@@ -1,0 +1,37 @@
+#pragma once
+
+#include "BlackBirdBox/Core/Core.h"
+#include "Buffers/VertexArray.h"
+#include "BlackBirdBox/Primitives/Point.h"
+#include "BlackBirdBox/Primitives/ComputeShaderConfiguration.h"
+
+#include <glm/glm.hpp>
+
+namespace Core {
+
+	class RendererAPI
+	{
+	public:
+		enum class API
+		{
+			None = 0, OpenGL = 1
+		};
+	public:
+		virtual void Init() = 0;
+		virtual void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) = 0;
+		virtual void SetClearColor(const glm::vec4& color) = 0;
+		virtual void Clear() = 0;
+
+		virtual void DrawIndexed(const Ref<VertexArray>& vertexArray, uint32_t indexCount = 0) = 0;
+		virtual void DrawPoints(const std::vector<Ref<Point>>& points) = 0;
+		virtual void DispatchCompute(const ComputeShaderConfiguration& compute_shader_configuration) = 0;
+		virtual void WaitMemoryBarrier() = 0;
+
+		inline static API GetAPI() { return s_API; }
+		static Scope<RendererAPI> Create();
+
+	private:
+		static API s_API;
+	};
+
+}

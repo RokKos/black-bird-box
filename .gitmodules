@@ -1,0 +1,23 @@
+[submodule "external/glfw"]
+	path = external/glfw
+	url = https://github.com/RokKos/glfw.git
+	branch = master
+[submodule "external/glm"]
+	path = external/glm
+	url = https://github.com/g-truc/glm.git
+	branch = master
+[submodule "external/imgui"]
+	path = external/imgui
+	url = https://github.com/ocornut/imgui.git
+	branch = docking
+[submodule "external/spdlog"]
+	path = external/spdlog
+	url = https://github.com/gabime/spdlog.git
+	branch = v1.x
+[submodule "external/stb"]
+	path = external/stb
+	url = https://github.com/nothings/stb.git
+	branch = master
+[submodule "external/tinyobjloader"]
+	path = external/tinyobjloader
+	url = https://github.com/tinyobjloader/tinyobjloader.git

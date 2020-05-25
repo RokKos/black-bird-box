@@ -348,3 +348,11 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+
+# BlackBirdBox specific
+bin/
+bin-int/
+
+# Visual Studio files and folder
+*.sln
+*.vcxproj*
