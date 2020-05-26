@@ -16,7 +16,7 @@
 	branch = v1.x
 [submodule "external/stb"]
 	path = external/stb
-	url = https://github.com/nothings/stb.git
+	url = https://github.com/RokKos/stb.git
 	branch = master
 [submodule "external/tinyobjloader"]
 	path = external/tinyobjloader
