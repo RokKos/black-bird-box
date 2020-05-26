@@ -2,8 +2,6 @@
 
 #include "BlackBirdBox/Primitives/ModelData.h"
 
-#include "tiny_obj_loader.h"
-
 namespace Core {
 
 	class ModelLoader {

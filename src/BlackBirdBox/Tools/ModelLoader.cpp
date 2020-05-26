@@ -4,6 +4,9 @@
 #include "BlackBirdBox/Core/Core.h"
 #include "BlackBirdBox/Core/Log.h"
 
+#define TINYOBJLOADER_IMPLEMENTATION
+#include "tiny_obj_loader.h"
+
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/hash.hpp>
 

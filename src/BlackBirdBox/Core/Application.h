@@ -46,6 +46,6 @@ namespace Core {
 	};
 
 	// To be defined in CLIENT
-	Application* CreateApplication(std::string general_settings_file_path, std::string simulation_settings_file_path);
+	Application* CreateApplication();
 
 }

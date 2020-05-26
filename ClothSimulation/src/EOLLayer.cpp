@@ -1,0 +1,375 @@
+#include "EOLLayer.h"
+
+#include <imgui.h>
+#include <cmath>
+#include <glm/gtc/type_ptr.hpp>
+
+
+namespace EOL {
+	EOLLayer::EOLLayer(Core::Ref<GeneralSettings> general_setting)
+		: Core::Layer("EOLLayer"), perspective_camera_controller_()
+	{
+		general_setting_ = general_setting;
+
+		auto triangle_test_shader = shader_library_.Load(general_setting->RESOURCE_DIR + "Shaders/TriangleTest.glsl");
+		auto texture_shader = shader_library_.Load(general_setting->RESOURCE_DIR + "Shaders/Texture.glsl");
+
+
+		auto generic_color_shader = shader_library_.Load(general_setting->RESOURCE_DIR + "Shaders/GenericColor.glsl");
+		auto mat_generic_color = Core::CreateRef<Core::Material>(generic_color_shader, Core::PhongLightingParameters(), "Generic_Color_MAT");
+
+		auto generic_normals_shader = shader_library_.Load(general_setting->RESOURCE_DIR + "Shaders/GenericNormals.glsl");
+		auto mat_generic_normals = Core::CreateRef<Core::Material>(generic_normals_shader, Core::PhongLightingParameters(), "Generic_Normals_MAT");
+
+		auto generic_uv_coordinates_shader = shader_library_.Load(general_setting->RESOURCE_DIR + "Shaders/GenericUVCoordinates.glsl");
+		generic_uv_coordinates_shader->Bind();
+		generic_uv_coordinates_shader->SetInt("u_Texture", 0);
+		auto uv_texture = Core::Texture2D::Create(general_setting->RESOURCE_DIR + "Textures/uv_texture.png");
+		auto mat_generic_uv_coordinates = Core::CreateRef<Core::Material>(generic_uv_coordinates_shader, Core::PhongLightingParameters(), "Generic_UV_Coordinates_MAT");
+		mat_generic_uv_coordinates->SetTexture("UV_TEST_Texture", uv_texture);
+
+		auto generic_texture_shader = shader_library_.Load(general_setting->RESOURCE_DIR + "Shaders/GenericTexture.glsl");
+		generic_texture_shader->Bind();
+		generic_texture_shader->SetInt("u_Texture", 0);
+		auto gun_texture = Core::Texture2D::Create(general_setting->RESOURCE_DIR + "Textures/Cerberus_A.tga");
+		auto mat_generic_texture = Core::CreateRef<Core::Material>(generic_texture_shader, Core::PhongLightingParameters(), "Generic_Texture_MAT");
+		mat_generic_texture->SetTexture("Gun_Texture", gun_texture);
+
+		auto generic_lighting_shader = shader_library_.Load(general_setting->RESOURCE_DIR + "Shaders/GenericLighting.glsl");
+		auto phong_lighting_parameters = Core::PhongLightingParameters();
+		phong_lighting_parameters.diffuse_color_ = glm::vec3(0.8f, 0.0f, 0.0f);
+		phong_lighting_parameters.specular_color_ = glm::vec3(0.0f, 0.3f, 0.0f);
+		phong_lighting_parameters.specular_scattering_ = 32.0f;
+		phong_lighting_parameters.ambient_color_ = glm::vec3(0.0f, 0.0f, 1.0f);
+		phong_lighting_parameters.ambient_intensity_ = glm::vec3(0.5f, 0.5f, 0.5f);
+		auto mat_generic_lighting = Core::CreateRef<Core::Material>(generic_lighting_shader, phong_lighting_parameters, "Generic_Lighting_MAT");
+
+		auto standard_shader = shader_library_.Load(general_setting->RESOURCE_DIR + "Shaders/StandardShader.glsl");
+		standard_shader->Bind();
+		standard_shader->SetInt("u_Texture", 0);
+		auto mat_stadard_shader = Core::CreateRef<Core::Material>(standard_shader, phong_lighting_parameters, "Standard_MAT");
+		mat_stadard_shader->SetTexture("Gun_Texture", gun_texture);
+
+		// BOX ------
+		auto vertex_array_box = Core::VertexArray::Create();
+		auto model_data = Core::ModelLoader::LoadModel(general_setting->RESOURCE_DIR + "Models/gun.obj");
+
+		auto vertex_buffer_box = Core::VertexBuffer::Create(model_data.vertices.data(), model_data.vertices.size() * sizeof(Core::Vertex));
+		Core::BufferLayout layout_box = {
+		{ Core::ShaderDataType::Float3, "a_Position" },
+		{ Core::ShaderDataType::Float3, "a_Normal" },
+		{ Core::ShaderDataType::Float2, "a_TexCoord" },
+		};
+
+		vertex_buffer_box->SetLayout(layout_box);
+		vertex_array_box->AddVertexBuffer(vertex_buffer_box);
+
+		Core::Ref<Core::IndexBuffer> index_buffer_box = Core::IndexBuffer::Create(model_data.indices.data(), model_data.indices.size());
+		vertex_array_box->SetIndexBuffer(index_buffer_box);
+
+		// TODO(Rok Kos): Read from JSON file
+		auto shape = Core::CreateRef<Core::Shape>(mat_generic_color, vertex_array_box, Core::CreateRef<Core::Transform>(glm::vec3(0, 0, 0)), model_data, "Obj Model Test");
+		auto shape2 = Core::CreateRef<Core::Shape>(mat_generic_normals, vertex_array_box, Core::CreateRef<Core::Transform>(glm::vec3(2, 0, 0)), model_data, "Obj Model Normals Test");
+		auto shape3 = Core::CreateRef<Core::Shape>(mat_generic_uv_coordinates, vertex_array_box, Core::CreateRef<Core::Transform>(glm::vec3(4, 0, 0)), model_data, "Obj Texture UVs Test");
+		auto shape4 = Core::CreateRef<Core::Shape>(mat_generic_texture, vertex_array_box, Core::CreateRef<Core::Transform>(glm::vec3(6, 0, 0)), model_data, "Obj Texture Test");
+		auto shape5 = Core::CreateRef<Core::Shape>(mat_generic_lighting, vertex_array_box, Core::CreateRef<Core::Transform>(glm::vec3(8, 0, 0)), model_data, "Obj Lighting Test");
+		auto shape6 = Core::CreateRef<Core::Shape>(mat_stadard_shader, vertex_array_box, Core::CreateRef<Core::Transform>(glm::vec3(10, 0, 0)), model_data, "Obj All Together");
+		/*scene_.AddShape(shape);
+		scene_.AddShape(shape2);
+		scene_.AddShape(shape3);
+		scene_.AddShape(shape4);
+		scene_.AddShape(shape5);
+		scene_.AddShape(shape6);
+
+		scene_.AddLightSource(Core::CreateRef<Core::LightSource>(Core::LightType::kDirectional, Core::CreateRef<Core::Transform>(glm::vec3(0, 0, 10)), glm::vec3(0.5f, 0.0f, 0.7f)));
+
+		scene_.AddPoint(Core::CreateRef<Core::Point>(10, glm::vec3(0, 0, 0), glm::vec3(1, 0, 0)));
+		scene_.AddPoint(Core::CreateRef<Core::Point>(100, glm::vec3(10, 2, 5), glm::vec3(0, 1, 0)));
+		*/
+		// Compute Shader Test
+		
+		auto compute_particles_shader = shader_library_.Load(general_setting->RESOURCE_DIR + "Shaders/ComputeParticlesShader.glsl");
+		num_particles_ = 1024 * 1024;
+		compute_shader_configuration_ = Core::ComputeShaderConfiguration({ 1024 * 1024, 1, 1 }, { 1, 1, 1 });
+
+		std::vector<glm::vec3> particle_positons;
+		particle_positons.reserve(num_particles_);
+		std::vector<glm::vec3> particle_velocities;
+		particle_velocities.reserve(num_particles_);
+		std::vector<glm::vec4> particle_colors;
+		particle_colors.reserve(num_particles_);
+		for (unsigned int i = 0; i < num_particles_; ++i) {
+			particle_positons.push_back(glm::vec3(std::sin(i) * (float)i / num_particles_, std::cos(i) * (float)i / num_particles_, 0));
+			particle_velocities.push_back(glm::vec3(std::sin(i) * (float)i / num_particles_, std::cos(i) * (float)i / num_particles_, 0));
+			particle_colors.push_back(glm::vec4(std::sin(i), std::cos(i), 0, 1.0f));
+		}
+
+		auto positions_buffer = Core::ShaderStorageBuffer::Create(particle_positons, particle_positons.size() * sizeof(glm::vec3));
+		auto velocities_buffer = Core::ShaderStorageBuffer::Create(particle_velocities, particle_velocities.size() * sizeof(glm::vec3));
+		auto color_buffer = Core::ShaderStorageBuffer::Create(particle_colors, particle_colors.size() * sizeof(glm::vec4));
+		particles_storage_array_ = Core::ShaderStorageArray::Create();
+		particles_storage_array_->AddShaderStorageBuffer(positions_buffer);
+		particles_storage_array_->AddShaderStorageBuffer(velocities_buffer);
+		particles_storage_array_->AddShaderStorageBuffer(color_buffer);
+		
+
+	}
+
+	void EOLLayer::OnAttach()
+	{
+		Core::Layer::OnAttach();
+	}
+
+	void EOLLayer::OnDetach()
+	{
+		Core::Layer::OnDetach();
+
+	}
+
+	void EOLLayer::OnUpdate(Core::TimeStep ts)
+	{
+		Core::Layer::OnUpdate(ts);
+		perspective_camera_controller_.OnUpdate(ts);
+
+		Core::Renderer::BeginScene(perspective_camera_controller_.GetCamera(), scene_.GetLightSources());
+
+		prev_time_step_ = ts;
+
+		Core::RenderCommand::SetClearColor(bg_color_);
+		Core::RenderCommand::Clear();
+
+		// TODO(Rok Kos): Load Models on themand
+
+		for (auto shape : scene_.GetShapes())
+		{
+			Core::Renderer::Submit(shape->GetMaterial(), shape->GetVertexArray(), shape->GetTransform()->GetTransformMatrix());
+		}
+
+		auto compute_particles_shader = shader_library_.Get("ComputeParticlesShader");
+		Core::Renderer::DispatchComputeShader(compute_particles_shader, particles_storage_array_, compute_shader_configuration_);
+
+		scene_.DeletePoints();
+		auto particle_positions_buffer = particles_storage_array_->GetShaderStorageBuffers()[0];
+		std::vector<glm::vec3> particle_positions = particle_positions_buffer->GetData(num_particles_ * sizeof(glm::vec3));
+		for (const auto& particle_position : particle_positions)
+		{
+			scene_.AddPoint(Core::CreateRef<Core::Point>(10, particle_position, glm::vec3(1, 1, 1)));
+		}
+
+		Core::Renderer::DrawPoints(scene_.GetPoints());
+		
+		Core::Renderer::EndScene();
+	}
+
+	void EOLLayer::OnImGuiRender()
+	{
+		Core::Layer::OnImGuiRender();
+
+		ImGui::Begin("Debug Controlls");
+		if (ImGui::TreeNode("Misc")) {
+			ImGui::ColorEdit4("BG Color", glm::value_ptr(bg_color_));
+			ImGui::Text("Delta time: %f", prev_time_step_.GetSeconds());
+
+			ImGui::TreePop();
+		}
+
+	
+		if (ImGui::TreeNode("Camera Controls")) {
+
+			float camera_movement_speed = perspective_camera_controller_.GetCameraMovementSpeed();
+			ImGui::InputFloat("Camera movement speed", &camera_movement_speed);
+			perspective_camera_controller_.SetCameraMovementSpeed(camera_movement_speed);
+
+			float camera_rotation_speed = perspective_camera_controller_.GetCameraRotationSpeed();
+			ImGui::InputFloat("Camera rotation speed", &camera_rotation_speed);
+			perspective_camera_controller_.SetCameraRotationSpeed(camera_rotation_speed);
+
+			ImGui::Text("Yaw: %f", perspective_camera_controller_.GetYaw());
+			ImGui::Text("Pitch: %f", perspective_camera_controller_.GetPitch());
+			auto camera_front = perspective_camera_controller_.GetCamerFront();
+			ImGui::Text("Camera front x: %f y: %f z: %f", camera_front.x, camera_front.y, camera_front.z);
+			ImGui::TreePop();
+		}
+
+		if (ImGui::TreeNode("Scene View")) {
+
+			for (auto shape : scene_.GetShapes())
+			{
+				if (ImGui::TreeNode(shape->GetName().c_str())) {
+					if (ImGui::TreeNode("Transform")) {
+						// TODO(Rok Kos): Refac this
+						auto shape_transform = shape->GetTransform();
+
+						glm::vec3 t_pos = shape_transform->GetPosition();
+						float pos[3] = { t_pos.x, t_pos.y, t_pos.z };
+						ImGui::Text("Pos:"); ImGui::InputFloat3("a", &pos[0]);
+						t_pos.x = pos[0];
+						t_pos.y = pos[1];
+						t_pos.z = pos[2];
+						shape_transform->SetPosition(t_pos);
+
+
+						glm::vec3 t_rot = shape_transform->GetRotation();
+						float rot[3] = { t_rot.x, t_rot.y, t_rot.z };
+						ImGui::Text("Rot:"); ImGui::InputFloat3("b", &rot[0]);
+						t_rot.x = rot[0];
+						t_rot.y = rot[1];
+						t_rot.z = rot[2];
+						shape_transform->SetRotation(t_rot);
+
+
+
+						glm::vec3 t_scale = shape_transform->GetScale();
+						float scl[3] = { t_scale.x, t_scale.y, t_scale.z };
+						ImGui::Text("Scale:"); ImGui::InputFloat3("c", &scl[0]);
+						t_scale.x = scl[0];
+						t_scale.y = scl[1];
+						t_scale.z = scl[2];
+						shape_transform->SetScale(t_scale);
+
+						ImGui::TreePop();
+					}
+					
+					if (ImGui::TreeNode("Material")) {
+						auto shape_material = shape->GetMaterial();
+						ImGui::Text(shape_material->GetName().c_str());
+						auto lighting_data = shape_material->GetPhongLightingParameters();
+						
+						ImGui::ColorEdit3("Diffuse Color:", glm::value_ptr(lighting_data.diffuse_color_));
+						ImGui::ColorEdit3("Specular Color:", glm::value_ptr(lighting_data.specular_color_));
+						ImGui::ColorEdit3("Ambient Color:", glm::value_ptr(lighting_data.ambient_color_));
+						ImGui::InputFloat3("Ambient Intensity:", glm::value_ptr(lighting_data.ambient_intensity_));
+
+						ImGui::SliderFloat("Specular scattering:", &lighting_data.specular_scattering_, 0.0f, 256.0f);
+
+						shape_material->SetPhongLightingParameters(lighting_data);
+
+						ImGui::TreePop();
+					}
+
+
+					ImGui::TreePop();
+				}
+			}
+
+			for (auto light_source : scene_.GetLightSources())
+			{
+				if (ImGui::TreeNode(light_source->GetName().c_str())) {
+					if (ImGui::TreeNode("Color Properties")) {
+						glm::vec3 t_color = light_source->GetColor();
+						ImGui::ColorEdit3("Color:", glm::value_ptr(t_color));
+						light_source->SetColor(t_color);
+
+						ImGui::TreePop();
+					}
+
+
+					if (ImGui::TreeNode("Transform")) {
+						// TODO(Rok Kos): Refac this
+						
+
+						glm::vec3 t_pos = light_source->GetPosition();
+						float pos[3] = { t_pos.x, t_pos.y, t_pos.z };
+						ImGui::Text("Pos:"); ImGui::InputFloat3("a", &pos[0]);
+						t_pos.x = pos[0];
+						t_pos.y = pos[1];
+						t_pos.z = pos[2];
+						light_source->SetPosition(t_pos);
+
+
+						glm::vec3 t_rot = light_source->GetDirection();
+						float rot[3] = { t_rot.x, t_rot.y, t_rot.z };
+						ImGui::Text("Rot:"); ImGui::InputFloat3("b", &rot[0]);
+						t_rot.x = rot[0];
+						t_rot.y = rot[1];
+						t_rot.z = rot[2];
+						light_source->SetDirection(t_rot);
+
+
+
+						glm::vec3 t_scale = light_source->GetIntensity();
+						float scl[3] = { t_scale.x, t_scale.y, t_scale.z };
+						ImGui::Text("Scale:"); ImGui::InputFloat3("c", &scl[0]);
+						t_scale.x = scl[0];
+						t_scale.y = scl[1];
+						t_scale.z = scl[2];
+						light_source->SetIntensity(t_scale);
+
+						ImGui::TreePop();
+					}
+					ImGui::TreePop();
+				}
+			}
+			
+			ImGui::TreePop();
+		}
+		
+		ImGui::End();
+
+	}
+
+	void EOLLayer::OnEvent(Core::Event& e)
+	{
+		Core::EventDispatcher dispatcher(e);
+		dispatcher.Dispatch<Core::KeyPressedEvent>(BIND_EVENT_FN(EOLLayer::OnKeyPressedEvent));
+		dispatcher.Dispatch<Core::KeyTypedEvent>(BIND_EVENT_FN(EOLLayer::OnKeyTypedEvent));
+
+		perspective_camera_controller_.OnEvent(e);
+		Core::Layer::OnEvent(e);
+	}
+
+	bool EOLLayer::OnKeyPressedEvent(Core::KeyPressedEvent& e)
+	{
+		LOG_INFO("EOL LAYER::OnKeyPressedEvent key pressed: {0}", e.GetKeyCode());
+		/*switch (e.GetKeyCode()) {
+		case Core::KeyCode::Up: {
+			glm::vec3 pos = transform_box_.GetPosition();
+			pos.y += 1.0 * prev_time_step_;
+			transform_box_.SetPosition(pos);
+			return true;
+		}
+		case Core::KeyCode::Down: {
+			glm::vec3 pos = transform_box_.GetPosition();
+			pos.y -= 1.0 * prev_time_step_;
+			transform_box_.SetPosition(pos);
+			return true;
+		}
+		case Core::KeyCode::Left: {
+			glm::vec3 pos = transform_box_.GetPosition();
+			pos.x -= 1.0 * prev_time_step_;
+			transform_box_.SetPosition(pos);
+			return true;
+		}
+		case Core::KeyCode::Right: {
+			glm::vec3 pos = transform_box_.GetPosition();
+			pos.x += 1.0 * prev_time_step_;
+			transform_box_.SetPosition(pos);
+			return true;
+		}
+		}*/
+		return false;
+	}
+
+	bool EOLLayer::OnKeyTypedEvent(Core::KeyTypedEvent& e)
+	{
+		LOG_INFO("EOLLayer::OnKeyTypedEvent key pressed: {0}", e.GetKeyCode());
+		
+		switch (e.GetKeyCode()) {
+		case Core::KeyCode::H:
+			//scene->step(gs->online, gs->exportObjs);
+			return true;
+		case Core::KeyCode::R:
+			//scene->reset();  It was before commented out
+			return true;
+		case Core::KeyCode::P:
+			//scene->partialStep();
+			return true;
+		case Core::KeyCode::V:
+			//camera->toggleFlatView();
+			return true;
+		}
+
+		return false;
+	}
+
+}

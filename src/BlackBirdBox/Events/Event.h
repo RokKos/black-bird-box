@@ -1,5 +1,7 @@
 #pragma once
 
+#include "bbbpch.h"
+
 #include "BlackBirdBox/Core/Core.h"
 
 
