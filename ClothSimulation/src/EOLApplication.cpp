@@ -5,9 +5,7 @@ namespace EOL {
 
 	EOLApplication::EOLApplication()
 	{
-		general_setting_ = Core::CreateRef<GeneralSettings>();
-
-		PushLayer(new EOLLayer(general_setting_));
+		PushLayer(new EOLLayer());
 	}
 	
 

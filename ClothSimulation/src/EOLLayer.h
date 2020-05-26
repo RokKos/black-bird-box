@@ -2,8 +2,6 @@
 
 #include "BlackBirdBox.h"
 
-#include "Settings/GeneralSettings.h"
-
 #include <glm/glm.hpp>
 
 namespace EOL {
@@ -11,7 +9,7 @@ namespace EOL {
 	class EOLLayer : public Core::Layer
 	{
 	public:
-		EOLLayer(Core::Ref<GeneralSettings> general_setting);
+		EOLLayer();
 		virtual ~EOLLayer() = default;
 
 		virtual void OnAttach() override;
@@ -26,7 +24,6 @@ namespace EOL {
 		bool OnKeyTypedEvent(Core::KeyTypedEvent& e);
 
 	private:
-		Core::Ref<GeneralSettings> general_setting_;
 		Core::TimeStep prev_time_step_;
 		glm::vec4 bg_color_ = { 0.1f, 0.1f, 0.1f, 1 };
 		

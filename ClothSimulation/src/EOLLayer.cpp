@@ -6,36 +6,35 @@
 
 
 namespace EOL {
-	EOLLayer::EOLLayer(Core::Ref<GeneralSettings> general_setting)
+	EOLLayer::EOLLayer()
 		: Core::Layer("EOLLayer"), perspective_camera_controller_()
 	{
-		general_setting_ = general_setting;
 
-		auto triangle_test_shader = shader_library_.Load(general_setting->RESOURCE_DIR + "Shaders/TriangleTest.glsl");
-		auto texture_shader = shader_library_.Load(general_setting->RESOURCE_DIR + "Shaders/Texture.glsl");
+		auto triangle_test_shader = shader_library_.Load("assets/Shaders/TriangleTest.glsl");
+		auto texture_shader = shader_library_.Load("assets/Shaders/Texture.glsl");
 
 
-		auto generic_color_shader = shader_library_.Load(general_setting->RESOURCE_DIR + "Shaders/GenericColor.glsl");
+		auto generic_color_shader = shader_library_.Load("assets/Shaders/GenericColor.glsl");
 		auto mat_generic_color = Core::CreateRef<Core::Material>(generic_color_shader, Core::PhongLightingParameters(), "Generic_Color_MAT");
 
-		auto generic_normals_shader = shader_library_.Load(general_setting->RESOURCE_DIR + "Shaders/GenericNormals.glsl");
+		auto generic_normals_shader = shader_library_.Load("assets/Shaders/GenericNormals.glsl");
 		auto mat_generic_normals = Core::CreateRef<Core::Material>(generic_normals_shader, Core::PhongLightingParameters(), "Generic_Normals_MAT");
 
-		auto generic_uv_coordinates_shader = shader_library_.Load(general_setting->RESOURCE_DIR + "Shaders/GenericUVCoordinates.glsl");
+		auto generic_uv_coordinates_shader = shader_library_.Load("assets/Shaders/GenericUVCoordinates.glsl");
 		generic_uv_coordinates_shader->Bind();
 		generic_uv_coordinates_shader->SetInt("u_Texture", 0);
-		auto uv_texture = Core::Texture2D::Create(general_setting->RESOURCE_DIR + "Textures/uv_texture.png");
+		auto uv_texture = Core::Texture2D::Create("assets/Textures/uv_texture.png");
 		auto mat_generic_uv_coordinates = Core::CreateRef<Core::Material>(generic_uv_coordinates_shader, Core::PhongLightingParameters(), "Generic_UV_Coordinates_MAT");
 		mat_generic_uv_coordinates->SetTexture("UV_TEST_Texture", uv_texture);
 
-		auto generic_texture_shader = shader_library_.Load(general_setting->RESOURCE_DIR + "Shaders/GenericTexture.glsl");
+		auto generic_texture_shader = shader_library_.Load("assets/Shaders/GenericTexture.glsl");
 		generic_texture_shader->Bind();
 		generic_texture_shader->SetInt("u_Texture", 0);
-		auto gun_texture = Core::Texture2D::Create(general_setting->RESOURCE_DIR + "Textures/Cerberus_A.tga");
+		auto gun_texture = Core::Texture2D::Create("assets/Textures/Cerberus_A.tga");
 		auto mat_generic_texture = Core::CreateRef<Core::Material>(generic_texture_shader, Core::PhongLightingParameters(), "Generic_Texture_MAT");
 		mat_generic_texture->SetTexture("Gun_Texture", gun_texture);
 
-		auto generic_lighting_shader = shader_library_.Load(general_setting->RESOURCE_DIR + "Shaders/GenericLighting.glsl");
+		auto generic_lighting_shader = shader_library_.Load("assets/Shaders/GenericLighting.glsl");
 		auto phong_lighting_parameters = Core::PhongLightingParameters();
 		phong_lighting_parameters.diffuse_color_ = glm::vec3(0.8f, 0.0f, 0.0f);
 		phong_lighting_parameters.specular_color_ = glm::vec3(0.0f, 0.3f, 0.0f);
@@ -44,7 +43,7 @@ namespace EOL {
 		phong_lighting_parameters.ambient_intensity_ = glm::vec3(0.5f, 0.5f, 0.5f);
 		auto mat_generic_lighting = Core::CreateRef<Core::Material>(generic_lighting_shader, phong_lighting_parameters, "Generic_Lighting_MAT");
 
-		auto standard_shader = shader_library_.Load(general_setting->RESOURCE_DIR + "Shaders/StandardShader.glsl");
+		auto standard_shader = shader_library_.Load("assets/Shaders/StandardShader.glsl");
 		standard_shader->Bind();
 		standard_shader->SetInt("u_Texture", 0);
 		auto mat_stadard_shader = Core::CreateRef<Core::Material>(standard_shader, phong_lighting_parameters, "Standard_MAT");
@@ -52,7 +51,7 @@ namespace EOL {
 
 		// BOX ------
 		auto vertex_array_box = Core::VertexArray::Create();
-		auto model_data = Core::ModelLoader::LoadModel(general_setting->RESOURCE_DIR + "Models/gun.obj");
+		auto model_data = Core::ModelLoader::LoadModel("assets/Models/gun.obj");
 
 		auto vertex_buffer_box = Core::VertexBuffer::Create(model_data.vertices.data(), model_data.vertices.size() * sizeof(Core::Vertex));
 		Core::BufferLayout layout_box = {
@@ -74,7 +73,7 @@ namespace EOL {
 		auto shape4 = Core::CreateRef<Core::Shape>(mat_generic_texture, vertex_array_box, Core::CreateRef<Core::Transform>(glm::vec3(6, 0, 0)), model_data, "Obj Texture Test");
 		auto shape5 = Core::CreateRef<Core::Shape>(mat_generic_lighting, vertex_array_box, Core::CreateRef<Core::Transform>(glm::vec3(8, 0, 0)), model_data, "Obj Lighting Test");
 		auto shape6 = Core::CreateRef<Core::Shape>(mat_stadard_shader, vertex_array_box, Core::CreateRef<Core::Transform>(glm::vec3(10, 0, 0)), model_data, "Obj All Together");
-		/*scene_.AddShape(shape);
+		scene_.AddShape(shape);
 		scene_.AddShape(shape2);
 		scene_.AddShape(shape3);
 		scene_.AddShape(shape4);
@@ -85,10 +84,10 @@ namespace EOL {
 
 		scene_.AddPoint(Core::CreateRef<Core::Point>(10, glm::vec3(0, 0, 0), glm::vec3(1, 0, 0)));
 		scene_.AddPoint(Core::CreateRef<Core::Point>(100, glm::vec3(10, 2, 5), glm::vec3(0, 1, 0)));
-		*/
-		// Compute Shader Test
 		
-		auto compute_particles_shader = shader_library_.Load(general_setting->RESOURCE_DIR + "Shaders/ComputeParticlesShader.glsl");
+		// Compute Shader Test
+		/*
+		auto compute_particles_shader = shader_library_.Load("assets/Shaders/ComputeParticlesShader.glsl");
 		num_particles_ = 1024 * 1024;
 		compute_shader_configuration_ = Core::ComputeShaderConfiguration({ 1024 * 1024, 1, 1 }, { 1, 1, 1 });
 
@@ -111,7 +110,7 @@ namespace EOL {
 		particles_storage_array_->AddShaderStorageBuffer(positions_buffer);
 		particles_storage_array_->AddShaderStorageBuffer(velocities_buffer);
 		particles_storage_array_->AddShaderStorageBuffer(color_buffer);
-		
+		*/
 
 	}
 
@@ -145,7 +144,7 @@ namespace EOL {
 			Core::Renderer::Submit(shape->GetMaterial(), shape->GetVertexArray(), shape->GetTransform()->GetTransformMatrix());
 		}
 
-		auto compute_particles_shader = shader_library_.Get("ComputeParticlesShader");
+		/*auto compute_particles_shader = shader_library_.Get("ComputeParticlesShader");
 		Core::Renderer::DispatchComputeShader(compute_particles_shader, particles_storage_array_, compute_shader_configuration_);
 
 		scene_.DeletePoints();
@@ -157,6 +156,7 @@ namespace EOL {
 		}
 
 		Core::Renderer::DrawPoints(scene_.GetPoints());
+		*/
 		
 		Core::Renderer::EndScene();
 	}

@@ -24,13 +24,9 @@ namespace EOL {
 			return simulation_settings_file_path_;
 		}
 
-		const Core::Ref<GeneralSettings>& GetGeneralSettings() const { return general_setting_; }
-
 	private:
-		std::string general_settings_file_path_;
+		std::string general_settings_file_path_ = "assets/";
 		std::string simulation_settings_file_path_;
-
-		Core::Ref<GeneralSettings> general_setting_;
 	};
 
 
