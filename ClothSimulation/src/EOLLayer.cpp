@@ -49,30 +49,30 @@ namespace EOL {
 		auto mat_stadard_shader = Core::CreateRef<Core::Material>(standard_shader, phong_lighting_parameters, "Standard_MAT");
 		mat_stadard_shader->SetTexture("Gun_Texture", gun_texture);
 
-		// BOX ------
-		auto vertex_array_box = Core::VertexArray::Create();
+		// Gun ------
+		auto vertex_array_gun = Core::VertexArray::Create();
 		auto model_data = Core::ModelLoader::LoadModel("assets/Models/gun.obj");
 
-		auto vertex_buffer_box = Core::VertexBuffer::Create(model_data.vertices.data(), model_data.vertices.size() * sizeof(Core::Vertex));
-		Core::BufferLayout layout_box = {
+		auto vertex_buffer_gun = Core::VertexBuffer::Create(model_data.vertices.data(), model_data.vertices.size() * sizeof(Core::Vertex));
+		Core::BufferLayout layout_gun = {
 		{ Core::ShaderDataType::Float3, "a_Position" },
 		{ Core::ShaderDataType::Float3, "a_Normal" },
 		{ Core::ShaderDataType::Float2, "a_TexCoord" },
 		};
 
-		vertex_buffer_box->SetLayout(layout_box);
-		vertex_array_box->AddVertexBuffer(vertex_buffer_box);
+		vertex_buffer_gun->SetLayout(layout_gun);
+		vertex_array_gun->AddVertexBuffer(vertex_buffer_gun);
 
-		Core::Ref<Core::IndexBuffer> index_buffer_box = Core::IndexBuffer::Create(model_data.indices.data(), model_data.indices.size());
-		vertex_array_box->SetIndexBuffer(index_buffer_box);
+		Core::Ref<Core::IndexBuffer> index_buffer_gun = Core::IndexBuffer::Create(model_data.indices.data(), model_data.indices.size());
+		vertex_array_gun->SetIndexBuffer(index_buffer_gun);
 
 		// TODO(Rok Kos): Read from JSON file
-		auto shape = Core::CreateRef<Core::Shape>(mat_generic_color, vertex_array_box, Core::CreateRef<Core::Transform>(glm::vec3(0, 0, 0)), model_data, "Obj Model Test");
-		auto shape2 = Core::CreateRef<Core::Shape>(mat_generic_normals, vertex_array_box, Core::CreateRef<Core::Transform>(glm::vec3(2, 0, 0)), model_data, "Obj Model Normals Test");
-		auto shape3 = Core::CreateRef<Core::Shape>(mat_generic_uv_coordinates, vertex_array_box, Core::CreateRef<Core::Transform>(glm::vec3(4, 0, 0)), model_data, "Obj Texture UVs Test");
-		auto shape4 = Core::CreateRef<Core::Shape>(mat_generic_texture, vertex_array_box, Core::CreateRef<Core::Transform>(glm::vec3(6, 0, 0)), model_data, "Obj Texture Test");
-		auto shape5 = Core::CreateRef<Core::Shape>(mat_generic_lighting, vertex_array_box, Core::CreateRef<Core::Transform>(glm::vec3(8, 0, 0)), model_data, "Obj Lighting Test");
-		auto shape6 = Core::CreateRef<Core::Shape>(mat_stadard_shader, vertex_array_box, Core::CreateRef<Core::Transform>(glm::vec3(10, 0, 0)), model_data, "Obj All Together");
+		auto shape = Core::CreateRef<Core::Shape>(mat_generic_color, vertex_array_gun, Core::CreateRef<Core::Transform>(glm::vec3(0, 0, 0)), model_data, "Obj Model Test");
+		auto shape2 = Core::CreateRef<Core::Shape>(mat_generic_normals, vertex_array_gun, Core::CreateRef<Core::Transform>(glm::vec3(2, 0, 0)), model_data, "Obj Model Normals Test");
+		auto shape3 = Core::CreateRef<Core::Shape>(mat_generic_uv_coordinates, vertex_array_gun, Core::CreateRef<Core::Transform>(glm::vec3(4, 0, 0)), model_data, "Obj Texture UVs Test");
+		auto shape4 = Core::CreateRef<Core::Shape>(mat_generic_texture, vertex_array_gun, Core::CreateRef<Core::Transform>(glm::vec3(6, 0, 0)), model_data, "Obj Texture Test");
+		auto shape5 = Core::CreateRef<Core::Shape>(mat_generic_lighting, vertex_array_gun, Core::CreateRef<Core::Transform>(glm::vec3(8, 0, 0)), model_data, "Obj Lighting Test");
+		auto shape6 = Core::CreateRef<Core::Shape>(mat_stadard_shader, vertex_array_gun, Core::CreateRef<Core::Transform>(glm::vec3(10, 0, 0)), model_data, "Obj All Together");
 		scene_.AddShape(shape);
 		scene_.AddShape(shape2);
 		scene_.AddShape(shape3);
@@ -84,6 +84,74 @@ namespace EOL {
 
 		scene_.AddPoint(Core::CreateRef<Core::Point>(10, glm::vec3(0, 0, 0), glm::vec3(1, 0, 0)));
 		scene_.AddPoint(Core::CreateRef<Core::Point>(100, glm::vec3(10, 2, 5), glm::vec3(0, 1, 0)));
+
+
+		// Enviroment map ------
+		enviroment_map_shader_ = shader_library_.Load("assets/Shaders/EnviromentMapShader.glsl");
+		enviroment_map_shader_->Bind();
+		enviroment_map_shader_->SetInt("u_EnviromentMap", 0);
+
+		vertex_array_box_ = Core::VertexArray::Create();
+
+		float enviroment_map_box_vertices[] = {
+			// Front face
+			-1.0, -1.0,  1.0,
+			1.0, -1.0,  1.0,
+			1.0,  1.0,  1.0,
+			-1.0,  1.0,  1.0,
+
+			// Back face
+			-1.0, -1.0, -1.0,
+			-1.0,  1.0, -1.0,
+			1.0,  1.0, -1.0,
+			1.0, -1.0, -1.0,
+
+			// Top face
+			-1.0,  1.0, -1.0,
+			-1.0,  1.0,  1.0,
+			1.0,  1.0,  1.0,
+			1.0,  1.0, -1.0,
+
+			// Bottom face
+			-1.0, -1.0, -1.0,
+			1.0, -1.0, -1.0,
+			1.0, -1.0,  1.0,
+			-1.0, -1.0,  1.0,
+
+			// Right face
+			1.0, -1.0, -1.0,
+			1.0,  1.0, -1.0,
+			1.0,  1.0,  1.0,
+			1.0, -1.0,  1.0,
+
+			// Left face
+			-1.0, -1.0, -1.0,
+			-1.0, -1.0,  1.0,
+			-1.0,  1.0,  1.0,
+			-1.0,  1.0, -1.0,
+		};
+
+		uint32_t enviroment_map_box_indices[] = {
+			0, 1, 2, 0, 2, 3,    // front
+			4, 5, 6, 4, 6, 7,    // back
+			8, 9, 10, 8, 10, 11,   // top
+			12, 13, 14, 12, 14, 15,   // bottom
+			16, 17, 18, 16, 18, 19,   // right
+			20, 21, 22, 20, 22, 23,   // left
+		};
+
+		auto vertex_buffer_box = Core::VertexBuffer::Create(enviroment_map_box_vertices, sizeof(enviroment_map_box_vertices));
+		Core::BufferLayout layout_box = {
+		{ Core::ShaderDataType::Float3, "a_Position" },
+		};
+
+		vertex_buffer_box->SetLayout(layout_box);
+		vertex_array_box_->AddVertexBuffer(vertex_buffer_box);
+
+		Core::Ref<Core::IndexBuffer> index_buffer_box = Core::IndexBuffer::Create(enviroment_map_box_indices, sizeof(enviroment_map_box_indices));
+		vertex_array_box_->SetIndexBuffer(index_buffer_box);
+
+		enviroment_map_ = Core::CubeMap::Create("assets/Textures/CubeMap/");
 		
 		// Compute Shader Test
 		/*
@@ -143,6 +211,8 @@ namespace EOL {
 		{
 			Core::Renderer::Submit(shape->GetMaterial(), shape->GetVertexArray(), shape->GetTransform()->GetTransformMatrix());
 		}
+		
+		Core::Renderer::Submit(enviroment_map_shader_, enviroment_map_, vertex_array_box_);
 
 		/*auto compute_particles_shader = shader_library_.Get("ComputeParticlesShader");
 		Core::Renderer::DispatchComputeShader(compute_particles_shader, particles_storage_array_, compute_shader_configuration_);
@@ -164,6 +234,15 @@ namespace EOL {
 	void EOLLayer::OnImGuiRender()
 	{
 		Core::Layer::OnImGuiRender();
+
+		ImGui::Begin("Dockinf test");
+		if (ImGui::TreeNode("Misc")) {
+			ImGui::ColorEdit4("BG Color", glm::value_ptr(bg_color_));
+			ImGui::Text("Delta time: %f", prev_time_step_.GetSeconds());
+
+			ImGui::TreePop();
+		}
+		ImGui::End();
 
 		ImGui::Begin("Debug Controlls");
 		if (ImGui::TreeNode("Misc")) {

@@ -19,6 +19,7 @@ namespace Platform {
 
 		virtual void DispatchCompute(const Core::ComputeShaderConfiguration& compute_shader_configuration) override;
 		virtual void WaitMemoryBarrier() override;
+		virtual void SetDepthFunction(Core::RendererAPI::DepthFunction depth_function) override;
 	};
 
 

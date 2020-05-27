@@ -9,6 +9,7 @@ namespace Platform {
 	public:
 		OpenGLVertexBuffer(uint32_t size);
 		OpenGLVertexBuffer(Core::Vertex* vertices, uint32_t size);
+		OpenGLVertexBuffer(float* vertices, uint32_t size);
 		virtual ~OpenGLVertexBuffer();
 
 		virtual void Bind() const override;
@@ -19,7 +20,7 @@ namespace Platform {
 		virtual const Core::BufferLayout& GetLayout() const override { return m_Layout; }
 		virtual void SetLayout(const Core::BufferLayout& layout) override { m_Layout = layout; }
 	private:
-		uint32_t m_RendererID;
+		uint32_t renderer_id_;
 		Core::BufferLayout m_Layout;
 	};
 

@@ -25,6 +25,8 @@ namespace Core {
 	void Renderer::BeginScene(Camera& camera, std::vector<Ref<LightSource>> light_sources)
 	{
 		s_SceneData->ViewProjectionMatrix = camera.GetViewProjectionMatrix();
+		s_SceneData->ViewMatrix = camera.GetViewMatrix();
+		s_SceneData->ProjectionMatrix = camera.GetProjectionMatrix();
 		s_SceneData->camera_position_ = camera.GetPosition();
 		s_SceneData->light_sources_ = light_sources;
 	}
@@ -56,6 +58,24 @@ namespace Core {
 
 		vertexArray->Bind();
 		RenderCommand::DrawIndexed(vertexArray);
+	}
+
+	void Renderer::Submit(const Ref<Shader>& shader, const Ref<CubeMap>& cube_map, const Ref<VertexArray>& vertexArray, const glm::mat4& transform)
+	{
+		// TODO(Rok Kos): This is only temporary
+		RenderCommand::SetDepthFunction(RendererAPI::DepthFunction::LEQUAL);
+		shader->Bind();
+
+		// TODO(Rok Kos): This is only temporary
+		glm::mat4 view_matrix = glm::mat4(glm::mat3(s_SceneData->ViewMatrix));
+		shader->SetMat4("u_ViewProjection", s_SceneData->ProjectionMatrix * view_matrix);
+		shader->SetMat4("u_Transform", transform);
+
+		vertexArray->Bind();
+		cube_map->Bind();
+		RenderCommand::DrawIndexed(vertexArray);
+		// TODO(Rok Kos): This is only temporary
+		RenderCommand::SetDepthFunction(RendererAPI::DepthFunction::LESS);
 	}
 
 	void Renderer::DispatchComputeShader(const Ref<Shader> shader, const Ref<ShaderStorageArray>& shader_storage_array, const ComputeShaderConfiguration& compute_shader_configuration)

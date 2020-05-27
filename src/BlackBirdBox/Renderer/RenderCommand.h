@@ -45,6 +45,11 @@ namespace Core {
 		{
 			s_RendererAPI->WaitMemoryBarrier();
 		}
+
+		static void SetDepthFunction(RendererAPI::DepthFunction depth_function)
+		{
+			s_RendererAPI->SetDepthFunction(depth_function);
+		}
 	private:
 		static Scope<RendererAPI> s_RendererAPI;
 	};

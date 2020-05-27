@@ -88,4 +88,38 @@ namespace Platform {
 		glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 	}
 
+	void OpenGLRendererAPI::SetDepthFunction(Core::RendererAPI::DepthFunction depth_function)
+	{
+		switch (depth_function)
+		{
+		case Core::RendererAPI::DepthFunction::NEVER:
+			glDepthFunc(GL_NEVER);
+			break;
+		case Core::RendererAPI::DepthFunction::LESS:
+			glDepthFunc(GL_LESS);
+			break;
+		case Core::RendererAPI::DepthFunction::EQUAL:
+			glDepthFunc(GL_EQUAL);
+			break;
+		case Core::RendererAPI::DepthFunction::LEQUAL:
+			glDepthFunc(GL_LEQUAL);
+			break;
+		case Core::RendererAPI::DepthFunction::GREATER:
+			glDepthFunc(GL_GREATER);
+			break;
+		case Core::RendererAPI::DepthFunction::NOTEQUAL:
+			glDepthFunc(GL_NOTEQUAL);
+			break;
+		case Core::RendererAPI::DepthFunction::GEQUAL:
+			glDepthFunc(GL_GEQUAL);
+			break;
+		case Core::RendererAPI::DepthFunction::ALWAYS:
+			glDepthFunc(GL_ALWAYS);
+			break;
+		default:
+			CORE_ASSERT(false, "Depth function unknown")
+			break;
+		}
+	}
+
 }

@@ -16,6 +16,18 @@ namespace Core {
 		{
 			None = 0, OpenGL = 1
 		};
+
+		enum class DepthFunction
+		{
+			NEVER = 0,
+			LESS = 1,
+			EQUAL = 2,
+			LEQUAL = 3,
+			GREATER = 4,
+			NOTEQUAL = 5,
+			GEQUAL = 6,
+			ALWAYS = 7
+		};
 	public:
 		virtual void Init() = 0;
 		virtual void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) = 0;
@@ -26,6 +38,7 @@ namespace Core {
 		virtual void DrawPoints(const std::vector<Ref<Point>>& points) = 0;
 		virtual void DispatchCompute(const ComputeShaderConfiguration& compute_shader_configuration) = 0;
 		virtual void WaitMemoryBarrier() = 0;
+		virtual void SetDepthFunction(DepthFunction depth_function) = 0;
 
 		inline static API GetAPI() { return s_API; }
 		static Scope<RendererAPI> Create();

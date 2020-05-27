@@ -20,6 +20,7 @@
 #include "BlackBirdBox/Renderer/Renderer.h"
 #include "BlackBirdBox/Renderer/RenderCommand.h"
 #include "BlackBirdBox/Renderer/Texture/Texture2D.h"
+#include "BlackBirdBox/Renderer/CubeMap/CubeMap.h"
 #include "BlackBirdBox/Renderer/Shader.h"
 // -----------------------------------
 
