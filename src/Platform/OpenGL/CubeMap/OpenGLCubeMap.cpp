@@ -16,8 +16,8 @@ namespace Platform {
 			std::make_pair("Left.png", GL_TEXTURE_CUBE_MAP_NEGATIVE_X),
 			std::make_pair("Top.png", GL_TEXTURE_CUBE_MAP_POSITIVE_Y),
 			std::make_pair("Bottom.png", GL_TEXTURE_CUBE_MAP_NEGATIVE_Y),
-			std::make_pair("Back.png", GL_TEXTURE_CUBE_MAP_POSITIVE_Z),
-			std::make_pair("Front.png", GL_TEXTURE_CUBE_MAP_NEGATIVE_Z) };
+			std::make_pair("Front.png", GL_TEXTURE_CUBE_MAP_POSITIVE_Z),
+			std::make_pair("Back.png", GL_TEXTURE_CUBE_MAP_NEGATIVE_Z) };
 
 		for (const auto& path_enum : cube_map_paths_enums) {
 			std::string side_of_cube_path = path + path_enum.first;
