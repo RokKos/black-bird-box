@@ -11,6 +11,7 @@ namespace EOL {
 	{
 
 		auto triangle_test_shader = shader_library_.Load("assets/Shaders/TriangleTest.glsl");
+		auto mat_generic_triangle = Core::CreateRef<Core::Material>(triangle_test_shader, Core::PhongLightingParameters(), "Generic_Triangle_MAT");
 		auto texture_shader = shader_library_.Load("assets/Shaders/Texture.glsl");
 
 
@@ -153,32 +154,70 @@ namespace EOL {
 
 		enviroment_map_ = Core::CubeMap::Create("assets/Textures/CubeMap/");
 		
-		// Compute Shader Test
-		/*
-		auto compute_particles_shader = shader_library_.Load("assets/Shaders/ComputeParticlesShader.glsl");
-		num_particles_ = 1024 * 1024;
-		compute_shader_configuration_ = Core::ComputeShaderConfiguration({ 1024 * 1024, 1, 1 }, { 1, 1, 1 });
+		// Compute Cloth
+		
+		auto compute_cloth_shader = shader_library_.Load("assets/Shaders/ComputeCloth.glsl");
+		num_cloth_dimension_size_ = 5;
+		num_cloth_particles_ = num_cloth_dimension_size_ * num_cloth_dimension_size_;
+		compute_shader_configuration_ = Core::ComputeShaderConfiguration({ num_cloth_particles_, 1, 1 }, { 1, 1, 1 });
 
-		std::vector<glm::vec3> particle_positons;
-		particle_positons.reserve(num_particles_);
-		std::vector<glm::vec3> particle_velocities;
-		particle_velocities.reserve(num_particles_);
-		std::vector<glm::vec4> particle_colors;
-		particle_colors.reserve(num_particles_);
-		for (unsigned int i = 0; i < num_particles_; ++i) {
-			particle_positons.push_back(glm::vec3(std::sin(i) * (float)i / num_particles_, std::cos(i) * (float)i / num_particles_, 0));
-			particle_velocities.push_back(glm::vec3(std::sin(i) * (float)i / num_particles_, std::cos(i) * (float)i / num_particles_, 0));
-			particle_colors.push_back(glm::vec4(std::sin(i), std::cos(i), 0, 1.0f));
+		std::vector<glm::vec3> prev_cloth_particle_positons;
+		prev_cloth_particle_positons.reserve(num_cloth_particles_);
+		std::vector<glm::vec3> cloth_particle_positons;
+		cloth_particle_positons.reserve(num_cloth_particles_);
+		
+		std::vector<glm::mat3> cloth_particle_constraints;
+		cloth_particle_constraints.reserve(num_cloth_particles_);
+		std::vector<glm::int32> cloth_particle_fixed_pos;
+		cloth_particle_fixed_pos.reserve(num_cloth_particles_);
+		for (unsigned int i = 0; i < num_cloth_particles_; ++i) {
+			prev_cloth_particle_positons.push_back(glm::vec3(i % num_cloth_dimension_size_, i / num_cloth_dimension_size_, 0));
+			cloth_particle_positons.push_back(glm::vec3(i % num_cloth_dimension_size_, i / num_cloth_dimension_size_, 0));
+			cloth_particle_constraints.push_back(glm::mat3(1.0));
+			cloth_particle_fixed_pos.push_back(0);
 		}
 
-		auto positions_buffer = Core::ShaderStorageBuffer::Create(particle_positons, particle_positons.size() * sizeof(glm::vec3));
-		auto velocities_buffer = Core::ShaderStorageBuffer::Create(particle_velocities, particle_velocities.size() * sizeof(glm::vec3));
-		auto color_buffer = Core::ShaderStorageBuffer::Create(particle_colors, particle_colors.size() * sizeof(glm::vec4));
-		particles_storage_array_ = Core::ShaderStorageArray::Create();
-		particles_storage_array_->AddShaderStorageBuffer(positions_buffer);
-		particles_storage_array_->AddShaderStorageBuffer(velocities_buffer);
-		particles_storage_array_->AddShaderStorageBuffer(color_buffer);
-		*/
+		auto prev_positions_buffer = Core::ShaderStorageBuffer::Create(prev_cloth_particle_positons, prev_cloth_particle_positons.size() * sizeof(glm::vec3));
+		auto positions_buffer = Core::ShaderStorageBuffer::Create(cloth_particle_positons, cloth_particle_positons.size() * sizeof(glm::vec3));
+		auto constrains_buffer = Core::ShaderStorageBuffer::Create(cloth_particle_constraints, cloth_particle_constraints.size() * sizeof(glm::mat3));
+		auto fixed_pos_buffer = Core::ShaderStorageBuffer::Create(cloth_particle_fixed_pos, cloth_particle_fixed_pos.size() * sizeof(glm::int32));
+		cloth_storage_array_ = Core::ShaderStorageArray::Create();
+		cloth_storage_array_->AddShaderStorageBuffer(prev_positions_buffer);
+		cloth_storage_array_->AddShaderStorageBuffer(positions_buffer);
+		cloth_storage_array_->AddShaderStorageBuffer(constrains_buffer);
+		cloth_storage_array_->AddShaderStorageBuffer(fixed_pos_buffer);
+		
+
+		auto vertex_array_cloth = Core::VertexArray::Create();
+		auto vertex_buffer_cloth = Core::VertexBuffer::Create(cloth_particle_positons.data(), cloth_particle_positons.size() * sizeof(glm::vec3));
+		Core::BufferLayout layout_cloth = {
+		{ Core::ShaderDataType::Float3, "a_Position" },
+		};
+
+		vertex_buffer_cloth->SetLayout(layout_cloth);
+		vertex_array_cloth->AddVertexBuffer(vertex_buffer_cloth);
+
+		std::vector<uint32_t> cloth_indices;
+		cloth_indices.reserve(num_cloth_particles_);
+		for (unsigned int x = 0; x < num_cloth_dimension_size_; ++x) {
+			for (unsigned int y = 0; y < num_cloth_dimension_size_; ++y) {
+				// Left Triangle
+				cloth_indices.push_back(x + y * num_cloth_dimension_size_);
+				cloth_indices.push_back((x + 1) + y * num_cloth_dimension_size_);
+				cloth_indices.push_back(x + (y + 1) * num_cloth_dimension_size_);
+				
+				// Right Triangle
+				cloth_indices.push_back((x + 1) + y * num_cloth_dimension_size_);
+				cloth_indices.push_back((x + 1) + (y + 1) * num_cloth_dimension_size_);
+				cloth_indices.push_back(x + (y + 1) * num_cloth_dimension_size_);
+			}
+		}
+
+		Core::Ref<Core::IndexBuffer> index_buffer_cloth = Core::IndexBuffer::Create(cloth_indices.data(), cloth_indices.size());
+		vertex_array_cloth->SetIndexBuffer(index_buffer_cloth);
+
+		auto cloth = Core::CreateRef<Core::Shape>(mat_generic_triangle, vertex_array_cloth, Core::CreateRef<Core::Transform>(glm::vec3(0, 0, 0)), Core::ModelData(), "Cloth");
+		scene_.AddShape(cloth);
 
 	}
 
@@ -214,9 +253,9 @@ namespace EOL {
 		
 		Core::Renderer::Submit(enviroment_map_shader_, enviroment_map_, vertex_array_box_);
 
-		/*auto compute_particles_shader = shader_library_.Get("ComputeParticlesShader");
-		Core::Renderer::DispatchComputeShader(compute_particles_shader, particles_storage_array_, compute_shader_configuration_);
-
+		auto compute_particles_shader = shader_library_.Get("ComputeCloth");
+		Core::Renderer::DispatchComputeShader(compute_particles_shader, cloth_storage_array_, compute_shader_configuration_);
+		/*
 		scene_.DeletePoints();
 		auto particle_positions_buffer = particles_storage_array_->GetShaderStorageBuffers()[0];
 		std::vector<glm::vec3> particle_positions = particle_positions_buffer->GetData(num_particles_ * sizeof(glm::vec3));

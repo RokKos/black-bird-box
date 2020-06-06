@@ -19,6 +19,13 @@ namespace Platform {
 		glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
 	}
 
+	OpenGLVertexBuffer::OpenGLVertexBuffer(glm::vec3* vertices, uint32_t size)
+	{
+		glCreateBuffers(1, &renderer_id_);
+		glBindBuffer(GL_ARRAY_BUFFER, renderer_id_);
+		glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
+	}
+
 	OpenGLVertexBuffer::OpenGLVertexBuffer(float* vertices, uint32_t size)
 	{
 		glCreateBuffers(1, &renderer_id_);

@@ -33,11 +33,13 @@ namespace EOL {
 
 		Core::Scene scene_;
 
-		Core::Ref<Core::ShaderStorageArray> particles_storage_array_;
+		Core::Ref<Core::ShaderStorageArray> cloth_storage_array_;
 		Core::Ref<Core::VertexArray> vertex_array_box_;
 		Core::Ref<Core::Shader> enviroment_map_shader_;
 		Core::Ref<Core::CubeMap> enviroment_map_;
 		Core::ComputeShaderConfiguration compute_shader_configuration_;
-		unsigned int num_particles_;
+		unsigned int num_cloth_dimension_size_;
+		unsigned int num_cloth_particles_;
+		
 	};
 }
