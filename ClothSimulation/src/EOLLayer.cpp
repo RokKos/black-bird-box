@@ -235,15 +235,6 @@ namespace EOL {
 	{
 		Core::Layer::OnImGuiRender();
 
-		ImGui::Begin("Dockinf test");
-		if (ImGui::TreeNode("Misc")) {
-			ImGui::ColorEdit4("BG Color", glm::value_ptr(bg_color_));
-			ImGui::Text("Delta time: %f", prev_time_step_.GetSeconds());
-
-			ImGui::TreePop();
-		}
-		ImGui::End();
-
 		ImGui::Begin("Debug Controlls");
 		if (ImGui::TreeNode("Misc")) {
 			ImGui::ColorEdit4("BG Color", glm::value_ptr(bg_color_));

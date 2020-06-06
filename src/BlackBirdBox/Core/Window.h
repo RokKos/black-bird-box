@@ -13,9 +13,9 @@ namespace Core {
 		unsigned int Width;
 		unsigned int Height;
 
-		WindowProps(const std::string& title = "EOL Cloth",
-			unsigned int width = 1280,
-			unsigned int height = 720)
+		WindowProps(const std::string& title = "Cloth Simulation",
+			unsigned int width = 1920,
+			unsigned int height = 1080)
 			: Title(title), Width(width), Height(height)
 		{
 		}
