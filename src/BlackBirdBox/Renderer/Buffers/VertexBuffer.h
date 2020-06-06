@@ -20,9 +20,10 @@ namespace Core {
 		virtual const BufferLayout& GetLayout() const = 0;
 		virtual void SetLayout(const BufferLayout& layout) = 0;
 
-		static Ref<VertexBuffer> Create(uint32_t size);
 		static Ref<VertexBuffer> Create(Vertex* vertices, uint32_t size);
 		static Ref<VertexBuffer> Create(glm::vec3 *vertices, uint32_t size);
 		static Ref<VertexBuffer> Create(float* vertices, uint32_t size);
+
+		static Ref<VertexBuffer> CreateExistingBuffer(uint32_t renderer_id);
 	};
 }

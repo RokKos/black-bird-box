@@ -35,11 +35,14 @@ void main()
 	uint particle_id = gl_GlobalInvocationID.x;
 
 	vec3 position = Positions[particle_id];
+	vec3 temp_position = position;
     vec3 prev_position = PreviousPositions[particle_id];
+
 	mat3 constrains = Constraints[particle_id];
     int is_fixed_position = fixedPoints[particle_id];
 
-	vec3 new_position = position; //+ is_fixed_position * (position - )
+	vec3 new_position = 2 * position - prev_position + (gravity * delta_time * delta_time);
 
-	Positions[particle_id].xyz = new_position;
+	Positions[particle_id] = new_position;
+	PreviousPositions[particle_id] = temp_position;
 }

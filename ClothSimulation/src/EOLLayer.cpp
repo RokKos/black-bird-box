@@ -172,7 +172,7 @@ namespace EOL {
 		cloth_particle_fixed_pos.reserve(num_cloth_particles_);
 		for (unsigned int i = 0; i < num_cloth_particles_; ++i) {
 			prev_cloth_particle_positons.push_back(glm::vec3(i % num_cloth_dimension_size_, i / num_cloth_dimension_size_, 0));
-			cloth_particle_positons.push_back(glm::vec3(i % num_cloth_dimension_size_, i / num_cloth_dimension_size_, 0));
+			cloth_particle_positons.push_back(glm::vec3( (float)(i % num_cloth_dimension_size_) / (float) num_cloth_dimension_size_, (float)(i / num_cloth_dimension_size_) / (float)num_cloth_dimension_size_, 0));
 			cloth_particle_constraints.push_back(glm::mat3(1.0));
 			cloth_particle_fixed_pos.push_back(0);
 		}
@@ -189,7 +189,7 @@ namespace EOL {
 		
 
 		auto vertex_array_cloth = Core::VertexArray::Create();
-		auto vertex_buffer_cloth = Core::VertexBuffer::Create(cloth_particle_positons.data(), cloth_particle_positons.size() * sizeof(glm::vec3));
+		auto vertex_buffer_cloth = Core::VertexBuffer::CreateExistingBuffer(positions_buffer->GetRendererID());
 		Core::BufferLayout layout_cloth = {
 		{ Core::ShaderDataType::Float3, "a_Position" },
 		};
@@ -244,28 +244,17 @@ namespace EOL {
 		Core::RenderCommand::SetClearColor(bg_color_);
 		Core::RenderCommand::Clear();
 
+		Core::Renderer::Submit(enviroment_map_shader_, enviroment_map_, vertex_array_box_);
+
+		auto compute_particles_shader = shader_library_.Get("ComputeCloth");
+		Core::Renderer::DispatchComputeShader(compute_particles_shader, cloth_storage_array_, compute_shader_configuration_);
+
 		// TODO(Rok Kos): Load Models on themand
 
 		for (auto shape : scene_.GetShapes())
 		{
 			Core::Renderer::Submit(shape->GetMaterial(), shape->GetVertexArray(), shape->GetTransform()->GetTransformMatrix());
 		}
-		
-		Core::Renderer::Submit(enviroment_map_shader_, enviroment_map_, vertex_array_box_);
-
-		auto compute_particles_shader = shader_library_.Get("ComputeCloth");
-		Core::Renderer::DispatchComputeShader(compute_particles_shader, cloth_storage_array_, compute_shader_configuration_);
-		/*
-		scene_.DeletePoints();
-		auto particle_positions_buffer = particles_storage_array_->GetShaderStorageBuffers()[0];
-		std::vector<glm::vec3> particle_positions = particle_positions_buffer->GetData(num_particles_ * sizeof(glm::vec3));
-		for (const auto& particle_position : particle_positions)
-		{
-			scene_.AddPoint(Core::CreateRef<Core::Point>(10, particle_position, glm::vec3(1, 1, 1)));
-		}
-
-		Core::Renderer::DrawPoints(scene_.GetPoints());
-		*/
 		
 		Core::Renderer::EndScene();
 	}

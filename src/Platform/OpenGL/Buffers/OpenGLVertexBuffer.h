@@ -7,10 +7,12 @@ namespace Platform {
 	class OpenGLVertexBuffer : public Core::VertexBuffer
 	{
 	public:
-		OpenGLVertexBuffer(uint32_t size);
 		OpenGLVertexBuffer(Core::Vertex* vertices, uint32_t size);
 		OpenGLVertexBuffer(glm::vec3* vertices, uint32_t size);
 		OpenGLVertexBuffer(float* vertices, uint32_t size);
+
+		OpenGLVertexBuffer(uint32_t render_id);
+
 		virtual ~OpenGLVertexBuffer();
 
 		virtual void Bind() const override;
