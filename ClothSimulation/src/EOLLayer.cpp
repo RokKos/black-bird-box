@@ -68,7 +68,7 @@ namespace EOL {
 		vertex_array_gun->SetIndexBuffer(index_buffer_gun);
 
 		// TODO(Rok Kos): Read from JSON file
-		auto shape = Core::CreateRef<Core::Shape>(mat_generic_color, vertex_array_gun, Core::CreateRef<Core::Transform>(glm::vec3(0, 0, 0)), model_data, "Obj Model Test");
+		auto shape = Core::CreateRef<Core::Shape>(mat_generic_color, vertex_array_gun, Core::CreateRef<Core::Transform>(glm::vec3(1, 0, 0)), model_data, "Obj Model Test");
 		auto shape2 = Core::CreateRef<Core::Shape>(mat_generic_normals, vertex_array_gun, Core::CreateRef<Core::Transform>(glm::vec3(2, 0, 0)), model_data, "Obj Model Normals Test");
 		auto shape3 = Core::CreateRef<Core::Shape>(mat_generic_uv_coordinates, vertex_array_gun, Core::CreateRef<Core::Transform>(glm::vec3(4, 0, 0)), model_data, "Obj Texture UVs Test");
 		auto shape4 = Core::CreateRef<Core::Shape>(mat_generic_texture, vertex_array_gun, Core::CreateRef<Core::Transform>(glm::vec3(6, 0, 0)), model_data, "Obj Texture Test");
@@ -157,7 +157,7 @@ namespace EOL {
 		// Compute Cloth
 		
 		auto compute_cloth_shader = shader_library_.Load("assets/Shaders/ComputeCloth.glsl");
-		num_cloth_dimension_size_ = 5;
+		num_cloth_dimension_size_ = 3;
 		num_cloth_particles_ = num_cloth_dimension_size_ * num_cloth_dimension_size_;
 		compute_shader_configuration_ = Core::ComputeShaderConfiguration({ num_cloth_particles_, 1, 1 }, { 1, 1, 1 });
 
@@ -171,10 +171,37 @@ namespace EOL {
 		std::vector<glm::int32> cloth_particle_fixed_pos;
 		cloth_particle_fixed_pos.reserve(num_cloth_particles_);
 		for (unsigned int i = 0; i < num_cloth_particles_; ++i) {
-			prev_cloth_particle_positons.push_back(glm::vec3(i % num_cloth_dimension_size_, i / num_cloth_dimension_size_, 0));
-			cloth_particle_positons.push_back(glm::vec3( (float)(i % num_cloth_dimension_size_) / (float) num_cloth_dimension_size_, (float)(i / num_cloth_dimension_size_) / (float)num_cloth_dimension_size_, 0));
-			cloth_particle_constraints.push_back(glm::mat3(1.0));
-			cloth_particle_fixed_pos.push_back(0);
+			int x = i % num_cloth_dimension_size_;
+			int y = i / num_cloth_dimension_size_;
+			glm::vec3 starting_position = glm::vec3((float)(x) / (float)num_cloth_dimension_size_, (float)(y) / (float)num_cloth_dimension_size_, 0);
+			prev_cloth_particle_positons.push_back(starting_position);
+			cloth_particle_positons.push_back(starting_position);
+
+			glm::mat3 contraint_indexs = glm::mat3(-1.0);
+			for (int dx = -1; dx <= 1; ++dx) {
+				for (int dy = -1; dy <= 1; ++dy) {
+					int new_x = x + dx;
+					int new_y = y + dy;
+
+					if (new_x < 0 || new_y < 0 || 
+						new_x >= num_cloth_dimension_size_ || new_y >= num_cloth_dimension_size_ || 
+						(new_x == x && new_y == y) || dx * dy != 0) {
+						contraint_indexs[dx + 1][dy + 1] = -1.0f;
+						continue;
+					}
+
+					contraint_indexs[dx + 1][dy + 1] = new_x + new_y * num_cloth_dimension_size_;
+				}
+			}
+
+			cloth_particle_constraints.push_back(contraint_indexs);
+			if (i != 0) {
+				cloth_particle_fixed_pos.push_back(1);
+			}
+			else {
+				cloth_particle_fixed_pos.push_back(0);
+			}
+			
 		}
 
 		auto prev_positions_buffer = Core::ShaderStorageBuffer::Create(prev_cloth_particle_positons, prev_cloth_particle_positons.size() * sizeof(glm::vec3));
@@ -198,9 +225,9 @@ namespace EOL {
 		vertex_array_cloth->AddVertexBuffer(vertex_buffer_cloth);
 
 		std::vector<uint32_t> cloth_indices;
-		cloth_indices.reserve(num_cloth_particles_);
-		for (unsigned int x = 0; x < num_cloth_dimension_size_; ++x) {
-			for (unsigned int y = 0; y < num_cloth_dimension_size_; ++y) {
+		cloth_indices.reserve(num_cloth_particles_ * 6);
+		for (unsigned int y = 0; y < num_cloth_dimension_size_ - 1; ++y) {
+			for (unsigned int x = 0; x < num_cloth_dimension_size_ - 1; ++x) {
 				// Left Triangle
 				cloth_indices.push_back(x + y * num_cloth_dimension_size_);
 				cloth_indices.push_back((x + 1) + y * num_cloth_dimension_size_);
@@ -251,11 +278,16 @@ namespace EOL {
 
 		// TODO(Rok Kos): Load Models on themand
 
+		Core::RenderCommand::SetPolygonMode((Core::RendererAPI::PolygonMode)polygon_mode_);
+
 		for (auto shape : scene_.GetShapes())
 		{
-			Core::Renderer::Submit(shape->GetMaterial(), shape->GetVertexArray(), shape->GetTransform()->GetTransformMatrix());
+			if (shape->GetObjectEnabled()) {
+				Core::Renderer::Submit(shape->GetMaterial(), shape->GetVertexArray(), shape->GetTransform()->GetTransformMatrix());
+			}
 		}
-		
+		Core::RenderCommand::SetPolygonMode(Core::RendererAPI::PolygonMode::FILL);
+
 		Core::Renderer::EndScene();
 	}
 
@@ -266,6 +298,7 @@ namespace EOL {
 		ImGui::Begin("Debug Controlls");
 		if (ImGui::TreeNode("Misc")) {
 			ImGui::ColorEdit4("BG Color", glm::value_ptr(bg_color_));
+			ImGui::Combo("Polygon Mode", &polygon_mode_, polygon_mode_names_, IM_ARRAYSIZE(polygon_mode_names_));
 			ImGui::Text("Delta time: %f", prev_time_step_.GetSeconds());
 
 			ImGui::TreePop();
@@ -294,6 +327,7 @@ namespace EOL {
 			for (auto shape : scene_.GetShapes())
 			{
 				if (ImGui::TreeNode(shape->GetName().c_str())) {
+					ImGui::Checkbox("Enabled", shape->GetObjectEnabledImGui());
 					if (ImGui::TreeNode("Transform")) {
 						// TODO(Rok Kos): Refac this
 						auto shape_transform = shape->GetTransform();

@@ -8,7 +8,8 @@ namespace Core {
 		vertex_array_(vertex_array),
 		model_data_(model_data),
 		transform_(transform),
-		name_(name)
+		name_(name),
+		enabled_(true)
 	{
 
 	}

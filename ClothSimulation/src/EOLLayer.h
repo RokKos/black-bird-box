@@ -40,6 +40,9 @@ namespace EOL {
 		Core::ComputeShaderConfiguration compute_shader_configuration_;
 		unsigned int num_cloth_dimension_size_;
 		unsigned int num_cloth_particles_;
+
+		int polygon_mode_ = 1;
+		const char* polygon_mode_names_[3]{ "Point", "Line", "Fill" };
 		
 	};
 }

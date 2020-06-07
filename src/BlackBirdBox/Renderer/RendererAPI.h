@@ -28,6 +28,14 @@ namespace Core {
 			GEQUAL = 6,
 			ALWAYS = 7
 		};
+
+		enum class PolygonMode
+		{
+			POINT = 0,
+			LINE = 1,
+			FILL = 2
+		};
+
 	public:
 		virtual void Init() = 0;
 		virtual void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) = 0;
@@ -39,6 +47,7 @@ namespace Core {
 		virtual void DispatchCompute(const ComputeShaderConfiguration& compute_shader_configuration) = 0;
 		virtual void WaitMemoryBarrier() = 0;
 		virtual void SetDepthFunction(DepthFunction depth_function) = 0;
+		virtual void SetPolygonMode(PolygonMode mode) = 0;
 
 		inline static API GetAPI() { return s_API; }
 		static Scope<RendererAPI> Create();

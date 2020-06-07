@@ -122,4 +122,22 @@ namespace Platform {
 		}
 	}
 
+	void OpenGLRendererAPI::SetPolygonMode(PolygonMode mode)
+	{
+		switch (mode)
+		{
+		case PolygonMode::POINT:
+			glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
+			break;
+		case PolygonMode::LINE:
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			break;
+		case PolygonMode::FILL:
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			break;
+		default:
+			break;
+		}
+	}
+
 }

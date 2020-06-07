@@ -46,6 +46,11 @@ namespace Core {
 			s_RendererAPI->WaitMemoryBarrier();
 		}
 
+		static void SetPolygonMode(RendererAPI::PolygonMode mode)
+		{
+			s_RendererAPI->SetPolygonMode(mode);
+		}
+
 		static void SetDepthFunction(RendererAPI::DepthFunction depth_function)
 		{
 			s_RendererAPI->SetDepthFunction(depth_function);
