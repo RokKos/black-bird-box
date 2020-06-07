@@ -7,8 +7,14 @@
 
 namespace EOL {
 	EOLLayer::EOLLayer()
-		: Core::Layer("EOLLayer"), perspective_camera_controller_()
+		: Core::Layer("EOLLayer")
 	{
+		perspective_camera_controller_ = Core::CreateRef<Core::PerspectiveCameraController>();
+		menus_.push_back(Core::CreateRef<Core::CameraMenu>("Camera Controls", perspective_camera_controller_));
+		menus_.push_back(Core::CreateRef<Core::SceneViewMenu>("Scene View", scene_.GetShapes(), scene_.GetLightSources()));
+		menus_.push_back(Core::CreateRef<Core::ComputeShaderMenu>("Compute Shader Simulation Controls", compute_shader_simulation_configuration_));
+		menus_.push_back(Core::CreateRef<Core::MiscMenu>("Misc Menu", prev_time_step_, bg_color_, polygon_mode_));
+		
 
 		auto triangle_test_shader = shader_library_.Load("assets/Shaders/TriangleTest.glsl");
 		auto mat_generic_triangle = Core::CreateRef<Core::Material>(triangle_test_shader, Core::PhongLightingParameters(), "Generic_Triangle_MAT");
@@ -263,9 +269,9 @@ namespace EOL {
 	void EOLLayer::OnUpdate(Core::TimeStep ts)
 	{
 		Core::Layer::OnUpdate(ts);
-		perspective_camera_controller_.OnUpdate(ts);
+		perspective_camera_controller_->OnUpdate(ts);
 
-		Core::Renderer::BeginScene(perspective_camera_controller_.GetCamera(), scene_.GetLightSources());
+		Core::Renderer::BeginScene(perspective_camera_controller_->GetCamera(), scene_.GetLightSources());
 
 		prev_time_step_ = ts;
 
@@ -296,171 +302,9 @@ namespace EOL {
 	{
 		Core::Layer::OnImGuiRender();
 
-		ImGui::Begin("Debug Controlls");
-		if (ImGui::TreeNode("Misc")) {
-			ImGui::ColorEdit4("BG Color", glm::value_ptr(bg_color_));
-			ImGui::Combo("Polygon Mode", &polygon_mode_, polygon_mode_names_, IM_ARRAYSIZE(polygon_mode_names_));
-			ImGui::Text("Delta time: %f", prev_time_step_.GetSeconds());
-
-			ImGui::TreePop();
+		for (auto menu : menus_) {
+			menu->OnImGuiRender();
 		}
-
-	
-		if (ImGui::TreeNode("Camera Controls")) {
-
-			float camera_movement_speed = perspective_camera_controller_.GetCameraMovementSpeed();
-			ImGui::InputFloat("Camera movement speed", &camera_movement_speed);
-			perspective_camera_controller_.SetCameraMovementSpeed(camera_movement_speed);
-
-			float camera_rotation_speed = perspective_camera_controller_.GetCameraRotationSpeed();
-			ImGui::InputFloat("Camera rotation speed", &camera_rotation_speed);
-			perspective_camera_controller_.SetCameraRotationSpeed(camera_rotation_speed);
-
-			ImGui::Text("Yaw: %f", perspective_camera_controller_.GetYaw());
-			ImGui::Text("Pitch: %f", perspective_camera_controller_.GetPitch());
-			auto camera_front = perspective_camera_controller_.GetCamerFront();
-			ImGui::Text("Camera front x: %f y: %f z: %f", camera_front.x, camera_front.y, camera_front.z);
-			ImGui::TreePop();
-		}
-
-		if (ImGui::TreeNode("Compute Shader Simulation Controls")) {
-
-			glm::vec3 gravity = compute_shader_simulation_configuration_.GetGravity();
-			ImGui::InputFloat3("Gravity", glm::value_ptr(gravity), 10);
-			compute_shader_simulation_configuration_.SetGravity(gravity);
-
-			float delta_time = compute_shader_simulation_configuration_.GetDeltaTime();
-			ImGui::InputFloat("Delta Time", &delta_time, 0.0f, 0.0f, "%.10f");
-			compute_shader_simulation_configuration_.SetDeltaTime(delta_time);
-
-			int itterations = compute_shader_simulation_configuration_.GetItterations();
-			ImGui::InputInt("Itterations", &itterations);
-			compute_shader_simulation_configuration_.SetItterations(itterations);
-
-			float rest_length = compute_shader_simulation_configuration_.GetRestLenght();
-			ImGui::InputFloat("Rest Lenght", &rest_length, 0.0f, 0.0f, "%.10f");
-			compute_shader_simulation_configuration_.SetRestLenght(rest_length);
-
-			
-			ImGui::TreePop();
-		}
-
-
-		if (ImGui::TreeNode("Scene View")) {
-
-			for (auto shape : scene_.GetShapes())
-			{
-				if (ImGui::TreeNode(shape->GetName().c_str())) {
-					ImGui::Checkbox("Enabled", shape->GetObjectEnabledImGui());
-					if (ImGui::TreeNode("Transform")) {
-						// TODO(Rok Kos): Refac this
-						auto shape_transform = shape->GetTransform();
-
-						glm::vec3 t_pos = shape_transform->GetPosition();
-						float pos[3] = { t_pos.x, t_pos.y, t_pos.z };
-						ImGui::Text("Pos:"); ImGui::InputFloat3("a", &pos[0]);
-						t_pos.x = pos[0];
-						t_pos.y = pos[1];
-						t_pos.z = pos[2];
-						shape_transform->SetPosition(t_pos);
-
-
-						glm::vec3 t_rot = shape_transform->GetRotation();
-						float rot[3] = { t_rot.x, t_rot.y, t_rot.z };
-						ImGui::Text("Rot:"); ImGui::InputFloat3("b", &rot[0]);
-						t_rot.x = rot[0];
-						t_rot.y = rot[1];
-						t_rot.z = rot[2];
-						shape_transform->SetRotation(t_rot);
-
-
-
-						glm::vec3 t_scale = shape_transform->GetScale();
-						float scl[3] = { t_scale.x, t_scale.y, t_scale.z };
-						ImGui::Text("Scale:"); ImGui::InputFloat3("c", &scl[0]);
-						t_scale.x = scl[0];
-						t_scale.y = scl[1];
-						t_scale.z = scl[2];
-						shape_transform->SetScale(t_scale);
-
-						ImGui::TreePop();
-					}
-					
-					if (ImGui::TreeNode("Material")) {
-						auto shape_material = shape->GetMaterial();
-						ImGui::Text(shape_material->GetName().c_str());
-						auto lighting_data = shape_material->GetPhongLightingParameters();
-						
-						ImGui::ColorEdit3("Diffuse Color:", glm::value_ptr(lighting_data.diffuse_color_));
-						ImGui::ColorEdit3("Specular Color:", glm::value_ptr(lighting_data.specular_color_));
-						ImGui::ColorEdit3("Ambient Color:", glm::value_ptr(lighting_data.ambient_color_));
-						ImGui::InputFloat3("Ambient Intensity:", glm::value_ptr(lighting_data.ambient_intensity_));
-
-						ImGui::SliderFloat("Specular scattering:", &lighting_data.specular_scattering_, 0.0f, 256.0f);
-
-						shape_material->SetPhongLightingParameters(lighting_data);
-
-						ImGui::TreePop();
-					}
-
-
-					ImGui::TreePop();
-				}
-			}
-
-			for (auto light_source : scene_.GetLightSources())
-			{
-				if (ImGui::TreeNode(light_source->GetName().c_str())) {
-					if (ImGui::TreeNode("Color Properties")) {
-						glm::vec3 t_color = light_source->GetColor();
-						ImGui::ColorEdit3("Color:", glm::value_ptr(t_color));
-						light_source->SetColor(t_color);
-
-						ImGui::TreePop();
-					}
-
-
-					if (ImGui::TreeNode("Transform")) {
-						// TODO(Rok Kos): Refac this
-						
-
-						glm::vec3 t_pos = light_source->GetPosition();
-						float pos[3] = { t_pos.x, t_pos.y, t_pos.z };
-						ImGui::Text("Pos:"); ImGui::InputFloat3("a", &pos[0]);
-						t_pos.x = pos[0];
-						t_pos.y = pos[1];
-						t_pos.z = pos[2];
-						light_source->SetPosition(t_pos);
-
-
-						glm::vec3 t_rot = light_source->GetDirection();
-						float rot[3] = { t_rot.x, t_rot.y, t_rot.z };
-						ImGui::Text("Rot:"); ImGui::InputFloat3("b", &rot[0]);
-						t_rot.x = rot[0];
-						t_rot.y = rot[1];
-						t_rot.z = rot[2];
-						light_source->SetDirection(t_rot);
-
-
-
-						glm::vec3 t_scale = light_source->GetIntensity();
-						float scl[3] = { t_scale.x, t_scale.y, t_scale.z };
-						ImGui::Text("Scale:"); ImGui::InputFloat3("c", &scl[0]);
-						t_scale.x = scl[0];
-						t_scale.y = scl[1];
-						t_scale.z = scl[2];
-						light_source->SetIntensity(t_scale);
-
-						ImGui::TreePop();
-					}
-					ImGui::TreePop();
-				}
-			}
-			
-			ImGui::TreePop();
-		}
-		
-		ImGui::End();
 
 	}
 
@@ -470,60 +314,19 @@ namespace EOL {
 		dispatcher.Dispatch<Core::KeyPressedEvent>(BIND_EVENT_FN(EOLLayer::OnKeyPressedEvent));
 		dispatcher.Dispatch<Core::KeyTypedEvent>(BIND_EVENT_FN(EOLLayer::OnKeyTypedEvent));
 
-		perspective_camera_controller_.OnEvent(e);
+		perspective_camera_controller_->OnEvent(e);
 		Core::Layer::OnEvent(e);
 	}
 
 	bool EOLLayer::OnKeyPressedEvent(Core::KeyPressedEvent& e)
 	{
 		LOG_INFO("EOL LAYER::OnKeyPressedEvent key pressed: {0}", e.GetKeyCode());
-		/*switch (e.GetKeyCode()) {
-		case Core::KeyCode::Up: {
-			glm::vec3 pos = transform_box_.GetPosition();
-			pos.y += 1.0 * prev_time_step_;
-			transform_box_.SetPosition(pos);
-			return true;
-		}
-		case Core::KeyCode::Down: {
-			glm::vec3 pos = transform_box_.GetPosition();
-			pos.y -= 1.0 * prev_time_step_;
-			transform_box_.SetPosition(pos);
-			return true;
-		}
-		case Core::KeyCode::Left: {
-			glm::vec3 pos = transform_box_.GetPosition();
-			pos.x -= 1.0 * prev_time_step_;
-			transform_box_.SetPosition(pos);
-			return true;
-		}
-		case Core::KeyCode::Right: {
-			glm::vec3 pos = transform_box_.GetPosition();
-			pos.x += 1.0 * prev_time_step_;
-			transform_box_.SetPosition(pos);
-			return true;
-		}
-		}*/
 		return false;
 	}
 
 	bool EOLLayer::OnKeyTypedEvent(Core::KeyTypedEvent& e)
 	{
 		LOG_INFO("EOLLayer::OnKeyTypedEvent key pressed: {0}", e.GetKeyCode());
-		
-		switch (e.GetKeyCode()) {
-		case Core::KeyCode::H:
-			//scene->step(gs->online, gs->exportObjs);
-			return true;
-		case Core::KeyCode::R:
-			//scene->reset();  It was before commented out
-			return true;
-		case Core::KeyCode::P:
-			//scene->partialStep();
-			return true;
-		case Core::KeyCode::V:
-			//camera->toggleFlatView();
-			return true;
-		}
 
 		return false;
 	}

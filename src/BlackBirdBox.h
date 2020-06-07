@@ -39,3 +39,8 @@
 #include "BlackBirdBox/Primitives/ComputeShaderConfiguration.h"
 #include "BlackBirdBox/Primitives/ComputeShaderSimulationConfiguration.h"
 #include "BlackBirdBox/Scene/Scene.h"
+#include "BlackBirdBox/ImGui/Menus/BaseMenu.h"
+#include "BlackBirdBox/ImGui/Menus/CameraMenu.h"
+#include "BlackBirdBox/ImGui/Menus/SceneViewMenu.h"
+#include "BlackBirdBox/ImGui/Menus/ComputeShaderMenu.h"
+#include "BlackBirdBox/ImGui/Menus/MiscMenu.h"

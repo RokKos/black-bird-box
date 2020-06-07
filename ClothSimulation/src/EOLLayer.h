@@ -29,7 +29,9 @@ namespace EOL {
 		
 		Core::ShaderLibrary shader_library_;
 		
-		Core::PerspectiveCameraController perspective_camera_controller_;
+		Core::Ref<Core::PerspectiveCameraController> perspective_camera_controller_;
+
+		std::vector<Core::Ref<Core::BaseMenu>> menus_;
 
 		Core::Scene scene_;
 
