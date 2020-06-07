@@ -9,6 +9,10 @@ namespace EOL {
 	EOLLayer::EOLLayer()
 		: Core::Layer("EOLLayer")
 	{
+		auto simulation_config = Core::JsonUtil::ReadJson("assets/Configs/SimulationConfig.json");
+		LOG_INFO(simulation_config["test"].GetString());
+
+
 		perspective_camera_controller_ = Core::CreateRef<Core::PerspectiveCameraController>();
 		menus_.push_back(Core::CreateRef<Core::CameraMenu>("Camera Controls", perspective_camera_controller_));
 		menus_.push_back(Core::CreateRef<Core::SceneViewMenu>("Scene View", scene_.GetShapes(), scene_.GetLightSources()));

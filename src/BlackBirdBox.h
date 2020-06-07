@@ -44,3 +44,6 @@
 #include "BlackBirdBox/ImGui/Menus/SceneViewMenu.h"
 #include "BlackBirdBox/ImGui/Menus/ComputeShaderMenu.h"
 #include "BlackBirdBox/ImGui/Menus/MiscMenu.h"
+
+#include "BlackBirdBox/Core/Util.h"
+#include "BlackBirdBox/JSON/JsonUtil.h"

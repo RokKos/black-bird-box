@@ -23,6 +23,7 @@ IncludeDir["ImGui"] = "external/imgui"
 IncludeDir["glm"] = "external/glm"
 IncludeDir["tinyobjloader"] = "external/tinyobjloader"
 IncludeDir["stb"] = "external/stb"
+IncludeDir["rapidjson"] = "external/rapidjson/include/rapidjson"
 
 group "Dependencies"
 	include "external/GLFW"
@@ -52,7 +53,8 @@ project "BlackBirdBox"
 		"external/glm/glm/**.hpp",
         "external/glm/glm/**.inl",
 		"%{IncludeDir.glew}/**.h",
-		"%{IncludeDir.tinyobjloader}/tiny_obj_loader.h"
+		"%{IncludeDir.tinyobjloader}/tiny_obj_loader.h",
+		"%{IncludeDir.rapidjson}/**.h"
 	}
 
 	defines
@@ -71,7 +73,8 @@ project "BlackBirdBox"
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.glm}",
         "%{IncludeDir.stb}", 
-        "%{IncludeDir.tinyobjloader}"
+		"%{IncludeDir.tinyobjloader}",
+		"%{IncludeDir.rapidjson}"
 	}
 
     libdirs { "external/glew/lib/Release/x64" }
@@ -125,7 +128,8 @@ project "ClothSimulation"
 		"external",
 		"external/glm",
 		"external/spdlog/include",
-		"external/imgui"
+		"external/imgui",
+		"%{IncludeDir.rapidjson}"
 	}
 
 	links 
