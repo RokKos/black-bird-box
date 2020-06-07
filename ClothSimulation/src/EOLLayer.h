@@ -24,6 +24,7 @@ namespace EOL {
 		bool OnKeyTypedEvent(Core::KeyTypedEvent& e);
 
 		void ParseSimulationSettings();
+		void LoadAllShaders();
 
 	private:
 		Core::TimeStep prev_time_step_;
@@ -39,7 +40,6 @@ namespace EOL {
 
 		Core::Ref<Core::ShaderStorageArray> cloth_storage_array_;
 		Core::Ref<Core::VertexArray> vertex_array_box_;
-		Core::Ref<Core::Shader> enviroment_map_shader_;
 		Core::Ref<Core::CubeMap> enviroment_map_;
 		Core::ComputeShaderConfiguration compute_shader_configuration_;
 		Core::ComputeShaderSimulationConfiguration compute_shader_simulation_configuration_;

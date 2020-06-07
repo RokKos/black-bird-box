@@ -9,6 +9,7 @@ namespace EOL {
 	EOLLayer::EOLLayer()
 		: Core::Layer("EOLLayer")
 	{
+		LoadAllShaders();
 		perspective_camera_controller_ = Core::CreateRef<Core::PerspectiveCameraController>();
 		menus_.push_back(Core::CreateRef<Core::CameraMenu>("Camera Controls", perspective_camera_controller_));
 		menus_.push_back(Core::CreateRef<Core::SceneViewMenu>("Scene View", scene_.GetShapes(), scene_.GetLightSources()));
@@ -16,41 +17,34 @@ namespace EOL {
 		menus_.push_back(Core::CreateRef<Core::MiscMenu>("Misc Menu", prev_time_step_, bg_color_, polygon_mode_));
 		
 
-		auto triangle_test_shader = shader_library_.Load("assets/Shaders/TriangleTest.glsl");
-		auto mat_generic_triangle = Core::CreateRef<Core::Material>(triangle_test_shader, Core::PhongLightingParameters(), "Generic_Triangle_MAT");
-		auto texture_shader = shader_library_.Load("assets/Shaders/Texture.glsl");
+		auto mat_generic_triangle = Core::CreateRef<Core::Material>(shader_library_.Get("TriangleTest"), Core::PhongLightingParameters(), "Generic_Triangle_MAT");
+		auto mat_generic_color = Core::CreateRef<Core::Material>(shader_library_.Get("GenericColor"), Core::PhongLightingParameters(), "Generic_Color_MAT");
 
+		auto mat_generic_normals = Core::CreateRef<Core::Material>(shader_library_.Get("GenericNormals"), Core::PhongLightingParameters(), "Generic_Normals_MAT");
 
-		auto generic_color_shader = shader_library_.Load("assets/Shaders/GenericColor.glsl");
-		auto mat_generic_color = Core::CreateRef<Core::Material>(generic_color_shader, Core::PhongLightingParameters(), "Generic_Color_MAT");
-
-		auto generic_normals_shader = shader_library_.Load("assets/Shaders/GenericNormals.glsl");
-		auto mat_generic_normals = Core::CreateRef<Core::Material>(generic_normals_shader, Core::PhongLightingParameters(), "Generic_Normals_MAT");
-
-		auto generic_uv_coordinates_shader = shader_library_.Load("assets/Shaders/GenericUVCoordinates.glsl");
+		auto generic_uv_coordinates_shader = shader_library_.Get("GenericUVCoordinates");
 		generic_uv_coordinates_shader->Bind();
 		generic_uv_coordinates_shader->SetInt("u_Texture", 0);
 		auto uv_texture = Core::Texture2D::Create("assets/Textures/uv_texture.png");
 		auto mat_generic_uv_coordinates = Core::CreateRef<Core::Material>(generic_uv_coordinates_shader, Core::PhongLightingParameters(), "Generic_UV_Coordinates_MAT");
 		mat_generic_uv_coordinates->SetTexture("UV_TEST_Texture", uv_texture);
 
-		auto generic_texture_shader = shader_library_.Load("assets/Shaders/GenericTexture.glsl");
+		auto generic_texture_shader = shader_library_.Get("GenericTexture");
 		generic_texture_shader->Bind();
 		generic_texture_shader->SetInt("u_Texture", 0);
 		auto gun_texture = Core::Texture2D::Create("assets/Textures/Cerberus_A.tga");
 		auto mat_generic_texture = Core::CreateRef<Core::Material>(generic_texture_shader, Core::PhongLightingParameters(), "Generic_Texture_MAT");
 		mat_generic_texture->SetTexture("Gun_Texture", gun_texture);
 
-		auto generic_lighting_shader = shader_library_.Load("assets/Shaders/GenericLighting.glsl");
 		auto phong_lighting_parameters = Core::PhongLightingParameters();
 		phong_lighting_parameters.diffuse_color_ = glm::vec3(0.8f, 0.0f, 0.0f);
 		phong_lighting_parameters.specular_color_ = glm::vec3(0.0f, 0.3f, 0.0f);
 		phong_lighting_parameters.specular_scattering_ = 32.0f;
 		phong_lighting_parameters.ambient_color_ = glm::vec3(0.0f, 0.0f, 1.0f);
 		phong_lighting_parameters.ambient_intensity_ = glm::vec3(0.5f, 0.5f, 0.5f);
-		auto mat_generic_lighting = Core::CreateRef<Core::Material>(generic_lighting_shader, phong_lighting_parameters, "Generic_Lighting_MAT");
+		auto mat_generic_lighting = Core::CreateRef<Core::Material>(shader_library_.Get("GenericLighting"), phong_lighting_parameters, "Generic_Lighting_MAT");
 
-		auto standard_shader = shader_library_.Load("assets/Shaders/StandardShader.glsl");
+		auto standard_shader = shader_library_.Get("StandardShader");
 		standard_shader->Bind();
 		standard_shader->SetInt("u_Texture", 0);
 		auto mat_stadard_shader = Core::CreateRef<Core::Material>(standard_shader, phong_lighting_parameters, "Standard_MAT");
@@ -94,9 +88,9 @@ namespace EOL {
 
 
 		// Enviroment map ------
-		enviroment_map_shader_ = shader_library_.Load("assets/Shaders/EnviromentMapShader.glsl");
-		enviroment_map_shader_->Bind();
-		enviroment_map_shader_->SetInt("u_EnviromentMap", 0);
+		auto enviroment_map_shader = shader_library_.Get("EnviromentMapShader");
+		enviroment_map_shader->Bind();
+		enviroment_map_shader->SetInt("u_EnviromentMap", 0);
 
 		vertex_array_box_ = Core::VertexArray::Create();
 
@@ -162,7 +156,6 @@ namespace EOL {
 		
 		// Compute Cloth
 		
-		auto compute_cloth_shader = shader_library_.Load("assets/Shaders/ComputeCloth.glsl");
 		ParseSimulationSettings();
 
 		std::vector<glm::vec3> prev_cloth_particle_positons;
@@ -275,7 +268,7 @@ namespace EOL {
 		Core::RenderCommand::SetClearColor(bg_color_);
 		Core::RenderCommand::Clear();
 
-		Core::Renderer::Submit(enviroment_map_shader_, enviroment_map_, vertex_array_box_);
+		Core::Renderer::Submit(shader_library_.Get("EnviromentMapShader"), enviroment_map_, vertex_array_box_);
 
 		auto compute_particles_shader = shader_library_.Get("ComputeCloth");
 		Core::Renderer::DispatchComputeShader(compute_particles_shader, cloth_storage_array_, compute_shader_configuration_, compute_shader_simulation_configuration_);
@@ -380,6 +373,17 @@ namespace EOL {
 		}
 		
 		compute_shader_configuration_ = Core::ComputeShaderConfiguration(work_group_config, local_group_config);
+	}
+
+	void EOLLayer::LoadAllShaders()
+	{
+		auto load_shader = Core::JsonUtil::ReadJson("assets/Configs/LoadShader.json");
+		ASSERT(load_shader["Shaders"].IsArray(), "Shaders is not an array!");
+
+		for (auto& shader_path : load_shader["Shaders"].GetArray()) {
+			ASSERT(shader_path.IsString(), "Shader Path is not string");
+			shader_library_.Load(shader_path.GetString());
+		}
 	}
 
 }
