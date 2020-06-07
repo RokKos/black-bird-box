@@ -9,10 +9,6 @@ namespace EOL {
 	EOLLayer::EOLLayer()
 		: Core::Layer("EOLLayer")
 	{
-		auto simulation_config = Core::JsonUtil::ReadJson("assets/Configs/SimulationConfig.json");
-		LOG_INFO(simulation_config["test"].GetString());
-
-
 		perspective_camera_controller_ = Core::CreateRef<Core::PerspectiveCameraController>();
 		menus_.push_back(Core::CreateRef<Core::CameraMenu>("Camera Controls", perspective_camera_controller_));
 		menus_.push_back(Core::CreateRef<Core::SceneViewMenu>("Scene View", scene_.GetShapes(), scene_.GetLightSources()));
@@ -167,10 +163,7 @@ namespace EOL {
 		// Compute Cloth
 		
 		auto compute_cloth_shader = shader_library_.Load("assets/Shaders/ComputeCloth.glsl");
-		num_cloth_dimension_size_ = 3;
-		num_cloth_particles_ = num_cloth_dimension_size_ * num_cloth_dimension_size_;
-		compute_shader_configuration_ = Core::ComputeShaderConfiguration({ num_cloth_particles_, 1, 1 }, { 1, 1, 1 });
-		compute_shader_simulation_configuration_ = Core::ComputeShaderSimulationConfiguration(glm::vec3(0.0, -9.81, 0), 0.001f, 30, 1.0f / num_cloth_dimension_size_);
+		ParseSimulationSettings();
 
 		std::vector<glm::vec3> prev_cloth_particle_positons;
 		prev_cloth_particle_positons.reserve(num_cloth_particles_);
@@ -333,6 +326,60 @@ namespace EOL {
 		LOG_INFO("EOLLayer::OnKeyTypedEvent key pressed: {0}", e.GetKeyCode());
 
 		return false;
+	}
+
+	void EOLLayer::ParseSimulationSettings()
+	{
+		auto simulation_config = Core::JsonUtil::ReadJson("assets/Configs/SimulationConfig.json");
+		ASSERT(simulation_config["ClothSimulationSettings"].IsObject(), "ClothSimulationSettings is not an object!");
+		auto cloth_simulation_settings = simulation_config["ClothSimulationSettings"].GetObject();
+
+		ASSERT(cloth_simulation_settings["ClothDimensionSize"].IsInt(), "ClothDimensionSize is not an int!");
+		num_cloth_dimension_size_ = cloth_simulation_settings["ClothDimensionSize"].GetInt();
+		num_cloth_particles_ = num_cloth_dimension_size_ * num_cloth_dimension_size_;
+
+		ASSERT(cloth_simulation_settings["Gravity"].IsArray(), "Gravity is not an array!");
+		auto& gravity_json = cloth_simulation_settings["Gravity"];
+		ASSERT(gravity_json.Size() == 3, "Gravity is not size 3!");
+
+		glm::vec3 gravity;
+		for (rapidjson::SizeType i = 0; i < gravity_json.Size(); i++) {
+			gravity[i] = gravity_json[i].GetFloat();
+		}
+
+		ASSERT(cloth_simulation_settings["SimulationDeltaTime"].IsFloat(), "SimulationDeltaTime is not an int!");
+		float simulation_delta_time = cloth_simulation_settings["SimulationDeltaTime"].GetFloat();
+
+		ASSERT(cloth_simulation_settings["ConstraintItteratitions"].IsInt(), "ConstraintItteratitions is not an int!");
+		int constraint_itterations = cloth_simulation_settings["ConstraintItteratitions"].GetInt();
+
+		ASSERT(cloth_simulation_settings["RestLenght"].IsFloat(), "RestLenght is not an int!");
+		float rest_lenght = cloth_simulation_settings["RestLenght"].GetFloat();
+
+		compute_shader_simulation_configuration_ = Core::ComputeShaderSimulationConfiguration(gravity, simulation_delta_time, constraint_itterations, rest_lenght);
+
+		ASSERT(cloth_simulation_settings["ComputeShaderConfiguration"].IsObject(), "ComputeShaderConfiguration is not an object!");
+		auto compute_shader_configuration = cloth_simulation_settings["ComputeShaderConfiguration"].GetObject();
+		ASSERT(compute_shader_configuration["WorkGroupSize"].IsArray(), "WorkGroupSize is not an array!");
+		auto& work_group_size_json = compute_shader_configuration["WorkGroupSize"];
+		ASSERT(work_group_size_json.Size() == 3, "WorkGroupSize is not size 3!");
+
+		std::array<unsigned int, 3> work_group_config;
+		for (rapidjson::SizeType i = 0; i < work_group_size_json.Size(); i++) {
+			work_group_config[i] = work_group_size_json[i].GetInt();
+		}
+		
+
+		ASSERT(compute_shader_configuration["LocalGroupSize"].IsArray(), "LocalGroupSize is not an array!");
+		auto& local_group_size_json = compute_shader_configuration["LocalGroupSize"];
+		ASSERT(local_group_size_json.Size() == 3, "LocalGroupSize is not size 3!");
+
+		std::array<unsigned int, 3> local_group_config;
+		for (rapidjson::SizeType i = 0; i < local_group_size_json.Size(); i++) {
+			local_group_config[i] = local_group_size_json[i].GetInt();
+		}
+		
+		compute_shader_configuration_ = Core::ComputeShaderConfiguration(work_group_config, local_group_config);
 	}
 
 }
