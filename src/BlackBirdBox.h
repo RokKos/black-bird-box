@@ -37,4 +37,5 @@
 #include "BlackBirdBox/Controllers/Renderer/Camera/PerspectiveCameraController.h"
 #include "BlackBirdBox/Renderer/Buffers/ShaderStorageArray.h"
 #include "BlackBirdBox/Primitives/ComputeShaderConfiguration.h"
+#include "BlackBirdBox/Primitives/ComputeShaderSimulationConfiguration.h"
 #include "BlackBirdBox/Scene/Scene.h"

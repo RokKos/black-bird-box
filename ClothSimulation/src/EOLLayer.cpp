@@ -160,6 +160,7 @@ namespace EOL {
 		num_cloth_dimension_size_ = 3;
 		num_cloth_particles_ = num_cloth_dimension_size_ * num_cloth_dimension_size_;
 		compute_shader_configuration_ = Core::ComputeShaderConfiguration({ num_cloth_particles_, 1, 1 }, { 1, 1, 1 });
+		compute_shader_simulation_configuration_ = Core::ComputeShaderSimulationConfiguration(glm::vec3(0.0, -9.81, 0), 0.001f, 30, 1.0f / num_cloth_dimension_size_);
 
 		std::vector<glm::vec3> prev_cloth_particle_positons;
 		prev_cloth_particle_positons.reserve(num_cloth_particles_);
@@ -225,7 +226,7 @@ namespace EOL {
 		vertex_array_cloth->AddVertexBuffer(vertex_buffer_cloth);
 
 		std::vector<uint32_t> cloth_indices;
-		cloth_indices.reserve(num_cloth_particles_ * 6);
+		cloth_indices.reserve((num_cloth_dimension_size_ - 1) * (num_cloth_dimension_size_ - 1) * 6);
 		for (unsigned int y = 0; y < num_cloth_dimension_size_ - 1; ++y) {
 			for (unsigned int x = 0; x < num_cloth_dimension_size_ - 1; ++x) {
 				// Left Triangle
@@ -274,7 +275,7 @@ namespace EOL {
 		Core::Renderer::Submit(enviroment_map_shader_, enviroment_map_, vertex_array_box_);
 
 		auto compute_particles_shader = shader_library_.Get("ComputeCloth");
-		Core::Renderer::DispatchComputeShader(compute_particles_shader, cloth_storage_array_, compute_shader_configuration_);
+		Core::Renderer::DispatchComputeShader(compute_particles_shader, cloth_storage_array_, compute_shader_configuration_, compute_shader_simulation_configuration_);
 
 		// TODO(Rok Kos): Load Models on themand
 
@@ -321,6 +322,29 @@ namespace EOL {
 			ImGui::Text("Camera front x: %f y: %f z: %f", camera_front.x, camera_front.y, camera_front.z);
 			ImGui::TreePop();
 		}
+
+		if (ImGui::TreeNode("Compute Shader Simulation Controls")) {
+
+			glm::vec3 gravity = compute_shader_simulation_configuration_.GetGravity();
+			ImGui::InputFloat3("Gravity", glm::value_ptr(gravity), 10);
+			compute_shader_simulation_configuration_.SetGravity(gravity);
+
+			float delta_time = compute_shader_simulation_configuration_.GetDeltaTime();
+			ImGui::InputFloat("Delta Time", &delta_time, 0.0f, 0.0f, "%.10f");
+			compute_shader_simulation_configuration_.SetDeltaTime(delta_time);
+
+			int itterations = compute_shader_simulation_configuration_.GetItterations();
+			ImGui::InputInt("Itterations", &itterations);
+			compute_shader_simulation_configuration_.SetItterations(itterations);
+
+			float rest_length = compute_shader_simulation_configuration_.GetRestLenght();
+			ImGui::InputFloat("Rest Lenght", &rest_length, 0.0f, 0.0f, "%.10f");
+			compute_shader_simulation_configuration_.SetRestLenght(rest_length);
+
+			
+			ImGui::TreePop();
+		}
+
 
 		if (ImGui::TreeNode("Scene View")) {
 

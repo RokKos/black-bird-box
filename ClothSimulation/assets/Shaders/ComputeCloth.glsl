@@ -27,14 +27,18 @@ layout(std430, binding=3) buffer fixedPts
 
 layout(local_size_variable) in;
 
+layout( location=1 ) uniform vec3 u_Gravity;
+layout( location=2 ) uniform float u_DeltaTime;
+layout( location=3 ) uniform int u_Itterations;
+layout( location=4 ) uniform float u_RestLenght;
 
 
 void main()
 {
-	const vec3 gravity = vec3(0.0, -1.0, 0.0);  // TODO(Rok Kos): Change to Uniform
-	const float delta_time = 0.000001;  // TODO(Rok Kos): Change to Uniform
-	const uint itterations = 1;  // TODO(Rok Kos): Change to Uniform
-	const float rest_lenght = 1.0 / 3.0;  // TODO(Rok Kos): Change to Uniform
+	//const vec3 gravity = vec3(0.0, -1.0, 0.0);  // TODO(Rok Kos): Change to Uniform
+	//const float delta_time = 0.000001;  // TODO(Rok Kos): Change to Uniform
+	//const uint itterations = 1;  // TODO(Rok Kos): Change to Uniform
+	//const float rest_lenght = 1.0 / 3.0;  // TODO(Rok Kos): Change to Uniform
 	
 	uint particle_id = gl_GlobalInvocationID.x;
 
@@ -47,11 +51,11 @@ void main()
 		Positions[particle_id] = temp_position;
 		PreviousPositions[particle_id] = temp_position;
 	} else {
-		vec3 new_position = 2 * position - prev_position + (gravity * delta_time * delta_time);
+		vec3 new_position = 2 * position - prev_position + (u_Gravity * u_DeltaTime * u_DeltaTime);
 
 		mat3 constrains = Constraints[particle_id];
 		
-		for (uint it = 0; it < itterations; ++it) {
+		for (uint it = 0; it < u_Itterations; ++it) {
 			vec3 displacement = vec3(0.0, 0.0, 0.0);
 			float num_contraints = 0.0;
 			for (uint x = 0; x < 3; ++x) {
@@ -65,7 +69,7 @@ void main()
 
 					vec3 delta = new_position -  other_pos;
 					float distance = length(delta);
-					float diff = (rest_lenght - distance) * 0.5;
+					float diff = (u_RestLenght - distance) * 0.5;
 
 					displacement += normalize(delta) * diff;
 					num_contraints += 1.0;

@@ -78,10 +78,14 @@ namespace Core {
 		RenderCommand::SetDepthFunction(RendererAPI::DepthFunction::LESS);
 	}
 
-	void Renderer::DispatchComputeShader(const Ref<Shader> shader, const Ref<ShaderStorageArray>& shader_storage_array, const ComputeShaderConfiguration& compute_shader_configuration)
+	void Renderer::DispatchComputeShader(const Ref<Shader> shader, const Ref<ShaderStorageArray>& shader_storage_array, const ComputeShaderConfiguration& compute_shader_configuration, const ComputeShaderSimulationConfiguration& compute_shader_simulation_configuration)
 	{
 		shader_storage_array->Bind();
 		shader->Bind();
+		shader->SetFloat3("u_Gravity", compute_shader_simulation_configuration.GetGravity());
+		shader->SetFloat("u_DeltaTime", compute_shader_simulation_configuration.GetDeltaTime());
+		shader->SetInt("u_Itterations", compute_shader_simulation_configuration.GetItterations());
+		shader->SetFloat("u_RestLenght", compute_shader_simulation_configuration.GetRestLenght());
 		RenderCommand::DispatchCompute(compute_shader_configuration);
 		RenderCommand::WaitMemoryBarrier();
 

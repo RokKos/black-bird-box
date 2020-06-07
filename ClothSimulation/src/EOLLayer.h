@@ -38,6 +38,7 @@ namespace EOL {
 		Core::Ref<Core::Shader> enviroment_map_shader_;
 		Core::Ref<Core::CubeMap> enviroment_map_;
 		Core::ComputeShaderConfiguration compute_shader_configuration_;
+		Core::ComputeShaderSimulationConfiguration compute_shader_simulation_configuration_;
 		unsigned int num_cloth_dimension_size_;
 		unsigned int num_cloth_particles_;
 
