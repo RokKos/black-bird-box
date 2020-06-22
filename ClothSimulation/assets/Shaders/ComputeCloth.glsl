@@ -7,12 +7,12 @@
 
 layout(std430, binding=0) buffer PrevPos
 {
-	vec3 PreviousPositions[ ];
+	vec4 PreviousPositions[ ];
 };
 
 layout(std430, binding=1) buffer Pos
 {
-	vec3 Positions[ ];
+	vec4 Positions[ ];
 };
 
 layout(std430, binding=2) buffer Constr
@@ -42,21 +42,21 @@ void main()
 	
 	uint particle_id = gl_GlobalInvocationID.x;
 
-	vec3 position = Positions[particle_id];
-	vec3 temp_position = position;
-    vec3 prev_position = PreviousPositions[particle_id];
+	vec4 position = Positions[particle_id];
+	vec4 temp_position = position;
+    vec4 prev_position = PreviousPositions[particle_id];
 
 	int is_fixed_position = fixedPoints[particle_id];
 	if (is_fixed_position == 1) {
 		Positions[particle_id] = temp_position;
 		PreviousPositions[particle_id] = temp_position;
 	} else {
-		vec3 new_position = 2 * position - prev_position + (u_Gravity * u_DeltaTime * u_DeltaTime);
+		vec4 new_position = 2 * position - prev_position + vec4(u_Gravity * u_DeltaTime * u_DeltaTime, 0.0);
 
 		mat3 constrains = Constraints[particle_id];
 		
 		for (uint it = 0; it < u_Itterations; ++it) {
-			vec3 displacement = vec3(0.0, 0.0, 0.0);
+			vec4 displacement = vec4(0.0);
 			float num_contraints = 0.0;
 			for (uint x = 0; x < 3; ++x) {
 				for (uint y = 0; y < 3; ++y) {
@@ -65,13 +65,15 @@ void main()
 						continue;
 					}
 
-					vec3 other_pos = Positions[constraint_index];
+					vec4 other_pos = Positions[constraint_index];
 
-					vec3 delta = new_position -  other_pos;
+					vec4 delta = new_position -  other_pos;
 					float distance = length(delta);
 					float diff = (u_RestLenght - distance) * 0.5;
+					vec4 normalized_delta = normalize(delta);
+					normalized_delta *= diff;
 
-					displacement += normalize(delta) * diff;
+					displacement += normalized_delta;
 					num_contraints += 1.0;
 				}
 			}

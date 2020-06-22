@@ -158,9 +158,9 @@ namespace EOL {
 		
 		ParseSimulationSettings();
 
-		std::vector<glm::vec3> prev_cloth_particle_positons;
+		std::vector<glm::vec4> prev_cloth_particle_positons;
 		prev_cloth_particle_positons.reserve(num_cloth_particles_);
-		std::vector<glm::vec3> cloth_particle_positons;
+		std::vector<glm::vec4> cloth_particle_positons;
 		cloth_particle_positons.reserve(num_cloth_particles_);
 		
 		std::vector<glm::mat3> cloth_particle_constraints;
@@ -170,7 +170,7 @@ namespace EOL {
 		for (unsigned int i = 0; i < num_cloth_particles_; ++i) {
 			int x = i % num_cloth_dimension_size_;
 			int y = i / num_cloth_dimension_size_;
-			glm::vec3 starting_position = glm::vec3((float)(x) / (float)num_cloth_dimension_size_, (float)(y) / (float)num_cloth_dimension_size_, 0);
+			glm::vec4 starting_position = glm::vec4((float)(x) / (float)num_cloth_dimension_size_, (float)(y) / (float)num_cloth_dimension_size_, 0, 0);
 			prev_cloth_particle_positons.push_back(starting_position);
 			cloth_particle_positons.push_back(starting_position);
 
@@ -201,8 +201,8 @@ namespace EOL {
 			
 		}
 
-		auto prev_positions_buffer = Core::ShaderStorageBuffer::Create(prev_cloth_particle_positons, prev_cloth_particle_positons.size() * sizeof(glm::vec3));
-		auto positions_buffer = Core::ShaderStorageBuffer::Create(cloth_particle_positons, cloth_particle_positons.size() * sizeof(glm::vec3));
+		auto prev_positions_buffer = Core::ShaderStorageBuffer::Create(prev_cloth_particle_positons, prev_cloth_particle_positons.size() * sizeof(glm::vec4));
+		auto positions_buffer = Core::ShaderStorageBuffer::Create(cloth_particle_positons, cloth_particle_positons.size() * sizeof(glm::vec4));
 		auto constrains_buffer = Core::ShaderStorageBuffer::Create(cloth_particle_constraints, cloth_particle_constraints.size() * sizeof(glm::mat3));
 		auto fixed_pos_buffer = Core::ShaderStorageBuffer::Create(cloth_particle_fixed_pos, cloth_particle_fixed_pos.size() * sizeof(glm::int32));
 		cloth_storage_array_ = Core::ShaderStorageArray::Create();
@@ -215,7 +215,7 @@ namespace EOL {
 		auto vertex_array_cloth = Core::VertexArray::Create();
 		auto vertex_buffer_cloth = Core::VertexBuffer::CreateExistingBuffer(positions_buffer->GetRendererID());
 		Core::BufferLayout layout_cloth = {
-		{ Core::ShaderDataType::Float3, "a_Position" },
+		{ Core::ShaderDataType::Float4, "a_Position" },
 		};
 
 		vertex_buffer_cloth->SetLayout(layout_cloth);
