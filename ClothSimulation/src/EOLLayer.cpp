@@ -163,7 +163,7 @@ namespace EOL {
 		std::vector<glm::vec4> cloth_particle_positons;
 		cloth_particle_positons.reserve(num_cloth_particles_);
 		
-		std::vector<glm::mat3> cloth_particle_constraints;
+		std::vector<glm::mat4> cloth_particle_constraints;
 		cloth_particle_constraints.reserve(num_cloth_particles_);
 		std::vector<glm::int32> cloth_particle_fixed_pos;
 		cloth_particle_fixed_pos.reserve(num_cloth_particles_);
@@ -174,7 +174,7 @@ namespace EOL {
 			prev_cloth_particle_positons.push_back(starting_position);
 			cloth_particle_positons.push_back(starting_position);
 
-			glm::mat3 contraint_indexs = glm::mat3(-1.0);
+			glm::mat4 contraint_indexs = glm::mat4(-1.0);
 			for (int dx = -1; dx <= 1; ++dx) {
 				for (int dy = -1; dy <= 1; ++dy) {
 					int new_x = x + dx;
@@ -203,7 +203,7 @@ namespace EOL {
 
 		auto prev_positions_buffer = Core::ShaderStorageBuffer::Create(prev_cloth_particle_positons, prev_cloth_particle_positons.size() * sizeof(glm::vec4));
 		auto positions_buffer = Core::ShaderStorageBuffer::Create(cloth_particle_positons, cloth_particle_positons.size() * sizeof(glm::vec4));
-		auto constrains_buffer = Core::ShaderStorageBuffer::Create(cloth_particle_constraints, cloth_particle_constraints.size() * sizeof(glm::mat3));
+		auto constrains_buffer = Core::ShaderStorageBuffer::Create(cloth_particle_constraints, cloth_particle_constraints.size() * sizeof(glm::mat4));
 		auto fixed_pos_buffer = Core::ShaderStorageBuffer::Create(cloth_particle_fixed_pos, cloth_particle_fixed_pos.size() * sizeof(glm::int32));
 		cloth_storage_array_ = Core::ShaderStorageArray::Create();
 		cloth_storage_array_->AddShaderStorageBuffer(prev_positions_buffer);

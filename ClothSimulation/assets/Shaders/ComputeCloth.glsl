@@ -17,7 +17,7 @@ layout(std430, binding=1) buffer Pos
 
 layout(std430, binding=2) buffer Constr
 {
-	mat3 Constraints[ ];
+	mat4 Constraints[ ];
 };
 
 layout(std430, binding=3) buffer fixedPts
@@ -53,7 +53,7 @@ void main()
 	} else {
 		vec4 new_position = 2 * position - prev_position + vec4(u_Gravity * u_DeltaTime * u_DeltaTime, 0.0);
 
-		mat3 constrains = Constraints[particle_id];
+		mat4 constrains = Constraints[particle_id];
 		
 		for (uint it = 0; it < u_Itterations; ++it) {
 			vec4 displacement = vec4(0.0);

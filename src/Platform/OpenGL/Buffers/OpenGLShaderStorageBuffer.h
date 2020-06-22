@@ -11,6 +11,7 @@ namespace Platform {
 		OpenGLShaderStorageBuffer(const std::vector<glm::vec3>& storage_data, uint32_t size);
 		OpenGLShaderStorageBuffer(const std::vector<glm::vec4>& storage_data, uint32_t size);
 		OpenGLShaderStorageBuffer(const std::vector<glm::mat3>& storage_data, uint32_t size);
+		OpenGLShaderStorageBuffer(const std::vector<glm::mat4>& storage_data, uint32_t size);
 		OpenGLShaderStorageBuffer(const std::vector<glm::int32>& storage_data, uint32_t size);
 		virtual ~OpenGLShaderStorageBuffer();
 
@@ -21,6 +22,7 @@ namespace Platform {
 		virtual void SetData(const std::vector<glm::vec3>& storage_data, uint32_t size) override;
 		virtual void SetData(const std::vector<glm::vec4>& storage_data, uint32_t size) override;
 		virtual void SetData(const std::vector<glm::mat3>& storage_data, uint32_t size) override;
+		virtual void SetData(const std::vector<glm::mat4>& storage_data, uint32_t size) override;
 		virtual void SetData(const std::vector<glm::int32>& storage_data, uint32_t size) override;
 		
 		virtual std::vector<glm::vec3> GetData(uint32_t size) override;
