@@ -85,7 +85,6 @@ namespace Core {
 		shader->SetFloat3("u_Gravity", compute_shader_simulation_configuration.GetGravity());
 		shader->SetFloat("u_DeltaTime", compute_shader_simulation_configuration.GetDeltaTime());
 		shader->SetInt("u_Itterations", compute_shader_simulation_configuration.GetItterations());
-		shader->SetFloat("u_RestLenght", compute_shader_simulation_configuration.GetRestLenght());
 		RenderCommand::DispatchCompute(compute_shader_configuration);
 		RenderCommand::WaitMemoryBarrier();
 

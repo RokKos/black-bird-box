@@ -7,7 +7,7 @@ namespace Core {
 	{
 	public:
 		ComputeShaderSimulationConfiguration();
-		ComputeShaderSimulationConfiguration(glm::vec3 gravity, float delta_time, int itterations, float rest_lenght);
+		ComputeShaderSimulationConfiguration(glm::vec3 gravity, float delta_time, int itterations);
 
 		const glm::vec3& GetGravity() const { return gravity_; }
 		void SetGravity(const glm::vec3& gravity) { gravity_ = gravity; }
@@ -18,14 +18,10 @@ namespace Core {
 		int GetItterations() const { return itterations_; }
 		void SetItterations(int itterations) { itterations_ = itterations; }
 
-		float GetRestLenght() const { return rest_lenght_; }
-		void SetRestLenght(float rest_lenght) { rest_lenght_ = rest_lenght; }
-
 
 	private:
 		glm::vec3 gravity_;
 		float delta_time_;
 		int itterations_;
-		float rest_lenght_;
 	};
 }

@@ -166,8 +166,11 @@ namespace EOL {
 		
 		std::vector<glm::mat4> cloth_particle_constraints;
 		cloth_particle_constraints.reserve(num_cloth_particles_);
-		std::vector<glm::int32> cloth_particle_fixed_pos;
+		std::vector<glm::vec4> cloth_particle_fixed_pos;
 		cloth_particle_fixed_pos.reserve(num_cloth_particles_);
+
+		float horizontal_distance_between_vertexes = 1.0f / static_cast<float>(num_cloth_dimension_size_);
+		float diagonal_distance_between_vertexes = horizontal_distance_between_vertexes * std::sqrt(2.0f);
 		for (unsigned int i = 0; i < num_cloth_particles_; ++i) {
 			int x = i % num_cloth_dimension_size_;
 			int y = i / num_cloth_dimension_size_;
@@ -181,9 +184,9 @@ namespace EOL {
 					int new_x = x + dx;
 					int new_y = y + dy;
 
-					if (new_x < 0 || new_y < 0 || 
-						new_x >= num_cloth_dimension_size_ || new_y >= num_cloth_dimension_size_ || 
-						(new_x == x && new_y == y) || dx * dy != 0) {
+					if (new_x < 0 || new_y < 0 ||
+						new_x >= num_cloth_dimension_size_ || new_y >= num_cloth_dimension_size_ ||
+						(new_x == x && new_y == y)) {
 						contraint_indexs[dx + 1][dy + 1] = -1.0f;
 						continue;
 					}
@@ -193,19 +196,21 @@ namespace EOL {
 			}
 
 			cloth_particle_constraints.push_back(contraint_indexs);
-			if (i == num_cloth_particles_ - 1 || i == num_cloth_particles_ - num_cloth_dimension_size_ + 1) {
-				cloth_particle_fixed_pos.push_back(1);
+
+
+			if (i == num_cloth_particles_ - 1 || i == num_cloth_particles_ - num_cloth_dimension_size_) {
+				cloth_particle_fixed_pos.push_back(glm::vec4(1.0, horizontal_distance_between_vertexes, diagonal_distance_between_vertexes, 0.0f));
 			}
 			else {
-				cloth_particle_fixed_pos.push_back(0);
+				cloth_particle_fixed_pos.push_back(glm::vec4(0.0, horizontal_distance_between_vertexes, diagonal_distance_between_vertexes, 0.0f));
 			}
-			
+
 		}
 
 		auto prev_positions_buffer = Core::ShaderStorageBuffer::Create(prev_cloth_particle_positons, prev_cloth_particle_positons.size() * sizeof(glm::vec4));
 		auto positions_buffer = Core::ShaderStorageBuffer::Create(cloth_particle_positons, cloth_particle_positons.size() * sizeof(glm::vec4));
 		auto constrains_buffer = Core::ShaderStorageBuffer::Create(cloth_particle_constraints, cloth_particle_constraints.size() * sizeof(glm::mat4));
-		auto fixed_pos_buffer = Core::ShaderStorageBuffer::Create(cloth_particle_fixed_pos, cloth_particle_fixed_pos.size() * sizeof(glm::int32));
+		auto fixed_pos_buffer = Core::ShaderStorageBuffer::Create(cloth_particle_fixed_pos, cloth_particle_fixed_pos.size() * sizeof(glm::vec4));
 		cloth_storage_array_ = Core::ShaderStorageArray::Create();
 		cloth_storage_array_->AddShaderStorageBuffer(prev_positions_buffer);
 		cloth_storage_array_->AddShaderStorageBuffer(positions_buffer);
@@ -347,10 +352,7 @@ namespace EOL {
 		ASSERT(cloth_simulation_settings["ConstraintItteratitions"].IsInt(), "ConstraintItteratitions is not an int!");
 		int constraint_itterations = cloth_simulation_settings["ConstraintItteratitions"].GetInt();
 
-		ASSERT(cloth_simulation_settings["RestLenght"].IsFloat(), "RestLenght is not an int!");
-		float rest_lenght = cloth_simulation_settings["RestLenght"].GetFloat();
-
-		compute_shader_simulation_configuration_ = Core::ComputeShaderSimulationConfiguration(gravity, simulation_delta_time, constraint_itterations, rest_lenght);
+		compute_shader_simulation_configuration_ = Core::ComputeShaderSimulationConfiguration(gravity, simulation_delta_time, constraint_itterations);
 
 		ASSERT(cloth_simulation_settings["ComputeShaderConfiguration"].IsObject(), "ComputeShaderConfiguration is not an object!");
 		auto compute_shader_configuration = cloth_simulation_settings["ComputeShaderConfiguration"].GetObject();

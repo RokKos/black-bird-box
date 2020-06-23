@@ -29,10 +29,6 @@ namespace Core {
 		ImGui::InputInt("Itterations", &itterations);
 		compute_shader_simulation_configuration_.SetItterations(itterations);
 
-		float rest_length = compute_shader_simulation_configuration_.GetRestLenght();
-		ImGui::InputFloat("Rest Lenght", &rest_length, 0.0f, 0.0f, "%.10f");
-		compute_shader_simulation_configuration_.SetRestLenght(rest_length);
-
 		ImGui::End();
 	}
 

@@ -3,8 +3,7 @@
     "ClothDimensionSize": 200,
     "Gravity": [ 0.0, -9.81, 0.0 ],
     "SimulationDeltaTime": 0.16,
-    "ConstraintItteratitions": 60,
-    "RestLenght" :  0.005,
+    "ConstraintItteratitions": 100,
 
     "ComputeShaderConfiguration": {
       "WorkGroupSize": [ 4000, 1, 1 ],
