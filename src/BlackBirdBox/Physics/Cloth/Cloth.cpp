@@ -4,7 +4,7 @@
 namespace Core {
 
 	Cloth::Cloth(unsigned int num_cloth_dimension_size, Ref<Material> material_to_render_cloth) :
-		num_cloth_dimension_size_(num_cloth_dimension_size)
+		num_cloth_dimension_size_(num_cloth_dimension_size), Shape(material_to_render_cloth, nullptr, Core::CreateRef<Core::Transform>(glm::vec3(0, 0, 0)), Core::ModelData(), "Cloth")
 	{
 		num_cloth_particles_ = num_cloth_dimension_size_ * num_cloth_dimension_size_;
 		std::vector<glm::vec4> prev_cloth_particle_positons;
@@ -66,14 +66,14 @@ namespace Core {
 		cloth_storage_array_->AddShaderStorageBuffer(fixed_pos_buffer);
 
 
-		auto vertex_array_cloth = Core::VertexArray::Create();
+		vertex_array_ = Core::VertexArray::Create();
 		auto vertex_buffer_cloth = Core::VertexBuffer::CreateExistingBuffer(positions_buffer->GetRendererID());
 		Core::BufferLayout layout_cloth = {
 		{ Core::ShaderDataType::Float4, "a_Position" },
 		};
 
 		vertex_buffer_cloth->SetLayout(layout_cloth);
-		vertex_array_cloth->AddVertexBuffer(vertex_buffer_cloth);
+		vertex_array_->AddVertexBuffer(vertex_buffer_cloth);
 
 		std::vector<uint32_t> cloth_indices;
 		cloth_indices.reserve((num_cloth_dimension_size_ - 1) * (num_cloth_dimension_size_ - 1) * 6);
@@ -92,9 +92,7 @@ namespace Core {
 		}
 
 		Core::Ref<Core::IndexBuffer> index_buffer_cloth = Core::IndexBuffer::Create(cloth_indices.data(), cloth_indices.size());
-		vertex_array_cloth->SetIndexBuffer(index_buffer_cloth);
-
-		Shape(material_to_render_cloth, vertex_array_cloth, Core::CreateRef<Core::Transform>(glm::vec3(0, 0, 0)), Core::ModelData(), "Cloth");
+		vertex_array_->SetIndexBuffer(index_buffer_cloth);
 	}
 
 }

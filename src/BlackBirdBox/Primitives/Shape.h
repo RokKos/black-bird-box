@@ -22,12 +22,14 @@ namespace Core {
 		bool* GetObjectEnabledImGui() { return &enabled_; }
 		void SetObjectEnabled(bool enabled) { enabled_ = enabled; }
 
+	protected:
+		Ref<VertexArray> vertex_array_;
+
 	private:
 		std::string name_ = "shape";
 		bool enabled_ = true;
 
 		Ref<Material> material_;
-		Ref<VertexArray> vertex_array_;
 		ModelData model_data_ = ModelData();
 		Ref<Transform> transform_;
 	};
