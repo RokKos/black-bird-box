@@ -69,8 +69,8 @@ namespace EOL {
 		vertex_array_gun->SetIndexBuffer(index_buffer_gun);
 
 		// TODO(Rok Kos): Read from JSON file
-		auto shape = Core::CreateRef<Core::Shape>(mat_generic_color, vertex_array_gun, Core::CreateRef<Core::Transform>(glm::vec3(1, 0, 0)), model_data, "Obj Model Test");
-		auto shape2 = Core::CreateRef<Core::Shape>(mat_generic_normals, vertex_array_gun, Core::CreateRef<Core::Transform>(glm::vec3(2, 0, 0)), model_data, "Obj Model Normals Test");
+		auto shape = Core::CreateRef<Core::Shape>(mat_generic_color, vertex_array_gun, Core::CreateRef<Core::Transform>(glm::vec3(2, 0, 0)), model_data, "Obj Model Test");
+		auto shape2 = Core::CreateRef<Core::Shape>(mat_generic_normals, vertex_array_gun, Core::CreateRef<Core::Transform>(glm::vec3(3, 0, 0)), model_data, "Obj Model Normals Test");
 		auto shape3 = Core::CreateRef<Core::Shape>(mat_generic_uv_coordinates, vertex_array_gun, Core::CreateRef<Core::Transform>(glm::vec3(4, 0, 0)), model_data, "Obj Texture UVs Test");
 		auto shape4 = Core::CreateRef<Core::Shape>(mat_generic_texture, vertex_array_gun, Core::CreateRef<Core::Transform>(glm::vec3(6, 0, 0)), model_data, "Obj Texture Test");
 		auto shape5 = Core::CreateRef<Core::Shape>(mat_generic_lighting, vertex_array_gun, Core::CreateRef<Core::Transform>(glm::vec3(8, 0, 0)), model_data, "Obj Lighting Test");
@@ -159,95 +159,8 @@ namespace EOL {
 		
 		ParseSimulationSettings();
 
-		std::vector<glm::vec4> prev_cloth_particle_positons;
-		prev_cloth_particle_positons.reserve(num_cloth_particles_);
-		std::vector<glm::vec4> cloth_particle_positons;
-		cloth_particle_positons.reserve(num_cloth_particles_);
-		
-		std::vector<glm::mat4> cloth_particle_constraints;
-		cloth_particle_constraints.reserve(num_cloth_particles_);
-		std::vector<glm::vec4> cloth_particle_fixed_pos;
-		cloth_particle_fixed_pos.reserve(num_cloth_particles_);
-
-		float horizontal_distance_between_vertexes = 1.0f / static_cast<float>(num_cloth_dimension_size_);
-		float diagonal_distance_between_vertexes = horizontal_distance_between_vertexes * std::sqrt(2.0f);
-		for (unsigned int i = 0; i < num_cloth_particles_; ++i) {
-			int x = i % num_cloth_dimension_size_;
-			int y = i / num_cloth_dimension_size_;
-			glm::vec4 starting_position = glm::vec4((float)(x) / (float)num_cloth_dimension_size_, (float)(y) / (float)num_cloth_dimension_size_, 0, 0);
-			prev_cloth_particle_positons.push_back(starting_position);
-			cloth_particle_positons.push_back(starting_position);
-
-			glm::mat4 contraint_indexs = glm::mat4(-1.0);
-			for (int dx = -1; dx <= 1; ++dx) {
-				for (int dy = -1; dy <= 1; ++dy) {
-					int new_x = x + dx;
-					int new_y = y + dy;
-
-					if (new_x < 0 || new_y < 0 ||
-						new_x >= num_cloth_dimension_size_ || new_y >= num_cloth_dimension_size_ ||
-						(new_x == x && new_y == y)) {
-						contraint_indexs[dx + 1][dy + 1] = -1.0f;
-						continue;
-					}
-
-					contraint_indexs[dx + 1][dy + 1] = new_x + new_y * num_cloth_dimension_size_;
-				}
-			}
-
-			cloth_particle_constraints.push_back(contraint_indexs);
-
-
-			if (i == num_cloth_particles_ - 1 || i == num_cloth_particles_ - num_cloth_dimension_size_) {
-				cloth_particle_fixed_pos.push_back(glm::vec4(1.0, horizontal_distance_between_vertexes, diagonal_distance_between_vertexes, 0.0f));
-			}
-			else {
-				cloth_particle_fixed_pos.push_back(glm::vec4(0.0, horizontal_distance_between_vertexes, diagonal_distance_between_vertexes, 0.0f));
-			}
-
-		}
-
-		auto prev_positions_buffer = Core::ShaderStorageBuffer::Create(prev_cloth_particle_positons, prev_cloth_particle_positons.size() * sizeof(glm::vec4));
-		auto positions_buffer = Core::ShaderStorageBuffer::Create(cloth_particle_positons, cloth_particle_positons.size() * sizeof(glm::vec4));
-		auto constrains_buffer = Core::ShaderStorageBuffer::Create(cloth_particle_constraints, cloth_particle_constraints.size() * sizeof(glm::mat4));
-		auto fixed_pos_buffer = Core::ShaderStorageBuffer::Create(cloth_particle_fixed_pos, cloth_particle_fixed_pos.size() * sizeof(glm::vec4));
-		cloth_storage_array_ = Core::ShaderStorageArray::Create();
-		cloth_storage_array_->AddShaderStorageBuffer(prev_positions_buffer);
-		cloth_storage_array_->AddShaderStorageBuffer(positions_buffer);
-		cloth_storage_array_->AddShaderStorageBuffer(constrains_buffer);
-		cloth_storage_array_->AddShaderStorageBuffer(fixed_pos_buffer);
-		
-
-		auto vertex_array_cloth = Core::VertexArray::Create();
-		auto vertex_buffer_cloth = Core::VertexBuffer::CreateExistingBuffer(positions_buffer->GetRendererID());
-		Core::BufferLayout layout_cloth = {
-		{ Core::ShaderDataType::Float4, "a_Position" },
-		};
-
-		vertex_buffer_cloth->SetLayout(layout_cloth);
-		vertex_array_cloth->AddVertexBuffer(vertex_buffer_cloth);
-
-		std::vector<uint32_t> cloth_indices;
-		cloth_indices.reserve((num_cloth_dimension_size_ - 1) * (num_cloth_dimension_size_ - 1) * 6);
-		for (unsigned int y = 0; y < num_cloth_dimension_size_ - 1; ++y) {
-			for (unsigned int x = 0; x < num_cloth_dimension_size_ - 1; ++x) {
-				// Left Triangle
-				cloth_indices.push_back(x + y * num_cloth_dimension_size_);
-				cloth_indices.push_back((x + 1) + y * num_cloth_dimension_size_);
-				cloth_indices.push_back(x + (y + 1) * num_cloth_dimension_size_);
-				
-				// Right Triangle
-				cloth_indices.push_back((x + 1) + y * num_cloth_dimension_size_);
-				cloth_indices.push_back((x + 1) + (y + 1) * num_cloth_dimension_size_);
-				cloth_indices.push_back(x + (y + 1) * num_cloth_dimension_size_);
-			}
-		}
-
-		Core::Ref<Core::IndexBuffer> index_buffer_cloth = Core::IndexBuffer::Create(cloth_indices.data(), cloth_indices.size());
-		vertex_array_cloth->SetIndexBuffer(index_buffer_cloth);
-
-		auto cloth = Core::CreateRef<Core::Shape>(mat_generic_triangle, vertex_array_cloth, Core::CreateRef<Core::Transform>(glm::vec3(0, 0, 0)), Core::ModelData(), "Cloth");
-		scene_.AddShape(cloth);
+		cloth_ = Core::CreateRef<Core::Cloth>(num_cloth_dimension_size_, mat_generic_triangle);
+		scene_.AddShape(cloth_);
 
 	}
 
@@ -277,7 +190,7 @@ namespace EOL {
 		Core::Renderer::Submit(shader_library_.Get("EnviromentMapShader"), enviroment_map_, vertex_array_box_);
 
 		auto compute_particles_shader = shader_library_.Get("ComputeCloth");
-		Core::Renderer::DispatchComputeShader(compute_particles_shader, cloth_storage_array_, compute_shader_configuration_, compute_shader_simulation_configuration_);
+		Core::Renderer::DispatchComputeShader(compute_particles_shader, cloth_->GetClothStorageArray() , compute_shader_configuration_, compute_shader_simulation_configuration_);
 
 		// TODO(Rok Kos): Load Models on themand
 
@@ -335,7 +248,6 @@ namespace EOL {
 
 		ASSERT(cloth_simulation_settings["ClothDimensionSize"].IsInt(), "ClothDimensionSize is not an int!");
 		num_cloth_dimension_size_ = cloth_simulation_settings["ClothDimensionSize"].GetInt();
-		num_cloth_particles_ = num_cloth_dimension_size_ * num_cloth_dimension_size_;
 
 		ASSERT(cloth_simulation_settings["Gravity"].IsArray(), "Gravity is not an array!");
 		auto& gravity_json = cloth_simulation_settings["Gravity"];

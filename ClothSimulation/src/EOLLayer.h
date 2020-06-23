@@ -38,13 +38,12 @@ namespace EOL {
 
 		Core::Scene scene_;
 
-		Core::Ref<Core::ShaderStorageArray> cloth_storage_array_;
 		Core::Ref<Core::VertexArray> vertex_array_box_;
 		Core::Ref<Core::CubeMap> enviroment_map_;
+		Core::Ref<Core::Cloth> cloth_;
 		Core::ComputeShaderConfiguration compute_shader_configuration_;
 		Core::ComputeShaderSimulationConfiguration compute_shader_simulation_configuration_;
 		unsigned int num_cloth_dimension_size_;
-		unsigned int num_cloth_particles_;
 
 		int polygon_mode_ = 1;
 		const char* polygon_mode_names_[3]{ "Point", "Line", "Fill" };

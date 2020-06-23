@@ -47,3 +47,5 @@
 
 #include "BlackBirdBox/Core/Util.h"
 #include "BlackBirdBox/JSON/JsonUtil.h"
+
+#include "BlackBirdBox/Physics/Cloth/Cloth.h"
