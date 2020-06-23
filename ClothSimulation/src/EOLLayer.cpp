@@ -11,6 +11,7 @@ namespace EOL {
 	{
 		LoadAllShaders();
 		perspective_camera_controller_ = Core::CreateRef<Core::PerspectiveCameraController>();
+		perspective_camera_controller_->GetCamera().SetPosition(glm::vec3(0.0f, 0.5f, 1.5f));
 		menus_.push_back(Core::CreateRef<Core::CameraMenu>("Camera Controls", perspective_camera_controller_));
 		menus_.push_back(Core::CreateRef<Core::SceneViewMenu>("Scene View", scene_.GetShapes(), scene_.GetLightSources()));
 		menus_.push_back(Core::CreateRef<Core::ComputeShaderMenu>("Compute Shader Simulation Controls", compute_shader_simulation_configuration_));
@@ -192,7 +193,7 @@ namespace EOL {
 			}
 
 			cloth_particle_constraints.push_back(contraint_indexs);
-			if (i != 0) {
+			if (i == num_cloth_particles_ - 1 || i == num_cloth_particles_ - num_cloth_dimension_size_ + 1) {
 				cloth_particle_fixed_pos.push_back(1);
 			}
 			else {
