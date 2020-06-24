@@ -190,7 +190,11 @@ namespace EOL {
 		Core::Renderer::Submit(shader_library_.Get("EnviromentMapShader"), enviroment_map_, vertex_array_box_);
 
 		auto compute_particles_shader = shader_library_.Get("ComputeCloth");
-		Core::Renderer::DispatchComputeShader(compute_particles_shader, cloth_->GetClothStorageArray() , compute_shader_configuration_, compute_shader_simulation_configuration_);
+		
+		for (size_t batch_id = 0; batch_id < cloth_->GetNumberOfBatchers(); ++batch_id) {
+			Core::Renderer::DispatchComputeShader(compute_particles_shader, cloth_->GetClothStorageArray(batch_id), compute_shader_configuration_, compute_shader_simulation_configuration_);
+		}
+		
 
 		// TODO(Rok Kos): Load Models on themand
 

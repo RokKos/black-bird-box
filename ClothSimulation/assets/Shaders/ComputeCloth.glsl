@@ -25,6 +25,11 @@ layout(std430, binding=3) buffer fixedPts
 	vec4 fixedPoints[ ];
 };
 
+layout(std430, binding=4) buffer btcIds
+{
+	int batchIds[ ];
+};
+
 layout(local_size_variable) in;
 
 layout( location=1 ) uniform vec3 u_Gravity;
@@ -34,22 +39,22 @@ layout( location=3 ) uniform int u_Itterations;
 
 void main()
 {
-	uint particle_id = gl_GlobalInvocationID.x;
+	uint vertex_id = batchIds[gl_GlobalInvocationID.x];
 
-	vec4 position = Positions[particle_id];
+	vec4 position = Positions[vertex_id];
 	vec4 temp_position = position;
-    vec4 prev_position = PreviousPositions[particle_id];
+    vec4 prev_position = PreviousPositions[vertex_id];
 
-	int is_fixed_position = int(fixedPoints[particle_id].x);
+	int is_fixed_position = int(fixedPoints[vertex_id].x);
 	if (is_fixed_position == 1) {
-		Positions[particle_id] = temp_position;
-		PreviousPositions[particle_id] = temp_position;
+		Positions[vertex_id] = temp_position;
+		PreviousPositions[vertex_id] = temp_position;
 	} else {
 		vec4 new_position = 2 * position - prev_position + vec4(u_Gravity * u_DeltaTime * u_DeltaTime, 0.0);
 
-		mat4 constrains = Constraints[particle_id];
-		float horizontal_rest_lenght = fixedPoints[particle_id].y;
-		float diagonal_rest_length = fixedPoints[particle_id].z;
+		mat4 constrains = Constraints[vertex_id];
+		float horizontal_rest_lenght = fixedPoints[vertex_id].y;
+		float diagonal_rest_length = fixedPoints[vertex_id].z;
 		
 		for (uint it = 0; it < u_Itterations; ++it) {
 			vec4 displacement = vec4(0.0);
@@ -82,7 +87,7 @@ void main()
 
 
 
-		Positions[particle_id] = new_position;
-		PreviousPositions[particle_id] = temp_position;
+		Positions[vertex_id] = new_position;
+		PreviousPositions[vertex_id] = temp_position;
 	}
 }

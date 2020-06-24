@@ -1,6 +1,8 @@
 #include "bbbpch.h"
 #include "Cloth.h"
 
+#include "BlackBirdBox/Core/Util.h"
+
 namespace Core {
 
 	Cloth::Cloth(unsigned int num_cloth_dimension_size, Ref<Material> material_to_render_cloth) :
@@ -93,6 +95,31 @@ namespace Core {
 
 		Core::Ref<Core::IndexBuffer> index_buffer_cloth = Core::IndexBuffer::Create(cloth_indices.data(), cloth_indices.size());
 		vertex_array_->SetIndexBuffer(index_buffer_cloth);
+
+		std::vector<unsigned int> graph_coloring = Util::GreedyGraphColoring(num_cloth_particles_, cloth_particle_constraints);
+		std::vector<std::vector<glm::int32>> batch_ids;
+		for (int cloth_particle_index = 0; cloth_particle_index < graph_coloring.size(); ++cloth_particle_index) {
+			unsigned int color = graph_coloring[cloth_particle_index];
+			if (color + 1 > batch_ids.size()) {
+				batch_ids.push_back(std::vector<glm::int32>());
+				batch_ids[color].push_back(static_cast<glm::int32>(cloth_particle_index));
+			}
+			else {
+				batch_ids[color].push_back(static_cast<glm::int32>(cloth_particle_index));
+			}
+		}
+
+		for (size_t i = 0; i < batch_ids.size(); ++i) {
+			batch_id_buffers_.push_back(Core::ShaderStorageBuffer::Create(batch_ids[i], batch_ids[i].size() * sizeof(glm::int32)));
+		}
+		
+		batch_id_start_ind_ = cloth_storage_array_->AddShaderStorageBuffer(batch_id_buffers_[0]);
+	}
+
+	Core::Ref<Core::ShaderStorageArray> Cloth::GetClothStorageArray(int batch_id)
+	{
+		cloth_storage_array_->SetShaderStorageBuffer(batch_id_start_ind_, batch_id_buffers_[batch_id]);
+		return cloth_storage_array_;
 	}
 
 }
