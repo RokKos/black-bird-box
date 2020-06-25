@@ -1,6 +1,6 @@
 #pragma once
 
-#include "document.h"
+#include "rapidjson/document.h"
 
 namespace Core {
 

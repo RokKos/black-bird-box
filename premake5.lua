@@ -23,7 +23,7 @@ IncludeDir["ImGui"] = "external/imgui"
 IncludeDir["glm"] = "external/glm"
 IncludeDir["tinyobjloader"] = "external/tinyobjloader"
 IncludeDir["stb"] = "external/stb"
-IncludeDir["rapidjson"] = "external/rapidjson/include/rapidjson"
+IncludeDir["rapidjson"] = "external/rapidjson/include"
 
 group "Dependencies"
 	include "external/GLFW"
