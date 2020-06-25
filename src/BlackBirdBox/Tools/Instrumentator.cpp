@@ -43,29 +43,28 @@ namespace Core {
 
 	void Instrumentor::WriteProfile(const ProfileResult& result)
 	{
-		rapidjson::Value trace_events = output_json_["traceEvents"].GetArray();
+		rapidjson::Document::AllocatorType& allocator = output_json_.GetAllocator();
 
 		rapidjson::Value traced_event(rapidjson::Type::kObjectType);
-		traced_event.AddMember("cat", "function", output_json_.GetAllocator());
-		traced_event.AddMember("dur", result.ElapsedTime.count(), output_json_.GetAllocator());
-		
-		rapidjson::Value event_name(rapidjson::Type::kStringType);
-		event_name.SetString(result.Name.c_str(), result.Name.length(), output_json_.GetAllocator());
-		traced_event.AddMember("name", event_name, output_json_.GetAllocator());
+		traced_event.AddMember("cat", "function", allocator);
+		traced_event.AddMember("dur", result.ElapsedTime.count(), allocator);
 
-		traced_event.AddMember("ph", "X", output_json_.GetAllocator());
-		traced_event.AddMember("pid", "0", output_json_.GetAllocator());
+		rapidjson::Value event_name(rapidjson::Type::kStringType);
+		event_name.SetString(result.Name.c_str(), result.Name.length(), allocator);
+		traced_event.AddMember("name", event_name, allocator);
+
+		traced_event.AddMember("ph", "X", allocator);
+		traced_event.AddMember("pid", "0", allocator);
 
 		rapidjson::Value event_thread(rapidjson::Type::kStringType);
 		std::stringstream thread_id;
 		thread_id << result.ThreadID;
-		event_thread.SetString(thread_id.str().c_str(), thread_id.str().length(), output_json_.GetAllocator());
-		traced_event.AddMember("tid", event_thread, output_json_.GetAllocator());
+		event_thread.SetString(thread_id.str().c_str(), thread_id.str().length(), allocator);
+		traced_event.AddMember("tid", event_thread, allocator);
 
-		traced_event.AddMember("ts", result.Start.count(), output_json_.GetAllocator());
+		traced_event.AddMember("ts", result.Start.count(), allocator);
 
-		trace_events.PushBack(traced_event, output_json_.GetAllocator());
-		output_json_.AddMember("traceEvents", trace_events, output_json_.GetAllocator());
+		output_json_["traceEvents"].PushBack(traced_event, allocator);
 	}
 
 	void Instrumentor::WriteHeader()
