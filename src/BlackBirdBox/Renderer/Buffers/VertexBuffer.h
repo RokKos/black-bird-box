@@ -1,5 +1,6 @@
 #pragma once
 
+#include "BlackBirdBox/Core/Core.h"
 #include "BufferLayout.h"
 
 #include "BlackBirdBox/Primitives/ModelData.h"

@@ -1,9 +1,6 @@
 #include "bbbpch.h"
 #include "ModelLoader.h"
 
-#include "BlackBirdBox/Core/Core.h"
-#include "BlackBirdBox/Core/Log.h"
-
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "tiny_obj_loader.h"
 

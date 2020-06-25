@@ -1,8 +1,8 @@
 #pragma once
 
-#include "BlackBirdBox/Core/Core.h"
 #include "BlackBirdBox/Core/Application.h"
 #include "BlackBirdBox/Core/Log.h"
+#include "BlackBirdBox/Core/Macros.h"
 
 #ifdef PLATFORM_WINDOWS
 

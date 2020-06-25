@@ -1,7 +1,5 @@
 #pragma once
 
-#include "BlackBirdBox/Core/Core.h"
-
 namespace Core {
 	enum class ShaderDataType
 	{

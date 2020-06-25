@@ -1,6 +1,5 @@
 #pragma once
 
-#include "BlackBirdBox/Core/Core.h"
 #include "BlackBirdBox/Events/Event.h"
 #include "BlackBirdBox/Core/TimeStep.h"
 

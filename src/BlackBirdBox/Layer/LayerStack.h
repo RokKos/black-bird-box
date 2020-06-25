@@ -1,6 +1,5 @@
 #pragma once
 
-#include "BlackBirdBox/Core/Core.h"
 #include "Layer.h"
 
 namespace Core {

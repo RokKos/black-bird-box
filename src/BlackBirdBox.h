@@ -50,4 +50,8 @@
 
 #include "BlackBirdBox/Tools/Instrumentator.h"
 #include "BlackBirdBox/Tools/InstrumentationTimer.h"
+
+// Note(Rok Kos): Macros needs to be behind ImGui, because it includes Windows.h, look at this issue for further explanation: https://github.com/Tencent/rapidjson/issues/1448
+#include "BlackBirdBox/Core/Macros.h"
+
 #include "BlackBirdBox/Physics/Cloth/Cloth.h"

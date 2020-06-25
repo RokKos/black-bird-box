@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BaseMenu.h"
+#include "BlackBirdBox/Core/Core.h"
 #include "BlackBirdBox/Controllers/Renderer/Camera/PerspectiveCameraController.h"
 
 namespace Core {
