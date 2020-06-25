@@ -4,11 +4,12 @@
 #include <cmath>
 #include <glm/gtc/type_ptr.hpp>
 
-
 namespace EOL {
 	EOLLayer::EOLLayer()
 		: Core::Layer("EOLLayer")
 	{
+		PROFILE_FUNCTION();
+
 		LoadAllShaders();
 		perspective_camera_controller_ = Core::CreateRef<Core::PerspectiveCameraController>();
 		perspective_camera_controller_->GetCamera().SetPosition(glm::vec3(0.0f, 0.5f, 1.5f));
@@ -296,6 +297,7 @@ namespace EOL {
 
 	void EOLLayer::LoadAllShaders()
 	{
+		PROFILE_FUNCTION();
 		auto load_shader = Core::JsonUtil::ReadJson("assets/Configs/LoadShader.json");
 		ASSERT(load_shader["Shaders"].IsArray(), "Shaders is not an array!");
 

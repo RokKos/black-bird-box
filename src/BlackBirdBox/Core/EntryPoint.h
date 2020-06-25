@@ -12,17 +12,17 @@ int main(int argc, char** argv)
 {
 	Core::Log::Init();
 
-	//PROFILE_BEGIN_SESSION("Startup", "HazelProfile-Startup.json");
+	PROFILE_BEGIN_SESSION("Profile-Startup.json");
 	auto app = Core::CreateApplication();
-	//PROFILE_END_SESSION();
+	PROFILE_END_SESSION();
 
-	//PROFILE_BEGIN_SESSION("Runtime", "HazelProfile-Runtime.json");
+	PROFILE_BEGIN_SESSION("Profile-Runtime.json");
 	app->Run();
-	//PROFILE_END_SESSION();
+	PROFILE_END_SESSION();
 
-	//PROFILE_BEGIN_SESSION("Startup", "HazelProfile-Shutdown.json");
+	PROFILE_BEGIN_SESSION("Profile-Shutdown.json");
 	delete app;
-	//PROFILE_END_SESSION();
+	PROFILE_END_SESSION();
 }
 
 #endif
