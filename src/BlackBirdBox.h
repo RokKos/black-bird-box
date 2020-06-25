@@ -48,4 +48,6 @@
 #include "BlackBirdBox/Core/Util.h"
 #include "BlackBirdBox/JSON/JsonUtil.h"
 
+#include "BlackBirdBox/Tools/Instrumentator.h"
+#include "BlackBirdBox/Tools/InstrumentationTimer.h"
 #include "BlackBirdBox/Physics/Cloth/Cloth.h"
