@@ -14,6 +14,8 @@ namespace Core {
 
 	void Material::SetTexture(const std::string& tex_name, const Ref<Texture>& texture)
 	{
+		PROFILE_FUNCTION();
+
 		if (TextureExists(tex_name)) {
 			LOG_WARN("Texture already exists! You will overide texture");
 		}
@@ -29,6 +31,8 @@ namespace Core {
 
 	void Material::BindTextures() const
 	{
+		PROFILE_FUNCTION();
+
 		for (std::pair<std::string, Ref<Texture>> pair : textures_)
 		{
 			pair.second->Bind();
@@ -37,6 +41,8 @@ namespace Core {
 
 	void Material::BindLightData() const
 	{
+		PROFILE_FUNCTION();
+
 		// TODO(Rok Kos): Add null check
 		shader_->SetFloat3("u_DiffuseColor", phong_lighting_parameters_.diffuse_color_);
 		shader_->SetFloat3("u_SpecularColor", phong_lighting_parameters_.specular_color_);
@@ -47,6 +53,8 @@ namespace Core {
 
 	bool Material::TextureExists(const std::string& name) const
 	{
+		PROFILE_FUNCTION();
+
 		return textures_.find(name) != textures_.end();
 	}
 

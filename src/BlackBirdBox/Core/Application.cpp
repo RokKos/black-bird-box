@@ -14,6 +14,7 @@ namespace Core {
 
 	Application::Application()
 	{
+		PROFILE_FUNCTION();
 
 		CORE_ASSERT(!s_Instance, "Application already exists!");
 		s_Instance = this;
@@ -28,11 +29,15 @@ namespace Core {
 
 	Application::~Application()
 	{
+		PROFILE_FUNCTION();
+
 		Renderer::Shutdown();
 	}
 
 	void Application::PushLayer(Layer* layer)
 	{
+		PROFILE_FUNCTION();
+
 		LOG_TRACE("Pushing Layer: {0}", layer->GetName());
 		m_LayerStack.PushLayer(layer);
 		layer->OnAttach();
@@ -40,6 +45,8 @@ namespace Core {
 
 	void Application::PushOverlay(Layer* layer)
 	{
+		PROFILE_FUNCTION();
+
 		LOG_TRACE("Pushing Overlay: {0}", layer->GetName());
 		m_LayerStack.PushOverlay(layer);
 		layer->OnAttach();
@@ -47,6 +54,7 @@ namespace Core {
 
 	void Application::OnEvent(Event& e)
 	{
+		PROFILE_FUNCTION();
 
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(Application::OnWindowClose));
@@ -63,6 +71,8 @@ namespace Core {
 
 	void Application::Run()
 	{
+
+		PROFILE_FUNCTION();
 
 		while (m_Running)
 		{
@@ -92,12 +102,16 @@ namespace Core {
 
 	bool Application::OnWindowClose(WindowCloseEvent& e)
 	{
+		PROFILE_FUNCTION();
+
 		m_Running = false;
 		return true;
 	}
 
 	bool Application::OnWindowResize(WindowResizeEvent& e)
 	{
+
+		PROFILE_FUNCTION();
 
 		if (e.GetWidth() == 0 || e.GetHeight() == 0)
 		{
@@ -112,6 +126,8 @@ namespace Core {
 
 	bool Application::OnKeyPressedEvent(KeyPressedEvent& e)
 	{
+		PROFILE_FUNCTION();
+
 		if (e.GetKeyCode() == KeyCode::Escape) {
 			m_Running = false;
 			return true;

@@ -8,6 +8,8 @@ namespace Core {
 
 	Ref<Texture2D> Texture2D::Create(uint32_t width, uint32_t height)
 	{
+		PROFILE_FUNCTION();
+
 		switch (Renderer::GetAPI())
 		{
 		case RendererAPI::API::None:    CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
@@ -20,6 +22,8 @@ namespace Core {
 
 	Ref<Texture2D> Texture2D::Create(const std::string& path)
 	{
+		PROFILE_FUNCTION();
+
 		switch (Renderer::GetAPI())
 		{
 		case RendererAPI::API::None:    CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;

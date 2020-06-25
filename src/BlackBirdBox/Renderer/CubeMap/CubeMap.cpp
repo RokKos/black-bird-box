@@ -8,6 +8,8 @@ namespace Core {
 	
 	Ref<CubeMap> CubeMap::Create(const std::string& path)
 	{
+		PROFILE_FUNCTION();
+
 		switch (Renderer::GetAPI())
 		{
 		case RendererAPI::API::None:    CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;

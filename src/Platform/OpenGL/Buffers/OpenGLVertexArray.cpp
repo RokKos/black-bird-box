@@ -28,26 +28,36 @@ namespace Platform {
 
 	OpenGLVertexArray::OpenGLVertexArray()
 	{
+		PROFILE_FUNCTION();
+
 		glCreateVertexArrays(1, &m_RendererID);
 	}
 
 	OpenGLVertexArray::~OpenGLVertexArray()
 	{
+		PROFILE_FUNCTION();
+
 		glDeleteVertexArrays(1, &m_RendererID);
 	}
 
 	void OpenGLVertexArray::Bind() const
 	{
+		PROFILE_FUNCTION();
+
 		glBindVertexArray(m_RendererID);
 	}
 
 	void OpenGLVertexArray::Unbind() const
 	{
+		PROFILE_FUNCTION();
+
 		glBindVertexArray(0);
 	}
 
 	void OpenGLVertexArray::AddVertexBuffer(const Core::Ref<Core::VertexBuffer>& vertexBuffer)
 	{
+		PROFILE_FUNCTION();
+
 		CORE_ASSERT(vertexBuffer->GetLayout().GetElements().size(), "Vertex Buffer has no layout!");
 
 		glBindVertexArray(m_RendererID);
@@ -71,6 +81,8 @@ namespace Platform {
 
 	void OpenGLVertexArray::SetIndexBuffer(const Core::Ref<Core::IndexBuffer>& indexBuffer)
 	{
+		PROFILE_FUNCTION();
+
 		glBindVertexArray(m_RendererID);
 		indexBuffer->Bind();
 

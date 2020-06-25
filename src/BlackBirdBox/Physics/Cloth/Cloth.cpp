@@ -8,6 +8,8 @@ namespace Core {
 	Cloth::Cloth(unsigned int num_cloth_dimension_size, Ref<Material> material_to_render_cloth) :
 		num_cloth_dimension_size_(num_cloth_dimension_size), Shape(material_to_render_cloth, nullptr, Core::CreateRef<Core::Transform>(glm::vec3(0, 0, 0)), Core::ModelData(), "Cloth")
 	{
+		PROFILE_FUNCTION();
+
 		num_cloth_particles_ = num_cloth_dimension_size_ * num_cloth_dimension_size_;
 		std::vector<glm::vec4> prev_cloth_particle_positons;
 		prev_cloth_particle_positons.reserve(num_cloth_particles_);
@@ -118,6 +120,8 @@ namespace Core {
 
 	Core::Ref<Core::ShaderStorageArray> Cloth::GetClothStorageArray(int batch_id)
 	{
+		PROFILE_FUNCTION();
+
 		cloth_storage_array_->SetShaderStorageBuffer(batch_id_start_ind_, batch_id_buffers_[batch_id]);
 		return cloth_storage_array_;
 	}

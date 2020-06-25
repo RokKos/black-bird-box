@@ -8,6 +8,8 @@ namespace Core {
 
 	Ref<VertexArray> VertexArray::Create()
 	{
+		PROFILE_FUNCTION();
+
 		switch (Renderer::GetAPI())
 		{
 		case RendererAPI::API::None:    CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;

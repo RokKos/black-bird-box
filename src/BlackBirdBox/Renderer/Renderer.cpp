@@ -9,21 +9,27 @@ namespace Core {
 
 	void Renderer::Init()
 	{
+		PROFILE_FUNCTION();
+
 		RenderCommand::Init();
 	}
 
 	void Renderer::Shutdown()
 	{
-
+		PROFILE_FUNCTION();
 	}
 
 	void Renderer::OnWindowResize(uint32_t width, uint32_t height)
 	{
+		PROFILE_FUNCTION();
+
 		RenderCommand::SetViewport(0, 0, width, height);
 	}
 
 	void Renderer::BeginScene(Camera& camera, std::vector<Ref<LightSource>> light_sources)
 	{
+		PROFILE_FUNCTION();
+
 		s_SceneData->ViewProjectionMatrix = camera.GetViewProjectionMatrix();
 		s_SceneData->ViewMatrix = camera.GetViewMatrix();
 		s_SceneData->ProjectionMatrix = camera.GetProjectionMatrix();
@@ -33,11 +39,13 @@ namespace Core {
 
 	void Renderer::EndScene()
 	{
-
+		PROFILE_FUNCTION();
 	}
 
 	void Renderer::Submit(const Ref<Material>& material, const Ref<VertexArray>& vertexArray, const glm::mat4& transform)
 	{
+		PROFILE_FUNCTION();
+
 		material->BindTextures();
 
 		Ref<Shader> shader = material->GetShader();
@@ -62,6 +70,8 @@ namespace Core {
 
 	void Renderer::Submit(const Ref<Shader>& shader, const Ref<CubeMap>& cube_map, const Ref<VertexArray>& vertexArray, const glm::mat4& transform)
 	{
+		PROFILE_FUNCTION();
+
 		// TODO(Rok Kos): This is only temporary
 		RenderCommand::SetDepthFunction(RendererAPI::DepthFunction::LEQUAL);
 		shader->Bind();
@@ -80,6 +90,8 @@ namespace Core {
 
 	void Renderer::DispatchComputeShader(const Ref<Shader> shader, const Ref<ShaderStorageArray>& shader_storage_array, const ComputeShaderConfiguration& compute_shader_configuration, const ComputeShaderSimulationConfiguration& compute_shader_simulation_configuration)
 	{
+		PROFILE_FUNCTION();
+
 		shader_storage_array->Bind();
 		shader->Bind();
 		shader->SetFloat3("u_Gravity", compute_shader_simulation_configuration.GetGravity());
@@ -92,6 +104,8 @@ namespace Core {
 
 	void Renderer::DrawPoints(const std::vector<Ref<Point>>& points)
 	{
+		PROFILE_FUNCTION();
+
 		RenderCommand::DrawPoints(points);
 	}
 

@@ -10,11 +10,13 @@ namespace Core {
 	ComputeShaderMenu::ComputeShaderMenu(const std::string& menu_name, ComputeShaderSimulationConfiguration& compute_shader_simulation_configuration):
 		BaseMenu(menu_name), compute_shader_simulation_configuration_(compute_shader_simulation_configuration)
 	{
-
+		PROFILE_FUNCTION();
 	}
 
 	void ComputeShaderMenu::OnImGuiRender()
 	{
+		PROFILE_FUNCTION();
+
 		ImGui::Begin(menu_name_.c_str());
 
 		glm::vec3 gravity = compute_shader_simulation_configuration_.GetGravity();

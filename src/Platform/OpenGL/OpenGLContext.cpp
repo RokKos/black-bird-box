@@ -11,11 +11,15 @@ namespace Platform {
 	OpenGLContext::OpenGLContext(GLFWwindow* windowHandle)
 		: m_WindowHandle(windowHandle)
 	{
+		PROFILE_FUNCTION();
+
 		CORE_ASSERT(windowHandle, "Window handle is null!")
 	}
 
 	void OpenGLContext::Init()
 	{
+		PROFILE_FUNCTION();
+
 		glfwMakeContextCurrent(m_WindowHandle);
 		glewExperimental = GL_TRUE;
 		if (glewInit() != GLEW_OK)
@@ -45,6 +49,8 @@ namespace Platform {
 
 	void OpenGLContext::SwapBuffers()
 	{
+		PROFILE_FUNCTION();
+
 		glfwSwapBuffers(m_WindowHandle);
 	}
 

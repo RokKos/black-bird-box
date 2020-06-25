@@ -8,7 +8,7 @@ namespace Core {
 		position_(position),
 		color_(color)
 	{
-
+		PROFILE_FUNCTION();
 	}
 
 }

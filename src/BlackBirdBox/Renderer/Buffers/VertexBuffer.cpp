@@ -7,6 +7,8 @@
 namespace Core {
 	Ref<VertexBuffer> VertexBuffer::Create(Vertex* vertices, uint32_t size)
 	{
+		PROFILE_FUNCTION();
+
 		switch (Renderer::GetAPI())
 		{
 		case RendererAPI::API::None:    CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
@@ -19,6 +21,8 @@ namespace Core {
 
 	Ref<VertexBuffer> VertexBuffer::Create(glm::vec3* vertices, uint32_t size)
 	{
+		PROFILE_FUNCTION();
+
 		switch (Renderer::GetAPI())
 		{
 		case RendererAPI::API::None:    CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
@@ -31,6 +35,8 @@ namespace Core {
 
 	Ref<VertexBuffer> VertexBuffer::Create(float* vertices, uint32_t size)
 	{
+		PROFILE_FUNCTION();
+
 		switch (Renderer::GetAPI())
 		{
 		case RendererAPI::API::None:    CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
@@ -43,6 +49,8 @@ namespace Core {
 
 	Ref<VertexBuffer> VertexBuffer::CreateExistingBuffer(uint32_t renderer_id)
 	{
+		PROFILE_FUNCTION();
+
 		switch (Renderer::GetAPI())
 		{
 		case RendererAPI::API::None:    CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;

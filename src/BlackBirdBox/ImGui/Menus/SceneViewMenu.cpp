@@ -10,11 +10,13 @@ namespace Core {
 	SceneViewMenu::SceneViewMenu(const std::string& menu_name, const std::vector<Ref<Shape>>& shapes, const std::vector<Ref<LightSource>>& lights) :
 		BaseMenu(menu_name), shapes_(shapes), lights_(lights)
 	{
-
+		PROFILE_FUNCTION();
 	}
 
 	void SceneViewMenu::OnImGuiRender()
 	{
+		PROFILE_FUNCTION();
+
 		ImGui::Begin(menu_name_.c_str());
 
 		for (auto shape : shapes_)

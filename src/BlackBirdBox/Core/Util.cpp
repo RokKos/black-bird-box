@@ -7,6 +7,8 @@ namespace Core {
 	
 	std::string Util::ReadFile(std::string file_path)
 	{
+		PROFILE_FUNCTION();
+
 		std::stringstream buffer;
 		buffer << std::ifstream(file_path).rdbuf();
 		return buffer.str();
@@ -14,6 +16,8 @@ namespace Core {
 
 	std::vector<unsigned int> Util::GreedyGraphColoring(unsigned int graph_size, std::vector<glm::mat4> neighbours)
 	{
+		PROFILE_FUNCTION();
+
 		std::vector<Ref<GraphVertex>> graph_vertexes;
 		graph_vertexes.reserve(graph_size);
 		for (unsigned int i = 0; i < graph_size; ++i) {

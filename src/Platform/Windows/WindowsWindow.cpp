@@ -20,16 +20,22 @@ namespace Platform {
 
 	WindowsWindow::WindowsWindow(const Core::WindowProps& props)
 	{
+		PROFILE_FUNCTION();
+
 		Init(props);
 	}
 
 	WindowsWindow::~WindowsWindow()
 	{
+		PROFILE_FUNCTION();
+
 		Shutdown();
 	}
 
 	void WindowsWindow::Init(const Core::WindowProps& props)
 	{
+		PROFILE_FUNCTION();
+
 		m_Data.Title = props.Title;
 		m_Data.Width = props.Width;
 		m_Data.Height = props.Height;
@@ -156,6 +162,8 @@ namespace Platform {
 
 	void WindowsWindow::Shutdown()
 	{
+		PROFILE_FUNCTION();
+
 		glfwDestroyWindow(m_Window);
 		--s_GLFWWindowCount;
 
@@ -167,12 +175,16 @@ namespace Platform {
 
 	void WindowsWindow::OnUpdate()
 	{
+		PROFILE_FUNCTION();
+
 		glfwPollEvents();
 		m_Context->SwapBuffers();
 	}
 
 	void WindowsWindow::SetVSync(bool enabled)
 	{
+		PROFILE_FUNCTION();
+
 		if (enabled)
 			glfwSwapInterval(1);
 		else
@@ -183,6 +195,8 @@ namespace Platform {
 
 	bool WindowsWindow::IsVSync() const
 	{
+		PROFILE_FUNCTION();
+
 		return m_Data.VSync;
 	}
 

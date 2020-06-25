@@ -16,4 +16,6 @@
 
 
 #include "BlackBirdBox/Core/Log.h"
+#include "BlackBirdBox/Tools/Instrumentator.h"
+#include "BlackBirdBox/Tools/InstrumentationTimer.h"
 #include "BlackBirdBox/Core/Macros.h"

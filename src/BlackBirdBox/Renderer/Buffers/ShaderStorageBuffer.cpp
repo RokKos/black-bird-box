@@ -9,6 +9,8 @@ namespace Core {
 
 	Ref<ShaderStorageBuffer> ShaderStorageBuffer::Create(uint32_t size)
 	{
+		PROFILE_FUNCTION();
+
 		switch (Renderer::GetAPI())
 		{
 		case RendererAPI::API::None:    CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
@@ -21,6 +23,8 @@ namespace Core {
 
 	Ref<ShaderStorageBuffer> ShaderStorageBuffer::Create(const std::vector<glm::vec3>& storage_data, uint32_t size)
 	{
+		PROFILE_FUNCTION();
+
 		switch (Renderer::GetAPI())
 		{
 		case RendererAPI::API::None:    CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
@@ -33,6 +37,8 @@ namespace Core {
 
 	Ref<ShaderStorageBuffer> ShaderStorageBuffer::Create(const std::vector<glm::vec4>& storage_data, uint32_t size)
 	{
+		PROFILE_FUNCTION();
+
 		switch (Renderer::GetAPI())
 		{
 		case RendererAPI::API::None:    CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
@@ -45,6 +51,8 @@ namespace Core {
 
 	Ref<ShaderStorageBuffer> ShaderStorageBuffer::Create(const std::vector<glm::mat3>& storage_data, uint32_t size)
 	{
+		PROFILE_FUNCTION();
+
 		switch (Renderer::GetAPI())
 		{
 		case RendererAPI::API::None:    CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
@@ -57,6 +65,8 @@ namespace Core {
 
 	Ref<ShaderStorageBuffer> ShaderStorageBuffer::Create(const std::vector<glm::mat4>& storage_data, uint32_t size)
 	{
+		PROFILE_FUNCTION();
+
 		switch (Renderer::GetAPI())
 		{
 		case RendererAPI::API::None:    CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
@@ -70,6 +80,8 @@ namespace Core {
 
 	Ref<ShaderStorageBuffer> ShaderStorageBuffer::Create(const std::vector<glm::int32>& storage_data, uint32_t size)
 	{
+		PROFILE_FUNCTION();
+
 		switch (Renderer::GetAPI())
 		{
 		case RendererAPI::API::None:    CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;

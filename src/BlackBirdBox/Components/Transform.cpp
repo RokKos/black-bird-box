@@ -11,6 +11,8 @@ namespace Core {
 		rotation_(glm::vec3(1.0f)), 
 		scale_(glm::vec3(1.0f))
 	{
+		PROFILE_FUNCTION();
+
 		RecalculateTransformMatrix();
 	}
 
@@ -19,6 +21,8 @@ namespace Core {
 		rotation_(rotation),
 		scale_(glm::vec3(1.0f))
 	{
+		PROFILE_FUNCTION();
+
 		RecalculateTransformMatrix();
 	}
 
@@ -27,11 +31,15 @@ namespace Core {
 		rotation_(rotation),
 		scale_(scale)
 	{
+		PROFILE_FUNCTION();
+
 		RecalculateTransformMatrix();
 	}
 
 	void Transform::RecalculateTransformMatrix()
 	{
+		PROFILE_FUNCTION();
+
 		glm::mat4 transformation_matrix = glm::mat4(1.0f);
 		transformation_matrix = glm::translate(transformation_matrix, position_);
 		

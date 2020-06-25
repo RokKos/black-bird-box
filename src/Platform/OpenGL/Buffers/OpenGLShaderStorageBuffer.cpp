@@ -7,6 +7,8 @@ namespace Platform {
 
 	OpenGLShaderStorageBuffer::OpenGLShaderStorageBuffer(uint32_t size)
 	{
+		PROFILE_FUNCTION();
+
 		glCreateBuffers(1, &m_RendererID);
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_RendererID);
 		glBufferData(GL_SHADER_STORAGE_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
@@ -14,51 +16,69 @@ namespace Platform {
 
 	OpenGLShaderStorageBuffer::OpenGLShaderStorageBuffer(const std::vector<glm::vec3>& storage_data, uint32_t size)
 	{
+		PROFILE_FUNCTION();
+
 		glCreateBuffers(1, &m_RendererID);
 		SetData(storage_data, size);
 	}
 
 	OpenGLShaderStorageBuffer::OpenGLShaderStorageBuffer(const std::vector<glm::vec4>& storage_data, uint32_t size)
 	{
+		PROFILE_FUNCTION();
+
 		glCreateBuffers(1, &m_RendererID);
 		SetData(storage_data, size);
 	}
 
 	OpenGLShaderStorageBuffer::OpenGLShaderStorageBuffer(const std::vector<glm::mat3>& storage_data, uint32_t size)
 	{
+		PROFILE_FUNCTION();
+
 		glCreateBuffers(1, &m_RendererID);
 		SetData(storage_data, size);
 	}
 
 	OpenGLShaderStorageBuffer::OpenGLShaderStorageBuffer(const std::vector<glm::int32>& storage_data, uint32_t size)
 	{
+		PROFILE_FUNCTION();
+
 		glCreateBuffers(1, &m_RendererID);
 		SetData(storage_data, size);
 	}
 
 	OpenGLShaderStorageBuffer::OpenGLShaderStorageBuffer(const std::vector<glm::mat4>& storage_data, uint32_t size)
 	{
+		PROFILE_FUNCTION();
+
 		glCreateBuffers(1, &m_RendererID);
 		SetData(storage_data, size);
 	}
 
 	OpenGLShaderStorageBuffer::~OpenGLShaderStorageBuffer()
 	{
+		PROFILE_FUNCTION();
+
 		glDeleteBuffers(1, &m_RendererID);
 	}
 
 	void OpenGLShaderStorageBuffer::Bind() const
 	{
+		PROFILE_FUNCTION();
+
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_RendererID);
 	}
 
 	void OpenGLShaderStorageBuffer::Unbind() const
 	{
+		PROFILE_FUNCTION();
+
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 	}
 
 	void OpenGLShaderStorageBuffer::SetData(const std::vector<glm::vec3>& storage_data, uint32_t size)
 	{
+		PROFILE_FUNCTION();
+
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_RendererID);
 		glBufferData(GL_SHADER_STORAGE_BUFFER, size, nullptr, GL_STATIC_DRAW);
 
@@ -75,6 +95,8 @@ namespace Platform {
 
 	void OpenGLShaderStorageBuffer::SetData(const std::vector<glm::vec4>& storage_data, uint32_t size)
 	{
+		PROFILE_FUNCTION();
+
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_RendererID);
 		glBufferData(GL_SHADER_STORAGE_BUFFER, size, nullptr, GL_STATIC_DRAW);
 
@@ -91,6 +113,8 @@ namespace Platform {
 
 	void OpenGLShaderStorageBuffer::SetData(const std::vector<glm::mat3>& storage_data, uint32_t size)
 	{
+		PROFILE_FUNCTION();
+
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_RendererID);
 		glBufferData(GL_SHADER_STORAGE_BUFFER, size, nullptr, GL_STATIC_DRAW);
 
@@ -107,6 +131,8 @@ namespace Platform {
 
 	void OpenGLShaderStorageBuffer::SetData(const std::vector<glm::int32>& storage_data, uint32_t size)
 	{
+		PROFILE_FUNCTION();
+
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_RendererID);
 		glBufferData(GL_SHADER_STORAGE_BUFFER, size, nullptr, GL_STATIC_DRAW);
 
@@ -123,6 +149,8 @@ namespace Platform {
 
 	void OpenGLShaderStorageBuffer::SetData(const std::vector<glm::mat4>& storage_data, uint32_t size)
 	{
+		PROFILE_FUNCTION();
+
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_RendererID);
 		glBufferData(GL_SHADER_STORAGE_BUFFER, size, nullptr, GL_STATIC_DRAW);
 
@@ -139,6 +167,8 @@ namespace Platform {
 
 	std::vector<glm::vec3> OpenGLShaderStorageBuffer::GetData(uint32_t size)
 	{
+		PROFILE_FUNCTION();
+
 		// TODO(Rok Kos): Improve this function not to copy whole buffer
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_RendererID); 
 		GLint buffer_mask = GL_MAP_READ_BIT;

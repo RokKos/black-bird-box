@@ -8,6 +8,8 @@ namespace Core {
 
 	Scope<GraphicsContext> GraphicsContext::Create(void* window)
 	{
+		PROFILE_FUNCTION();
+
 		switch (Renderer::GetAPI())
 		{
 		case RendererAPI::API::None:    CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;

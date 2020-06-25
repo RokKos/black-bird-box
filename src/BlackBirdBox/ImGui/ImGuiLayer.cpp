@@ -15,10 +15,14 @@ namespace Core {
 	ImGuiLayer::ImGuiLayer()
 		: Layer("ImGuiLayer")
 	{
+		PROFILE_FUNCTION();
+
 	}
 
 	void ImGuiLayer::OnAttach()
 	{
+		PROFILE_FUNCTION();
+
 		Layer::OnAttach();
 
 		// Setup Dear ImGui context
@@ -54,6 +58,8 @@ namespace Core {
 
 	void ImGuiLayer::OnDetach()
 	{
+		PROFILE_FUNCTION();
+
 		Layer::OnDetach();
 
 		ImGui_ImplOpenGL3_Shutdown();
@@ -63,6 +69,8 @@ namespace Core {
 
 	void ImGuiLayer::Begin()
 	{
+		PROFILE_FUNCTION();
+
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
@@ -70,6 +78,8 @@ namespace Core {
 
 	void ImGuiLayer::OnEvent(Event& e)
 	{
+		PROFILE_FUNCTION();
+
 		ImGuiIO& io = ImGui::GetIO();
 		e.Handled |= e.IsInCategory(EventCategoryMouse) & io.WantCaptureMouse;
 		e.Handled |= e.IsInCategory(EventCategoryKeyboard) & io.WantCaptureKeyboard;
@@ -77,6 +87,8 @@ namespace Core {
 
 	void ImGuiLayer::End()
 	{
+		PROFILE_FUNCTION();
+
 		ImGuiIO& io = ImGui::GetIO();
 		Application& app = Application::Get();
 		io.DisplaySize = ImVec2((float)app.GetWindow().GetWidth(), (float)app.GetWindow().GetHeight());

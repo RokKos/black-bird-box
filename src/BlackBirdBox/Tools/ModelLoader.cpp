@@ -11,6 +11,8 @@ namespace Core {
 
 	ModelData ModelLoader::LoadModel(const std::string& model_path)
 	{
+		PROFILE_FUNCTION();
+
 		ModelData model_data;
 		tinyobj::attrib_t attrib;
 		std::vector<tinyobj::shape_t> shapes;

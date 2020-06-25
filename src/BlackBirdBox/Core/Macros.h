@@ -51,6 +51,7 @@
 
 
 #include "BlackBirdBox/Tools/Instrumentator.h"
+#include "BlackBirdBox/Tools/InstrumentationTimer.h"
 
 
 template <size_t N>

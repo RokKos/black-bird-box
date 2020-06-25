@@ -8,6 +8,8 @@ namespace Platform {
 
 	OpenGLCubeMap::OpenGLCubeMap(const std::string& path)
 	{
+		PROFILE_FUNCTION();
+
 		glGenTextures(1, &renderer_id_);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, renderer_id_);
 
@@ -23,7 +25,7 @@ namespace Platform {
 			std::string side_of_cube_path = path + path_enum.first;
 			LoadOneTextureOfCubeMap(side_of_cube_path, path_enum.second);
 		}
-		
+
 
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -34,16 +36,22 @@ namespace Platform {
 
 	OpenGLCubeMap::~OpenGLCubeMap()
 	{
+		PROFILE_FUNCTION();
+
 		glDeleteTextures(1, &renderer_id_);
 	}
 
 	void OpenGLCubeMap::SetCubeMap(const std::string& path)
 	{
+		PROFILE_FUNCTION();
+
 
 	}
 
 	void OpenGLCubeMap::Bind(uint32_t slot) const
 	{
+		PROFILE_FUNCTION();
+
 		glBindTextureUnit(slot, renderer_id_);
 	}
 
@@ -51,7 +59,8 @@ namespace Platform {
 
 	void OpenGLCubeMap::LoadOneTextureOfCubeMap(const std::string& path, GLenum side_of_cube_map)
 	{
-		
+		PROFILE_FUNCTION();
+
 		int width, height, channels;
 		stbi_set_flip_vertically_on_load(0);
 		stbi_uc* data = nullptr;

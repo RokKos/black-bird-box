@@ -11,7 +11,7 @@ namespace Core {
 		name_(name),
 		enabled_(true)
 	{
-
+		PROFILE_FUNCTION();
 	}
 
 }

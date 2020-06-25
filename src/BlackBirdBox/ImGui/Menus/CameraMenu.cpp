@@ -8,11 +8,13 @@ namespace Core {
 	CameraMenu::CameraMenu(const std::string& menu_name, Ref<PerspectiveCameraController> perspective_camera_controller) :
 		BaseMenu(menu_name), perspective_camera_controller_(perspective_camera_controller)
 	{
-
+		PROFILE_FUNCTION();
 	}
 
 	void CameraMenu::OnImGuiRender()
 	{
+		PROFILE_FUNCTION();
+
 		ImGui::Begin(menu_name_.c_str());
 
 		float camera_movement_speed = perspective_camera_controller_->GetCameraMovementSpeed();
