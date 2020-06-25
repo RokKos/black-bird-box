@@ -11,6 +11,9 @@ namespace EOL {
 		PROFILE_FUNCTION();
 
 		LoadAllShaders();
+		// TODO(Rok Kos): LoadAllPrimitiveMeshes();
+
+
 		perspective_camera_controller_ = Core::CreateRef<Core::PerspectiveCameraController>();
 		perspective_camera_controller_->GetCamera().SetPosition(glm::vec3(0.0f, 0.5f, 1.5f));
 		menus_.push_back(Core::CreateRef<Core::CameraMenu>("Camera Controls", perspective_camera_controller_));
@@ -163,6 +166,8 @@ namespace EOL {
 		cloth_ = Core::CreateRef<Core::Cloth>(num_cloth_dimension_size_, mat_generic_triangle);
 		scene_.AddShape(cloth_);
 
+		test_frame_buffer_ = Core::FrameBuffer::Create(1920, 1080, false);
+
 	}
 
 	void EOLLayer::OnAttach()
@@ -201,12 +206,19 @@ namespace EOL {
 
 		Core::RenderCommand::SetPolygonMode((Core::RendererAPI::PolygonMode)polygon_mode_);
 
+		test_frame_buffer_->Bind();
+
 		for (auto shape : scene_.GetShapes())
 		{
 			if (shape->GetObjectEnabled()) {
 				Core::Renderer::Submit(shape->GetMaterial(), shape->GetVertexArray(), shape->GetTransform()->GetTransformMatrix());
 			}
 		}
+		test_frame_buffer_->Unbind();
+		
+		auto shape = scene_.GetShapes().back();
+		Core::Renderer::Submit(shape->GetMaterial(), shape->GetVertexArray(), shape->GetTransform()->GetTransformMatrix());
+
 		Core::RenderCommand::SetPolygonMode(Core::RendererAPI::PolygonMode::FILL);
 
 		Core::Renderer::EndScene();

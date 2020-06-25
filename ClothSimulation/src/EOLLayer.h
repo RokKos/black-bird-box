@@ -40,6 +40,7 @@ namespace EOL {
 
 		Core::Ref<Core::VertexArray> vertex_array_box_;
 		Core::Ref<Core::CubeMap> enviroment_map_;
+		Core::Ref<Core::FrameBuffer> test_frame_buffer_;
 		Core::Ref<Core::Cloth> cloth_;
 		Core::ComputeShaderConfiguration compute_shader_configuration_;
 		Core::ComputeShaderSimulationConfiguration compute_shader_simulation_configuration_;
