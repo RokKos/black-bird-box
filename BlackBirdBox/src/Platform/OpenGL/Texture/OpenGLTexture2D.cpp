@@ -5,26 +5,16 @@
 #include <stb_image.h>
 
 namespace Platform {
-	OpenGLTexture2D::OpenGLTexture2D(uint32_t width, uint32_t height)
-		: m_Width(width), m_Height(height)
+	OpenGLTexture2D::OpenGLTexture2D(const Core::Texture2DSpecification& specification)
+		: specification_(specification)
 	{
 		PROFILE_FUNCTION();
 
-		m_InternalFormat = GL_RGBA8;
-		m_DataFormat = GL_RGBA;
-
-		glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
-		glTextureStorage2D(m_RendererID, 1, m_InternalFormat, m_Width, m_Height);
-
-		glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		CreateTexture(nullptr);
 	}
 
-	OpenGLTexture2D::OpenGLTexture2D(const std::string& path)
-		: m_Path(path)
+	OpenGLTexture2D::OpenGLTexture2D(const std::string& path, const Core::Texture2DSpecification& specification)
+		: path_(path), specification_(specification)
 	{
 		PROFILE_FUNCTION();
 
@@ -35,36 +25,27 @@ namespace Platform {
 			data = stbi_load(path.c_str(), &width, &height, &channels, 0);
 		}
 		CORE_ASSERT(data, "Failed to load image!");
-		m_Width = width;
-		m_Height = height;
+		specification_.Width = width;
+		specification_.Height = height;
 
-		GLenum internalFormat = 0, dataFormat = 0;
+		Core::ImageFormat internalFormat = Core::ImageFormat::RGB8, dataFormat = Core::ImageFormat::RGB;
 		if (channels == 4)
 		{
-			internalFormat = GL_RGBA8;
-			dataFormat = GL_RGBA;
+			internalFormat = Core::ImageFormat::RGBA8;
+			dataFormat = Core::ImageFormat::RGBA;
 		}
 		else if (channels == 3)
 		{
-			internalFormat = GL_RGB8;
-			dataFormat = GL_RGB;
+			internalFormat = Core::ImageFormat::RGB8;
+			dataFormat = Core::ImageFormat::RGB;
 		}
 
-		m_InternalFormat = internalFormat;
-		m_DataFormat = dataFormat;
+		specification_.InternalFormat = internalFormat;
+		specification_.DataFormat = dataFormat;
 
-		CORE_ASSERT(internalFormat & dataFormat, "Format not supported!");
+		CORE_ASSERT(internalFormat == dataFormat, "Format not supported!");
 
-		glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
-		glTextureStorage2D(m_RendererID, 1, internalFormat, m_Width, m_Height);
-
-		glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-		glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, dataFormat, GL_UNSIGNED_BYTE, data);
+		CreateTexture(data);
 
 		stbi_image_free(data);
 	}
@@ -73,24 +54,160 @@ namespace Platform {
 	{
 		PROFILE_FUNCTION();
 
-		glDeleteTextures(1, &m_RendererID);
+		glDeleteTextures(1, &renderer_id_);
 	}
 
 	void OpenGLTexture2D::SetData(void* data, uint32_t size)
 	{
 		PROFILE_FUNCTION();
 
-		uint32_t bpp = m_DataFormat == GL_RGBA ? 4 : 3;
-		CORE_ASSERT(size == m_Width * m_Height * bpp, "Data must be entire texture!");
-		glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, data);
+		uint32_t bpp = specification_.DataFormat == Core::ImageFormat::RGBA ? 4 : 3;
+		CORE_ASSERT(size == specification_.Width * specification_.Height * bpp, "Data must be entire texture!");
+		glTextureSubImage2D(renderer_id_, 0, 0, 0, specification_.Width, specification_.Height, OpenGLInternalFormat(specification_.DataFormat), GL_UNSIGNED_BYTE, data);
 	}
 
 	void OpenGLTexture2D::Bind(uint32_t slot) const
 	{
 		PROFILE_FUNCTION();
 
-		glBindTextureUnit(slot, m_RendererID);
+		glBindTextureUnit(slot, renderer_id_);
 	}
 	
+
+	void OpenGLTexture2D::CreateTexture(void* data)
+	{
+		glCreateTextures(GL_TEXTURE_2D, 1, &renderer_id_);
+		glTextureStorage2D(renderer_id_, 1, OpenGLInternalFormat(specification_.InternalFormat), specification_.Width, specification_.Height);
+
+		glTextureParameteri(renderer_id_, GL_TEXTURE_MIN_FILTER, OpenGLMinifyingFilter(specification_.TextureMinFilter));
+		glTextureParameteri(renderer_id_, GL_TEXTURE_MAG_FILTER, OpenGLMagnificationFilter(specification_.TextureMagFilter));
+
+		glTextureParameteri(renderer_id_, GL_TEXTURE_WRAP_S, OpenGLTextureWraping(specification_.TextureWrapS));
+		glTextureParameteri(renderer_id_, GL_TEXTURE_WRAP_T, OpenGLTextureWraping(specification_.TextureWrapT));
+
+		glTextureSubImage2D(renderer_id_, 0, 0, 0, specification_.Width, specification_.Height, OpenGLInternalFormat(specification_.DataFormat), GL_UNSIGNED_BYTE, data);
+	}
+
+	GLenum OpenGLTexture2D::OpenGLInternalFormat(Core::ImageFormat internal_format) const
+	{
+		switch (internal_format)
+		{
+		case Core::ImageFormat::DEPTH_COMPONENT: return GL_DEPTH_COMPONENT;
+		case Core::ImageFormat::DEPTH_STENCIL: return GL_DEPTH_STENCIL;
+		case Core::ImageFormat::RED: return GL_RED;
+		case Core::ImageFormat::RG: return GL_RG;
+		case Core::ImageFormat::RGB: return GL_RGB;
+		case Core::ImageFormat::RGBA: return GL_RGBA;
+		case Core::ImageFormat::R8: return GL_R8;
+		case Core::ImageFormat::R16: return GL_R16;
+		case Core::ImageFormat::RG8: return GL_RG8;
+		case Core::ImageFormat::RG16: return GL_RG16;
+		case Core::ImageFormat::R3_G3_B2: return GL_R3_G3_B2;
+		case Core::ImageFormat::RGB4: return GL_RGB4;
+		case Core::ImageFormat::RGB5: return GL_RGB5;
+		case Core::ImageFormat::RGB8: return GL_RGB8;
+		case Core::ImageFormat::RGB8_SNORM: return GL_RGB8_SNORM;
+		case Core::ImageFormat::RGB10: return GL_RGB10;
+		case Core::ImageFormat::RGB12: return GL_RGB12;
+		case Core::ImageFormat::RGB16: return GL_RGB16;
+		case Core::ImageFormat::RGBA2: return GL_RGBA2;
+		case Core::ImageFormat::RGBA4: return GL_RGBA4;
+		case Core::ImageFormat::RGB5_A1: return GL_RGB5_A1;
+		case Core::ImageFormat::RGBA8: return GL_RGBA8;
+		case Core::ImageFormat::RGB10_A2: return GL_RGB10_A2;
+		case Core::ImageFormat::RGBA12: return GL_RGBA12;
+		case Core::ImageFormat::RGBA16: return GL_RGBA16;
+		case Core::ImageFormat::SRGB8_ALPHA8: return GL_SRGB8_ALPHA8;
+		case Core::ImageFormat::R16F: return GL_R16F;
+		case Core::ImageFormat::RG16F: return GL_RG16F;
+		case Core::ImageFormat::RGB16F: return GL_RGB16F;
+		case Core::ImageFormat::RGBA16F: return GL_RGBA16F;
+		case Core::ImageFormat::R32F: return GL_R32F;
+		case Core::ImageFormat::RG32F: return GL_RG32F;
+		case Core::ImageFormat::RGBA32F: return GL_RGBA32F;
+		case Core::ImageFormat::R11F_G11F_B10F: return GL_R11F_G11F_B10F;
+		case Core::ImageFormat::R8I: return GL_R8I;
+		case Core::ImageFormat::R8UI: return GL_R8UI;
+		case Core::ImageFormat::R16I: return GL_R16I;
+		case Core::ImageFormat::R16UI: return GL_R16UI;
+		case Core::ImageFormat::R32I: return GL_R32I;
+		case Core::ImageFormat::R32UI: return GL_R32UI;
+		case Core::ImageFormat::RG8I: return GL_RG8I;
+		case Core::ImageFormat::RG8UI: return GL_RG8UI;
+		case Core::ImageFormat::RG16I: return GL_RG16I;
+		case Core::ImageFormat::RG16UI: return GL_RG16UI;
+		case Core::ImageFormat::RGB16I: return GL_RGB16I;
+		case Core::ImageFormat::RGB16UI: return GL_RGB16UI;
+		case Core::ImageFormat::RGB32I: return GL_RGB32I;
+		case Core::ImageFormat::RGB32UI: return GL_RGB32UI;
+		case Core::ImageFormat::RGBA8I: return GL_RGBA8I;
+		case Core::ImageFormat::RGBA8UI: return GL_RGBA8UI;
+		case Core::ImageFormat::RGBA16I: return GL_RGBA16I;
+		case Core::ImageFormat::RGBA16UI: return GL_RGBA16UI;
+		case Core::ImageFormat::RGBA32I: return GL_RGBA32I;
+		case Core::ImageFormat::RGBA32UI: return GL_RGBA32UI;
+		case Core::ImageFormat::DEPTH_COMPONENT16: return GL_DEPTH_COMPONENT16;
+		case Core::ImageFormat::DEPTH_COMPONENT24: return GL_DEPTH_COMPONENT24;
+		case Core::ImageFormat::DEPTH_COMPONENT32: return GL_DEPTH_COMPONENT32;
+		case Core::ImageFormat::DEPTH_COMPONENT32F: return GL_DEPTH_COMPONENT32F;
+		case Core::ImageFormat::DEPTH24_STENCIL8: return GL_DEPTH24_STENCIL8;
+		case Core::ImageFormat::DEPTH32F_STENCIL8: return GL_DEPTH32F_STENCIL8;
+		case Core::ImageFormat::COMPRESSED_RED: return GL_COMPRESSED_RED;
+		case Core::ImageFormat::COMPRESSED_RG: return GL_COMPRESSED_RG;
+		case Core::ImageFormat::COMPRESSED_RGB: return GL_COMPRESSED_RGB;
+		case Core::ImageFormat::COMPRESSED_RGBA: return GL_COMPRESSED_RGBA;
+		case Core::ImageFormat::COMPRESSED_SRGB: return GL_COMPRESSED_SRGB;
+		case Core::ImageFormat::COMPRESSED_SRGB_ALPHA: return GL_COMPRESSED_SRGB_ALPHA;
+		case Core::ImageFormat::COMPRESSED_RED_RGTC1: return GL_COMPRESSED_RED_RGTC1;
+		case Core::ImageFormat::COMPRESSED_SIGNED_RED_RGTC1: return GL_COMPRESSED_SIGNED_RED_RGTC1;
+		case Core::ImageFormat::COMPRESSED_RG_RGTC2: return GL_COMPRESSED_RG_RGTC2;
+		case Core::ImageFormat::COMPRESSED_SIGNED_RG_RGTC2: return GL_COMPRESSED_SIGNED_RG_RGTC2;
+		}
+
+		CORE_ASSERT(false, "Unknown ImageFormat!");
+		return 0;
+	}
+
+	GLenum OpenGLTexture2D::OpenGLMagnificationFilter(Core::TextureMagnificationFilter magnification_filter) const
+	{
+		switch (magnification_filter)
+		{
+			case Core::TextureMagnificationFilter::NEAREST:return GL_NEAREST;
+			case Core::TextureMagnificationFilter::LINEAR: return GL_LINEAR;
+		}
+		CORE_ASSERT(false, "Unknown TextureMagnificationFilter!");
+		return 0;
+	}
+
+	GLenum OpenGLTexture2D::OpenGLMinifyingFilter(Core::TextureMinifyingFilter minifying_filter) const
+	{
+		switch (minifying_filter)
+		{
+			case Core::TextureMinifyingFilter::NEAREST: return GL_NEAREST ;
+			case Core::TextureMinifyingFilter::LINEAR: return GL_LINEAR;
+			case Core::TextureMinifyingFilter::NEAREST_MIPMAP_NEAREST: return GL_NEAREST_MIPMAP_NEAREST;
+			case Core::TextureMinifyingFilter::LINEAR_MIPMAP_NEAREST: return GL_LINEAR_MIPMAP_NEAREST;
+			case Core::TextureMinifyingFilter::NEAREST_MIPMAP_LINEAR: return GL_NEAREST_MIPMAP_LINEAR;
+			case Core::TextureMinifyingFilter::LINEAR_MIPMAP_LINEAR: return GL_LINEAR_MIPMAP_LINEAR;
+		}
+
+		CORE_ASSERT(false, "Unknown TextureMinifyingFilter!");
+		return 0;
+	}
+
+	GLenum OpenGLTexture2D::OpenGLTextureWraping(Core::TextureWraping texuture_wraping) const
+	{
+		switch (minifying_filter)
+		{
+			case Core::TextureWraping::CLAMP_TO_EDGE: return GL_CLAMP_TO_EDGE;
+			case Core::TextureWraping::CLAMP_TO_BORDER: return GL_CLAMP_TO_BORDER;
+			case Core::TextureWraping::MIRRORED_REPEAT: return GL_MIRRORED_REPEAT;
+			case Core::TextureWraping::REPEAT: return GL_REPEAT;
+			case Core::TextureWraping::MIRROR_CLAMP_TO_EDGE: return GL_MIRROR_CLAMP_TO_EDGE;
+		}
+
+		CORE_ASSERT(false, "Unknown TextureWraping!");
+		return 0;
+	}
 
 }

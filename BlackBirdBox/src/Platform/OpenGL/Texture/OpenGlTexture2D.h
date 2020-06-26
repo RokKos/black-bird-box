@@ -9,12 +9,13 @@ namespace Platform {
 	class OpenGLTexture2D : public Core::Texture2D
 	{
 	public:
-		OpenGLTexture2D(uint32_t width, uint32_t height);
-		OpenGLTexture2D(const std::string& path);
+		OpenGLTexture2D(const Core::Texture2DSpecification& specification);
+		OpenGLTexture2D(const std::string& path, const Core::Texture2DSpecification& specification);
 		virtual ~OpenGLTexture2D();
 
-		virtual uint32_t GetWidth() const override { return m_Width; }
-		virtual uint32_t GetHeight() const override { return m_Height; }
+		virtual uint32_t GetRenderID() const override { return renderer_id_; }
+		virtual uint32_t GetWidth() const override { return specification_.Width; }
+		virtual uint32_t GetHeight() const override { return specification_.Height; }
 
 		virtual void SetData(void* data, uint32_t size) override;
 
@@ -22,13 +23,20 @@ namespace Platform {
 
 		virtual bool operator==(const Texture& other) const override
 		{
-			return m_RendererID == ((OpenGLTexture2D&)other).m_RendererID;
+			return renderer_id_ == ((OpenGLTexture2D&)other).renderer_id_;
 		}
+
 	private:
-		std::string m_Path;
-		uint32_t m_Width, m_Height;
-		uint32_t m_RendererID;
-		GLenum m_InternalFormat, m_DataFormat;
+		void CreateTexture(void* data);
+
+		GLenum OpenGLInternalFormat(Core::ImageFormat internal_format) const;
+		GLenum OpenGLMagnificationFilter(Core::TextureMagnificationFilter magnification_filter) const;
+		GLenum OpenGLMinifyingFilter(Core::TextureMinifyingFilter minifying_filter) const;
+		GLenum OpenGLTextureWraping(Core::TextureWraping texuture_wraping) const;
+	private:
+		std::string path_;
+		uint32_t renderer_id_;
+		Core::Texture2DSpecification specification_;
 	};
 
 }

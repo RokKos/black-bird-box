@@ -14,11 +14,14 @@ namespace Platform {
 		virtual void Bind() const override;
 		virtual void Unbind() const override;
 
+		virtual const Core::Ref<Core::Texture2D>& GetTextureColorAttachment() const { return texture_color_attachment_;	};
+		virtual const Core::Ref<Core::Texture2D>& GetTextureDepthStencilAttachment() const { return texture_depth_stencil_attachment_; };
+
 		
 	private:
 		uint32_t renderer_id_;
-		uint32_t tex_color_attachment_id_;
-		uint32_t tex_depth_stencil_attachment_id_;
+		Core::Ref<Core::Texture2D> texture_color_attachment_;
+		Core::Ref<Core::Texture2D> texture_depth_stencil_attachment_;
 		
 		uint32_t width_;
 		uint32_t height_;
