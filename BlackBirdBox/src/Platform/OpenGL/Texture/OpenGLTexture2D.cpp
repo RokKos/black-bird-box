@@ -10,7 +10,7 @@ namespace Platform {
 	{
 		PROFILE_FUNCTION();
 
-		CreateTexture(nullptr);
+		CreateTexture();
 	}
 
 	OpenGLTexture2D::OpenGLTexture2D(const std::string& path, const Core::Texture2DSpecification& specification)
@@ -43,7 +43,7 @@ namespace Platform {
 		specification_.InternalFormat = internalFormat;
 		specification_.DataFormat = dataFormat;
 
-		CORE_ASSERT(internalFormat == dataFormat, "Format not supported!");
+		CORE_ASSERT(internalFormat != dataFormat, "Format not supported!");
 
 		CreateTexture(data);
 
@@ -63,7 +63,7 @@ namespace Platform {
 
 		uint32_t bpp = specification_.DataFormat == Core::ImageFormat::RGBA ? 4 : 3;
 		CORE_ASSERT(size == specification_.Width * specification_.Height * bpp, "Data must be entire texture!");
-		glTextureSubImage2D(renderer_id_, 0, 0, 0, specification_.Width, specification_.Height, OpenGLInternalFormat(specification_.DataFormat), GL_UNSIGNED_BYTE, data);
+		glTextureSubImage2D(renderer_id_, 0, 0, 0, specification_.Width, specification_.Height, OpenGLInternalFormat(specification_.DataFormat), OpenGLTypeOfPixelData(specification_.TypeOfData), data);
 	}
 
 	void OpenGLTexture2D::Bind(uint32_t slot) const
@@ -77,15 +77,25 @@ namespace Platform {
 	void OpenGLTexture2D::CreateTexture(void* data)
 	{
 		glCreateTextures(GL_TEXTURE_2D, 1, &renderer_id_);
-		glTextureStorage2D(renderer_id_, 1, OpenGLInternalFormat(specification_.InternalFormat), specification_.Width, specification_.Height);
+		glBindTexture(GL_TEXTURE_2D, renderer_id_);
+
+		if (data != nullptr) {
+			glTextureStorage2D(renderer_id_, 1, OpenGLInternalFormat(specification_.InternalFormat), specification_.Width, specification_.Height);
+			glTextureSubImage2D(renderer_id_, 0, 0, 0, specification_.Width, specification_.Height, OpenGLInternalFormat(specification_.DataFormat), OpenGLTypeOfPixelData(specification_.TypeOfData), data);
+		}
+		else {
+			glTexImage2D(GL_TEXTURE_2D, 0, OpenGLInternalFormat(specification_.InternalFormat), specification_.Width, specification_.Height, 0, OpenGLInternalFormat(specification_.DataFormat), OpenGLTypeOfPixelData(specification_.TypeOfData), nullptr);
+		}
+		
 
 		glTextureParameteri(renderer_id_, GL_TEXTURE_MIN_FILTER, OpenGLMinifyingFilter(specification_.TextureMinFilter));
 		glTextureParameteri(renderer_id_, GL_TEXTURE_MAG_FILTER, OpenGLMagnificationFilter(specification_.TextureMagFilter));
 
 		glTextureParameteri(renderer_id_, GL_TEXTURE_WRAP_S, OpenGLTextureWraping(specification_.TextureWrapS));
 		glTextureParameteri(renderer_id_, GL_TEXTURE_WRAP_T, OpenGLTextureWraping(specification_.TextureWrapT));
-
-		glTextureSubImage2D(renderer_id_, 0, 0, 0, specification_.Width, specification_.Height, OpenGLInternalFormat(specification_.DataFormat), GL_UNSIGNED_BYTE, data);
+		
+		glBindTexture(GL_TEXTURE_2D, 0);
+		
 	}
 
 	GLenum OpenGLTexture2D::OpenGLInternalFormat(Core::ImageFormat internal_format) const
@@ -197,7 +207,7 @@ namespace Platform {
 
 	GLenum OpenGLTexture2D::OpenGLTextureWraping(Core::TextureWraping texuture_wraping) const
 	{
-		switch (minifying_filter)
+		switch (texuture_wraping)
 		{
 			case Core::TextureWraping::CLAMP_TO_EDGE: return GL_CLAMP_TO_EDGE;
 			case Core::TextureWraping::CLAMP_TO_BORDER: return GL_CLAMP_TO_BORDER;
@@ -207,6 +217,31 @@ namespace Platform {
 		}
 
 		CORE_ASSERT(false, "Unknown TextureWraping!");
+		return 0;
+	}
+
+	GLenum OpenGLTexture2D::OpenGLTypeOfPixelData(Core::TypeOfPixelData type) const
+	{
+		switch (type) {
+			case Core::TypeOfPixelData::UNSIGNED_BYTE: return GL_UNSIGNED_BYTE;
+			case Core::TypeOfPixelData::BYTE: return GL_BYTE;
+			case Core::TypeOfPixelData::UNSIGNED_SHORT: return GL_UNSIGNED_SHORT;
+			case Core::TypeOfPixelData::SHORT: return GL_SHORT;
+			case Core::TypeOfPixelData::UNSIGNED_INT: return GL_UNSIGNED_INT;
+			case Core::TypeOfPixelData::INT: return GL_INT;
+			case Core::TypeOfPixelData::HALF_FLOAT: return GL_HALF_FLOAT;
+			case Core::TypeOfPixelData::FLOAT: return GL_FLOAT;
+			case Core::TypeOfPixelData::UNSIGNED_SHORT_5_6_5: return GL_UNSIGNED_SHORT_5_6_5;
+			case Core::TypeOfPixelData::UNSIGNED_SHORT_4_4_4_4: return GL_UNSIGNED_SHORT_4_4_4_4;
+			case Core::TypeOfPixelData::UNSIGNED_SHORT_5_5_5_1: return GL_UNSIGNED_SHORT_5_5_5_1;
+			case Core::TypeOfPixelData::UNSIGNED_INT_2_10_10_10_REV: return GL_UNSIGNED_INT_2_10_10_10_REV;
+			case Core::TypeOfPixelData::UNSIGNED_INT_10F_11F_11F_REV: return GL_UNSIGNED_INT_10F_11F_11F_REV;
+			case Core::TypeOfPixelData::UNSIGNED_INT_5_9_9_9_REV: return GL_UNSIGNED_INT_5_9_9_9_REV;
+			case Core::TypeOfPixelData::UNSIGNED_INT_24_8: return GL_UNSIGNED_INT_24_8;
+			case Core::TypeOfPixelData::FLOAT_32_UNSIGNED_INT_24_8_REV: return GL_FLOAT_32_UNSIGNED_INT_24_8_REV;
+		}
+
+		CORE_ASSERT(false, "Unknown TypeOfPixelData!");
 		return 0;
 	}
 

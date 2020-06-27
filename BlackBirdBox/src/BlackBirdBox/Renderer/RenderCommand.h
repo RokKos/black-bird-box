@@ -55,6 +55,17 @@ namespace Core {
 		{
 			s_RendererAPI->SetDepthFunction(depth_function);
 		}
+
+		static void Enable(RendererAPI::RenderCapabilities capability)
+		{
+			s_RendererAPI->Enable(capability);
+		}
+
+		static void Disable(RendererAPI::RenderCapabilities capability)
+		{
+			s_RendererAPI->Disable(capability);
+		}
+
 	private:
 		static Scope<RendererAPI> s_RendererAPI;
 	};

@@ -88,6 +88,25 @@ namespace Core {
 		RenderCommand::SetDepthFunction(RendererAPI::DepthFunction::LESS);
 	}
 
+	void Renderer::Submit(Ref<FrameBuffer> frame_buffer, const Ref<Shader>& shader, const Ref<VertexArray>& vertexArray, const glm::mat4& transform /*= glm::mat4(1.0f)*/)
+	{
+		PROFILE_FUNCTION();
+
+		shader->Bind();
+		shader->SetMat4("u_ViewProjection", s_SceneData->ViewProjectionMatrix);
+		shader->SetMat4("u_Transform", transform);
+
+		vertexArray->Bind();
+
+		RenderCommand::Disable(RendererAPI::RenderCapabilities::DEPTH_TEST);
+
+		frame_buffer->BindTextureColorAttachment();
+		
+		RenderCommand::DrawIndexed(vertexArray);
+
+		RenderCommand::Enable(RendererAPI::RenderCapabilities::DEPTH_TEST);
+	}
+
 	void Renderer::DispatchComputeShader(const Ref<Shader> shader, const Ref<ShaderStorageArray>& shader_storage_array, const ComputeShaderConfiguration& compute_shader_configuration, const ComputeShaderSimulationConfiguration& compute_shader_simulation_configuration)
 	{
 		PROFILE_FUNCTION();

@@ -45,6 +45,27 @@ namespace Platform {
 
 		glGetIntegerv(GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS, &max_compute_shader_invocations_);
 		LOG_INFO("max local work group invocations {0}", max_compute_shader_invocations_);
+
+
+		/*
+		
+		 int res;
+	glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &res);
+	printf("Max Color Attachments: %d\n", res);
+
+	glGetIntegerv(GL_MAX_FRAMEBUFFER_WIDTH, &res);
+	printf("Max Framebuffer Width: %d\n", res);
+
+	glGetIntegerv(GL_MAX_FRAMEBUFFER_HEIGHT, &res);
+	printf("Max Framebuffer Height: %d\n", res);
+
+	glGetIntegerv(GL_MAX_FRAMEBUFFER_SAMPLES, &res);
+	printf("Max Framebuffer Samples: %d\n", res);
+
+	glGetIntegerv(GL_MAX_FRAMEBUFFER_LAYERS, &res);
+	printf("Max Framebuffer Layers: %d\n", res);
+		
+		*/
 	}
 
 	void OpenGLContext::SwapBuffers()

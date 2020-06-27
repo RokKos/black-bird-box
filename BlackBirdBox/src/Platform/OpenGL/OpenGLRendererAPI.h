@@ -3,6 +3,7 @@
 #include "BlackBirdBox/Renderer/RendererAPI.h"
 
 #include <glm/glm.hpp>
+#include <GL/glew.h>
 
 namespace Platform {
 
@@ -20,8 +21,11 @@ namespace Platform {
 		virtual void DispatchCompute(const Core::ComputeShaderConfiguration& compute_shader_configuration) override;
 		virtual void WaitMemoryBarrier() override;
 		virtual void SetDepthFunction(Core::RendererAPI::DepthFunction depth_function) override;
-		virtual void SetPolygonMode(PolygonMode mode) override;
+		virtual void SetPolygonMode(Core::RendererAPI::PolygonMode mode) override;
+		virtual void Enable(Core::RendererAPI::RenderCapabilities capability) override;
+		virtual void Disable(Core::RendererAPI::RenderCapabilities capability) override;
+
+	private:
+		GLenum OpenGLRenderCapabilities(Core::RendererAPI::RenderCapabilities capability) const;
 	};
-
-
 }

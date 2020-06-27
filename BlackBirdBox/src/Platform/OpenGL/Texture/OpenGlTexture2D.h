@@ -27,12 +27,13 @@ namespace Platform {
 		}
 
 	private:
-		void CreateTexture(void* data);
+		void CreateTexture(void* data = nullptr);
 
 		GLenum OpenGLInternalFormat(Core::ImageFormat internal_format) const;
 		GLenum OpenGLMagnificationFilter(Core::TextureMagnificationFilter magnification_filter) const;
 		GLenum OpenGLMinifyingFilter(Core::TextureMinifyingFilter minifying_filter) const;
 		GLenum OpenGLTextureWraping(Core::TextureWraping texuture_wraping) const;
+		GLenum OpenGLTypeOfPixelData(Core::TypeOfPixelData type) const;
 	private:
 		std::string path_;
 		uint32_t renderer_id_;

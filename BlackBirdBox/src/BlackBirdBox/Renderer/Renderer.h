@@ -7,6 +7,7 @@
 #include "BlackBirdBox/Components/Material.h"
 #include "Buffers/VertexArray.h"
 #include "Buffers/ShaderStorageArray.h"
+#include "Buffers/FrameBuffer.h"
 #include "CubeMap/CubeMap.h"
 #include "Cameras/Camera.h"
 
@@ -25,6 +26,7 @@ namespace Core {
 		static void EndScene();
 		static void Submit(const Ref<Material>& material, const Ref<VertexArray>& vertexArray, const glm::mat4& transform = glm::mat4(1.0f));
 		static void Submit(const Ref<Shader>& shader, const Ref<CubeMap>& cube_map, const Ref<VertexArray>& vertexArray, const glm::mat4& transform = glm::mat4(1.0f));
+		static void Submit(Ref<FrameBuffer> frame_buffer, const Ref<Shader>& shader, const Ref<VertexArray>& vertexArray, const glm::mat4& transform = glm::mat4(1.0f));
 		static void DispatchComputeShader(const Ref<Shader> shader, const Ref<ShaderStorageArray>& shader_storage_array, const ComputeShaderConfiguration& compute_shader_configuration, const ComputeShaderSimulationConfiguration& compute_shader_simulation_configuration);
 		static void DrawPoints(const std::vector<Ref<Point>>& points);
 

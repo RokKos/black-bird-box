@@ -104,6 +104,27 @@ namespace Core {
 		COMPRESSED_RG_RGTC2,
 		COMPRESSED_SIGNED_RG_RGTC2,
 	};
+
+
+	enum class TypeOfPixelData
+	{
+		UNSIGNED_BYTE,
+		BYTE,
+		UNSIGNED_SHORT,
+		SHORT,
+		UNSIGNED_INT,
+		INT,
+		HALF_FLOAT,
+		FLOAT,
+		UNSIGNED_SHORT_5_6_5,
+		UNSIGNED_SHORT_4_4_4_4,
+		UNSIGNED_SHORT_5_5_5_1,
+		UNSIGNED_INT_2_10_10_10_REV,
+		UNSIGNED_INT_10F_11F_11F_REV,
+		UNSIGNED_INT_5_9_9_9_REV,
+		UNSIGNED_INT_24_8,
+		FLOAT_32_UNSIGNED_INT_24_8_REV
+	};
 		
 	struct Texture2DSpecification
 	{
@@ -115,6 +136,7 @@ namespace Core {
 		TextureWraping TextureWrapT = TextureWraping::REPEAT;
 		ImageFormat InternalFormat = ImageFormat::RGBA8;
 		ImageFormat DataFormat = ImageFormat::RGBA;
+		TypeOfPixelData TypeOfData = TypeOfPixelData::UNSIGNED_BYTE;
 	};
 
 	class Texture2D : public Texture

@@ -30,14 +30,19 @@ namespace EOL {
 		auto generic_uv_coordinates_shader = shader_library_.Get("GenericUVCoordinates");
 		generic_uv_coordinates_shader->Bind();
 		generic_uv_coordinates_shader->SetInt("u_Texture", 0);
-		auto uv_texture = Core::Texture2D::Create("assets/Textures/uv_texture.png");
+		
+		Core::Texture2DSpecification generic_tex_2d_spec = Core::Texture2DSpecification();
+		generic_tex_2d_spec.TextureMinFilter = Core::TextureMinifyingFilter::LINEAR;
+		generic_tex_2d_spec.TextureMagFilter = Core::TextureMagnificationFilter::NEAREST;
+
+		auto uv_texture = Core::Texture2D::Create("assets/Textures/uv_texture.png", generic_tex_2d_spec);
 		auto mat_generic_uv_coordinates = Core::CreateRef<Core::Material>(generic_uv_coordinates_shader, Core::PhongLightingParameters(), "Generic_UV_Coordinates_MAT");
 		mat_generic_uv_coordinates->SetTexture("UV_TEST_Texture", uv_texture);
 
 		auto generic_texture_shader = shader_library_.Get("GenericTexture");
 		generic_texture_shader->Bind();
 		generic_texture_shader->SetInt("u_Texture", 0);
-		auto gun_texture = Core::Texture2D::Create("assets/Textures/Cerberus_A.tga");
+		auto gun_texture = Core::Texture2D::Create("assets/Textures/Cerberus_A.tga", generic_tex_2d_spec);
 		auto mat_generic_texture = Core::CreateRef<Core::Material>(generic_texture_shader, Core::PhongLightingParameters(), "Generic_Texture_MAT");
 		mat_generic_texture->SetTexture("Gun_Texture", gun_texture);
 
@@ -56,35 +61,37 @@ namespace EOL {
 		mat_stadard_shader->SetTexture("Gun_Texture", gun_texture);
 
 		// Gun ------
-		auto vertex_array_gun = Core::VertexArray::Create();
-		auto model_data = Core::ModelLoader::LoadModel("assets/Models/gun.obj");
+		{
+			auto vertex_array_gun = Core::VertexArray::Create();
+			auto model_data = Core::ModelLoader::LoadModel("assets/Models/gun.obj");
 
-		auto vertex_buffer_gun = Core::VertexBuffer::Create(model_data.vertices.data(), model_data.vertices.size() * sizeof(Core::Vertex));
-		Core::BufferLayout layout_gun = {
-		{ Core::ShaderDataType::Float3, "a_Position" },
-		{ Core::ShaderDataType::Float3, "a_Normal" },
-		{ Core::ShaderDataType::Float2, "a_TexCoord" },
-		};
+			auto vertex_buffer_gun = Core::VertexBuffer::Create(model_data.vertices.data(), model_data.vertices.size() * sizeof(Core::Vertex));
+			Core::BufferLayout layout_gun = {
+			{ Core::ShaderDataType::Float3, "a_Position" },
+			{ Core::ShaderDataType::Float3, "a_Normal" },
+			{ Core::ShaderDataType::Float2, "a_TexCoord" },
+			};
 
-		vertex_buffer_gun->SetLayout(layout_gun);
-		vertex_array_gun->AddVertexBuffer(vertex_buffer_gun);
+			vertex_buffer_gun->SetLayout(layout_gun);
+			vertex_array_gun->AddVertexBuffer(vertex_buffer_gun);
 
-		Core::Ref<Core::IndexBuffer> index_buffer_gun = Core::IndexBuffer::Create(model_data.indices.data(), model_data.indices.size());
-		vertex_array_gun->SetIndexBuffer(index_buffer_gun);
+			Core::Ref<Core::IndexBuffer> index_buffer_gun = Core::IndexBuffer::Create(model_data.indices.data(), model_data.indices.size());
+			vertex_array_gun->SetIndexBuffer(index_buffer_gun);
 
-		// TODO(Rok Kos): Read from JSON file
-		auto shape = Core::CreateRef<Core::Shape>(mat_generic_color, vertex_array_gun, Core::CreateRef<Core::Transform>(glm::vec3(2, 0, 0)), model_data, "Obj Model Test");
-		auto shape2 = Core::CreateRef<Core::Shape>(mat_generic_normals, vertex_array_gun, Core::CreateRef<Core::Transform>(glm::vec3(3, 0, 0)), model_data, "Obj Model Normals Test");
-		auto shape3 = Core::CreateRef<Core::Shape>(mat_generic_uv_coordinates, vertex_array_gun, Core::CreateRef<Core::Transform>(glm::vec3(4, 0, 0)), model_data, "Obj Texture UVs Test");
-		auto shape4 = Core::CreateRef<Core::Shape>(mat_generic_texture, vertex_array_gun, Core::CreateRef<Core::Transform>(glm::vec3(6, 0, 0)), model_data, "Obj Texture Test");
-		auto shape5 = Core::CreateRef<Core::Shape>(mat_generic_lighting, vertex_array_gun, Core::CreateRef<Core::Transform>(glm::vec3(8, 0, 0)), model_data, "Obj Lighting Test");
-		auto shape6 = Core::CreateRef<Core::Shape>(mat_stadard_shader, vertex_array_gun, Core::CreateRef<Core::Transform>(glm::vec3(10, 0, 0)), model_data, "Obj All Together");
-		scene_.AddShape(shape);
-		scene_.AddShape(shape2);
-		scene_.AddShape(shape3);
-		scene_.AddShape(shape4);
-		scene_.AddShape(shape5);
-		scene_.AddShape(shape6);
+			// TODO(Rok Kos): Read from JSON file
+			auto shape = Core::CreateRef<Core::Shape>(mat_generic_color, vertex_array_gun, Core::CreateRef<Core::Transform>(glm::vec3(0, 0.5, 0)), model_data, "Obj Model Test");
+			auto shape2 = Core::CreateRef<Core::Shape>(mat_generic_normals, vertex_array_gun, Core::CreateRef<Core::Transform>(glm::vec3(1, 0, 0)), model_data, "Obj Model Normals Test");
+			auto shape3 = Core::CreateRef<Core::Shape>(mat_generic_uv_coordinates, vertex_array_gun, Core::CreateRef<Core::Transform>(glm::vec3(4, 0, 0)), model_data, "Obj Texture UVs Test");
+			auto shape4 = Core::CreateRef<Core::Shape>(mat_generic_texture, vertex_array_gun, Core::CreateRef<Core::Transform>(glm::vec3(6, 0, 0)), model_data, "Obj Texture Test");
+			auto shape5 = Core::CreateRef<Core::Shape>(mat_generic_lighting, vertex_array_gun, Core::CreateRef<Core::Transform>(glm::vec3(8, 0, 0)), model_data, "Obj Lighting Test");
+			auto shape6 = Core::CreateRef<Core::Shape>(mat_stadard_shader, vertex_array_gun, Core::CreateRef<Core::Transform>(glm::vec3(10, 0, 0)), model_data, "Obj All Together");
+			scene_.AddShape(shape);
+			//scene_.AddShape(shape2);
+			//scene_.AddShape(shape3);
+			//scene_.AddShape(shape4);
+			//scene_.AddShape(shape5);
+			//scene_.AddShape(shape6);
+		}
 
 		scene_.AddLightSource(Core::CreateRef<Core::LightSource>(Core::LightType::kDirectional, Core::CreateRef<Core::Transform>(glm::vec3(0, 0, 10)), glm::vec3(0.5f, 0.0f, 0.7f)));
 
@@ -164,10 +171,31 @@ namespace EOL {
 		ParseSimulationSettings();
 
 		cloth_ = Core::CreateRef<Core::Cloth>(num_cloth_dimension_size_, mat_generic_triangle);
-		scene_.AddShape(cloth_);
+		//scene_.AddShape(cloth_);
 
 		test_frame_buffer_ = Core::FrameBuffer::Create(1920, 1080, false);
 
+		auto vertex_array_grid = Core::VertexArray::Create();
+		auto model_data_grid = Core::ModelLoader::LoadModel("assets/Models/grid.obj");
+
+		auto vertex_buffer_grid = Core::VertexBuffer::Create(model_data_grid.vertices.data(), model_data_grid.vertices.size() * sizeof(Core::Vertex));
+		Core::BufferLayout layout_grid = {
+		{ Core::ShaderDataType::Float3, "a_Position" },
+		{ Core::ShaderDataType::Float3, "a_Normal" },
+		{ Core::ShaderDataType::Float2, "a_TexCoord" },
+		};
+
+		vertex_buffer_grid->SetLayout(layout_grid);
+		vertex_array_grid->AddVertexBuffer(vertex_buffer_grid);
+
+		Core::Ref<Core::IndexBuffer> index_buffer_grid = Core::IndexBuffer::Create(model_data_grid.indices.data(), model_data_grid.indices.size());
+		vertex_array_grid->SetIndexBuffer(index_buffer_grid);
+
+		auto mat_framebuffer_texture = Core::CreateRef<Core::Material>(generic_texture_shader, Core::PhongLightingParameters(), "Generic_FrameBuffer_Texture_MAT");
+		mat_framebuffer_texture->SetTexture("FrameBuffer_Texture", test_frame_buffer_->GetTextureColorAttachment());
+
+		frame_buffer_obj_ = Core::CreateRef<Core::Shape>(mat_framebuffer_texture, vertex_array_grid, Core::CreateRef<Core::Transform>(glm::vec3(-1, 0, 0)), model_data_grid, "Frame Buffer");
+		//scene_.AddShape(shape7);
 	}
 
 	void EOLLayer::OnAttach()
@@ -190,16 +218,13 @@ namespace EOL {
 
 		prev_time_step_ = ts;
 
-		Core::RenderCommand::SetClearColor(bg_color_);
-		Core::RenderCommand::Clear();
-
-		Core::Renderer::Submit(shader_library_.Get("EnviromentMapShader"), enviroment_map_, vertex_array_box_);
+		//Core::Renderer::Submit(shader_library_.Get("EnviromentMapShader"), enviroment_map_, vertex_array_box_);
 
 		auto compute_particles_shader = shader_library_.Get("ComputeCloth");
 		
-		for (size_t batch_id = 0; batch_id < cloth_->GetNumberOfBatchers(); ++batch_id) {
-			Core::Renderer::DispatchComputeShader(compute_particles_shader, cloth_->GetClothStorageArray(batch_id), compute_shader_configuration_, compute_shader_simulation_configuration_);
-		}
+		//for (size_t batch_id = 0; batch_id < cloth_->GetNumberOfBatchers(); ++batch_id) {
+		//	Core::Renderer::DispatchComputeShader(compute_particles_shader, cloth_->GetClothStorageArray(batch_id), compute_shader_configuration_, compute_shader_simulation_configuration_);
+		//}
 		
 
 		// TODO(Rok Kos): Load Models on themand
@@ -208,6 +233,9 @@ namespace EOL {
 
 		test_frame_buffer_->Bind();
 
+		Core::RenderCommand::SetClearColor(bg_color_);
+		Core::RenderCommand::Clear();
+
 		for (auto shape : scene_.GetShapes())
 		{
 			if (shape->GetObjectEnabled()) {
@@ -215,9 +243,18 @@ namespace EOL {
 			}
 		}
 		test_frame_buffer_->Unbind();
+
+		Core::RenderCommand::SetClearColor(bg_color_);
+		Core::RenderCommand::Clear();
 		
-		auto shape = scene_.GetShapes().back();
-		Core::Renderer::Submit(shape->GetMaterial(), shape->GetVertexArray(), shape->GetTransform()->GetTransformMatrix());
+		for (auto shape : scene_.GetShapes())
+		{
+			if (shape->GetObjectEnabled()) {
+				Core::Renderer::Submit(shape->GetMaterial(), shape->GetVertexArray(), shape->GetTransform()->GetTransformMatrix());
+			}
+		}
+
+		Core::Renderer::Submit(test_frame_buffer_, shader_library_.Get("GenericTexture"), frame_buffer_obj_->GetVertexArray(), frame_buffer_obj_->GetTransform()->GetTransformMatrix());
 
 		Core::RenderCommand::SetPolygonMode(Core::RendererAPI::PolygonMode::FILL);
 
@@ -231,6 +268,11 @@ namespace EOL {
 		for (auto menu : menus_) {
 			menu->OnImGuiRender();
 		}
+
+		ImGui::Begin("ViewPort");
+		uint32_t textureID = test_frame_buffer_->GetColorAttachmentRendererID();
+		ImGui::Image((void*)textureID, ImVec2{ 360, 360 }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+		ImGui::End();
 
 	}
 
