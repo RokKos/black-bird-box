@@ -13,7 +13,7 @@ namespace Platform {
 		glGenFramebuffers(1, &renderer_id_);
 		glBindFramebuffer(GL_FRAMEBUFFER, renderer_id_);
 
-		/*Core::Texture2DSpecification tex_color_spec = Core::Texture2DSpecification();
+		Core::Texture2DSpecification tex_color_spec = Core::Texture2DSpecification();
 		tex_color_spec.Width = width;
 		tex_color_spec.Height = height;
 		tex_color_spec.InternalFormat = Core::ImageFormat::RGBA8;
@@ -21,16 +21,8 @@ namespace Platform {
 		tex_color_spec.TextureMagFilter = Core::TextureMagnificationFilter::LINEAR;
 		tex_color_spec.TextureMinFilter = Core::TextureMinifyingFilter::LINEAR;
 		texture_color_attachment_ = Core::Texture2D::Create(tex_color_spec);
-		*/
 
-		glCreateTextures(GL_TEXTURE_2D, 1, &m_ColorAttachment);
-		glBindTexture(GL_TEXTURE_2D, m_ColorAttachment);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glBindTexture(GL_TEXTURE_2D, 0);
-
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_ColorAttachment, 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture_color_attachment_->GetRenderID(), 0);
 
 		/*Core::Texture2DSpecification tex_depth_stencil_spec = Core::Texture2DSpecification();
 		tex_depth_stencil_spec.Width = width;
@@ -77,7 +69,7 @@ namespace Platform {
 
 	void OpenGLFrameBuffer::BindTextureColorAttachment() const
 	{
-		glBindTexture(GL_TEXTURE_2D, m_ColorAttachment);
+		glBindTexture(GL_TEXTURE_2D, texture_color_attachment_->GetRenderID());
 	}
 
 }
