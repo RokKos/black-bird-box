@@ -24,7 +24,7 @@ namespace Platform {
 
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture_color_attachment_->GetRenderID(), 0);
 
-		/*Core::Texture2DSpecification tex_depth_stencil_spec = Core::Texture2DSpecification();
+		Core::Texture2DSpecification tex_depth_stencil_spec = Core::Texture2DSpecification();
 		tex_depth_stencil_spec.Width = width;
 		tex_depth_stencil_spec.Height = height;
 		tex_depth_stencil_spec.InternalFormat = Core::ImageFormat::DEPTH24_STENCIL8;
@@ -32,14 +32,8 @@ namespace Platform {
 		tex_depth_stencil_spec.TypeOfData = Core::TypeOfPixelData::UNSIGNED_INT_24_8;
 		// TODO(Rok Kos): Check if default parameters from texture like wraping and min/mag filter affect depth/stencil texture
 		texture_depth_stencil_attachment_ = Core::Texture2D::Create(tex_depth_stencil_spec);
-		*/
-
-		glCreateTextures(GL_TEXTURE_2D, 1, &m_DepthAttachment);
-		glBindTexture(GL_TEXTURE_2D, m_DepthAttachment);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, width, height, 0,GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, nullptr);
-		glBindTexture(GL_TEXTURE_2D, 0);
-		//glTexStorage2D(GL_TEXTURE_2D, 1, GL_DEPTH24_STENCIL8, width, height);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, m_DepthAttachment, 0);
+		
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, texture_depth_stencil_attachment_->GetRenderID(), 0);
 
 		CORE_ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Framebuffer is incomplete!");
 

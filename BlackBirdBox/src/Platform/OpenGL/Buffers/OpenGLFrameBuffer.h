@@ -26,8 +26,6 @@ namespace Platform {
 		uint32_t renderer_id_;
 		Core::Ref<Core::Texture2D> texture_color_attachment_;
 		Core::Ref<Core::Texture2D> texture_depth_stencil_attachment_;
-		
-		uint32_t m_DepthAttachment = 0;
 
 		uint32_t width_;
 		uint32_t height_;
