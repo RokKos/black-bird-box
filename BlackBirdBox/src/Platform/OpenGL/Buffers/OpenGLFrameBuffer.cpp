@@ -49,9 +49,12 @@ namespace Platform {
 	void OpenGLFrameBuffer::Bind() const
 	{
 		PROFILE_FUNCTION();
-
+		
 		glBindFramebuffer(GL_FRAMEBUFFER, renderer_id_);
+		
 		glViewport(0, 0, width_, height_);
+		glClearColor(0, 0, 0, 0);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
 	void OpenGLFrameBuffer::Unbind() const
@@ -59,11 +62,6 @@ namespace Platform {
 		PROFILE_FUNCTION();
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	}
-
-	void OpenGLFrameBuffer::BindTextureColorAttachment() const
-	{
-		glBindTexture(GL_TEXTURE_2D, texture_color_attachment_->GetRenderID());
 	}
 
 }

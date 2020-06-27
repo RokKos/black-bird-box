@@ -86,11 +86,11 @@ namespace EOL {
 			auto shape5 = Core::CreateRef<Core::Shape>(mat_generic_lighting, vertex_array_gun, Core::CreateRef<Core::Transform>(glm::vec3(8, 0, 0)), model_data, "Obj Lighting Test");
 			auto shape6 = Core::CreateRef<Core::Shape>(mat_stadard_shader, vertex_array_gun, Core::CreateRef<Core::Transform>(glm::vec3(10, 0, 0)), model_data, "Obj All Together");
 			scene_.AddShape(shape);
-			//scene_.AddShape(shape2);
-			//scene_.AddShape(shape3);
-			//scene_.AddShape(shape4);
-			//scene_.AddShape(shape5);
-			//scene_.AddShape(shape6);
+			scene_.AddShape(shape2);
+			scene_.AddShape(shape3);
+			scene_.AddShape(shape4);
+			scene_.AddShape(shape5);
+			scene_.AddShape(shape6);
 		}
 
 		scene_.AddLightSource(Core::CreateRef<Core::LightSource>(Core::LightType::kDirectional, Core::CreateRef<Core::Transform>(glm::vec3(0, 0, 10)), glm::vec3(0.5f, 0.0f, 0.7f)));
@@ -171,7 +171,7 @@ namespace EOL {
 		ParseSimulationSettings();
 
 		cloth_ = Core::CreateRef<Core::Cloth>(num_cloth_dimension_size_, mat_generic_triangle);
-		//scene_.AddShape(cloth_);
+		scene_.AddShape(cloth_);
 
 		test_frame_buffer_ = Core::FrameBuffer::Create(1920, 1080, false);
 
@@ -195,7 +195,7 @@ namespace EOL {
 		mat_framebuffer_texture->SetTexture("FrameBuffer_Texture", test_frame_buffer_->GetTextureColorAttachment());
 
 		frame_buffer_obj_ = Core::CreateRef<Core::Shape>(mat_framebuffer_texture, vertex_array_grid, Core::CreateRef<Core::Transform>(glm::vec3(-1, 0, 0)), model_data_grid, "Frame Buffer");
-		//scene_.AddShape(shape7);
+		//scene_.AddShape(frame_buffer_obj_);
 	}
 
 	void EOLLayer::OnAttach()
@@ -218,13 +218,16 @@ namespace EOL {
 
 		prev_time_step_ = ts;
 
-		//Core::Renderer::Submit(shader_library_.Get("EnviromentMapShader"), enviroment_map_, vertex_array_box_);
+		Core::RenderCommand::SetClearColor(bg_color_);
+		Core::RenderCommand::Clear();
+
+		Core::Renderer::Submit(shader_library_.Get("EnviromentMapShader"), enviroment_map_, vertex_array_box_);
 
 		auto compute_particles_shader = shader_library_.Get("ComputeCloth");
 		
-		//for (size_t batch_id = 0; batch_id < cloth_->GetNumberOfBatchers(); ++batch_id) {
-		//	Core::Renderer::DispatchComputeShader(compute_particles_shader, cloth_->GetClothStorageArray(batch_id), compute_shader_configuration_, compute_shader_simulation_configuration_);
-		//}
+		for (size_t batch_id = 0; batch_id < cloth_->GetNumberOfBatchers(); ++batch_id) {
+			Core::Renderer::DispatchComputeShader(compute_particles_shader, cloth_->GetClothStorageArray(batch_id), compute_shader_configuration_, compute_shader_simulation_configuration_);
+		}
 		
 
 		// TODO(Rok Kos): Load Models on themand
@@ -233,9 +236,6 @@ namespace EOL {
 
 		test_frame_buffer_->Bind();
 
-		Core::RenderCommand::SetClearColor(bg_color_);
-		Core::RenderCommand::Clear();
-
 		for (auto shape : scene_.GetShapes())
 		{
 			if (shape->GetObjectEnabled()) {
@@ -243,9 +243,6 @@ namespace EOL {
 			}
 		}
 		test_frame_buffer_->Unbind();
-
-		Core::RenderCommand::SetClearColor(bg_color_);
-		Core::RenderCommand::Clear();
 		
 		for (auto shape : scene_.GetShapes())
 		{
@@ -254,7 +251,7 @@ namespace EOL {
 			}
 		}
 
-		Core::Renderer::Submit(test_frame_buffer_, shader_library_.Get("GenericTexture"), frame_buffer_obj_->GetVertexArray(), frame_buffer_obj_->GetTransform()->GetTransformMatrix());
+		Core::Renderer::Submit(frame_buffer_obj_->GetMaterial(), frame_buffer_obj_->GetVertexArray(), frame_buffer_obj_->GetTransform()->GetTransformMatrix());
 
 		Core::RenderCommand::SetPolygonMode(Core::RendererAPI::PolygonMode::FILL);
 
@@ -270,7 +267,7 @@ namespace EOL {
 		}
 
 		ImGui::Begin("ViewPort");
-		uint32_t textureID = test_frame_buffer_->GetColorAttachmentRendererID();
+		uint32_t textureID = test_frame_buffer_->GetTextureColorAttachment()->GetRenderID();
 		ImGui::Image((void*)textureID, ImVec2{ 360, 360 }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 		ImGui::End();
 
