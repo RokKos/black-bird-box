@@ -7,7 +7,7 @@ namespace Platform {
 	class OpenGLFrameBuffer : public Core::FrameBuffer
 	{
 	public:
-		OpenGLFrameBuffer(uint32_t width, uint32_t height, bool render_to_camera = false);
+		OpenGLFrameBuffer(const Core::FramebufferSpecification& specification);
 		
 		virtual ~OpenGLFrameBuffer();
 
@@ -26,9 +26,7 @@ namespace Platform {
 		Core::Ref<Core::Texture2D> texture_depth_stencil_attachment_;
 
 
-		uint32_t width_;
-		uint32_t height_;
-		bool render_to_camera_ = false;
+		Core::FramebufferSpecification specification_;
 	};
 
 }

@@ -173,7 +173,10 @@ namespace EOL {
 		cloth_ = Core::CreateRef<Core::Cloth>(num_cloth_dimension_size_, mat_generic_triangle);
 		scene_.AddShape(cloth_);
 
-		test_frame_buffer_ = Core::FrameBuffer::Create(1920, 1080, false);
+		Core::FramebufferSpecification frame_buffer_spec = Core::FramebufferSpecification();
+		frame_buffer_spec.width = 1920;
+		frame_buffer_spec.height = 1080;
+		test_frame_buffer_ = Core::FrameBuffer::Create(frame_buffer_spec);
 
 		auto vertex_array_grid = Core::VertexArray::Create();
 		auto model_data_grid = Core::ModelLoader::LoadModel("assets/Models/grid.obj");

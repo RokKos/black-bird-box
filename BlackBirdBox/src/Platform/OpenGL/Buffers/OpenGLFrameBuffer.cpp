@@ -5,8 +5,8 @@
 
 namespace Platform {
 
-	OpenGLFrameBuffer::OpenGLFrameBuffer(uint32_t width, uint32_t height, bool render_to_camera) :
-		width_(width), height_(height), render_to_camera_(render_to_camera)
+	OpenGLFrameBuffer::OpenGLFrameBuffer(const Core::FramebufferSpecification& specification) :
+		specification_(specification)
 	{
 		PROFILE_FUNCTION();
 
@@ -14,8 +14,8 @@ namespace Platform {
 		glBindFramebuffer(GL_FRAMEBUFFER, renderer_id_);
 
 		Core::Texture2DSpecification tex_color_spec = Core::Texture2DSpecification();
-		tex_color_spec.Width = width;
-		tex_color_spec.Height = height;
+		tex_color_spec.Width = specification_.width;
+		tex_color_spec.Height = specification_.height;
 		tex_color_spec.InternalFormat = Core::ImageFormat::RGBA8;
 		tex_color_spec.DataFormat = Core::ImageFormat::RGBA;
 		tex_color_spec.TextureMagFilter = Core::TextureMagnificationFilter::LINEAR;
@@ -31,8 +31,8 @@ namespace Platform {
 		glDrawBuffers(2, DrawBuffers);
 
 		Core::Texture2DSpecification tex_depth_stencil_spec = Core::Texture2DSpecification();
-		tex_depth_stencil_spec.Width = width;
-		tex_depth_stencil_spec.Height = height;
+		tex_depth_stencil_spec.Width = specification_.width;
+		tex_depth_stencil_spec.Height = specification_.height;
 		tex_depth_stencil_spec.InternalFormat = Core::ImageFormat::DEPTH24_STENCIL8;
 		tex_depth_stencil_spec.DataFormat = Core::ImageFormat::DEPTH_STENCIL;
 		tex_depth_stencil_spec.TypeOfData = Core::TypeOfPixelData::UNSIGNED_INT_24_8;
@@ -58,7 +58,7 @@ namespace Platform {
 		
 		glBindFramebuffer(GL_FRAMEBUFFER, renderer_id_);
 		
-		glViewport(0, 0, width_, height_);
+		glViewport(0, 0, specification_.width, specification_.height);
 		glClearColor(0, 0, 0, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}

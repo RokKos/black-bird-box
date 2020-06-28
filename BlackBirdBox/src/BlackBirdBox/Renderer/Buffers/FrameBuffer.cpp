@@ -6,14 +6,14 @@
 
 namespace Core {
 	
-	Core::Ref<Core::FrameBuffer> FrameBuffer::Create(uint32_t width, uint32_t height, bool render_to_camera)
+	Core::Ref<Core::FrameBuffer> FrameBuffer::Create(const FramebufferSpecification& specification)
 	{
 		PROFILE_FUNCTION();
 
 		switch (Renderer::GetAPI())
 		{
 		case RendererAPI::API::None:    CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
-		case RendererAPI::API::OpenGL:  return CreateRef<Platform::OpenGLFrameBuffer>(width, height, render_to_camera);
+		case RendererAPI::API::OpenGL:  return CreateRef<Platform::OpenGLFrameBuffer>(specification);
 		}
 
 		CORE_ASSERT(false, "Unknown RendererAPI!");
