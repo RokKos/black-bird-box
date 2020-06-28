@@ -176,6 +176,7 @@ namespace EOL {
 		Core::FramebufferSpecification frame_buffer_spec = Core::FramebufferSpecification();
 		frame_buffer_spec.width = 1920;
 		frame_buffer_spec.height = 1080;
+		frame_buffer_spec.frame_buffer_attachments.push_back(Core::FrameBufferAttachments::COLOR_ATTACHMENT1);
 		test_frame_buffer_ = Core::FrameBuffer::Create(frame_buffer_spec);
 
 		auto vertex_array_grid = Core::VertexArray::Create();
@@ -195,7 +196,7 @@ namespace EOL {
 		vertex_array_grid->SetIndexBuffer(index_buffer_grid);
 
 		auto mat_framebuffer_texture = Core::CreateRef<Core::Material>(generic_texture_shader, Core::PhongLightingParameters(), "Generic_FrameBuffer_Texture_MAT");
-		mat_framebuffer_texture->SetTexture("FrameBuffer_Texture", test_frame_buffer_->GetTextureDepthStencilAttachment());
+		mat_framebuffer_texture->SetTexture("FrameBuffer_Texture", test_frame_buffer_->GetTextureAttachment(Core::FrameBufferAttachments::DEPTH_STENCIL_ATTACHMENT));
 
 		frame_buffer_obj_ = Core::CreateRef<Core::Shape>(mat_framebuffer_texture, vertex_array_grid, Core::CreateRef<Core::Transform>(glm::vec3(-1, 0, 0)), model_data_grid, "Frame Buffer");
 		//scene_.AddShape(frame_buffer_obj_);
@@ -270,9 +271,9 @@ namespace EOL {
 		}
 
 		ImGui::Begin("ViewPort");
-		uint32_t color_textureID = test_frame_buffer_->GetTextureColorAttachment()->GetRenderID();
+		uint32_t color_textureID = test_frame_buffer_->GetTextureAttachment(Core::FrameBufferAttachments::COLOR_ATTACHMENT0)->GetRenderID();
 		ImGui::Image((void*)color_textureID, ImVec2{ 360, 360 }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
-		uint32_t depth_textureID = test_frame_buffer_->GetTextureNormalAttachment()->GetRenderID();
+		uint32_t depth_textureID = test_frame_buffer_->GetTextureAttachment(Core::FrameBufferAttachments::COLOR_ATTACHMENT1)->GetRenderID();
 		ImGui::Image((void*)depth_textureID, ImVec2{ 360, 360 }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 		ImGui::End();
 

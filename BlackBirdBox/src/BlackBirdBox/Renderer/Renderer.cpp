@@ -100,7 +100,7 @@ namespace Core {
 
 		RenderCommand::Disable(RendererAPI::RenderCapabilities::DEPTH_TEST);
 
-		frame_buffer->GetTextureColorAttachment()->Bind();
+		frame_buffer->GetTextureAttachment(FrameBufferAttachments::COLOR_ATTACHMENT0)->Bind();
 		
 		RenderCommand::DrawIndexed(vertexArray);
 

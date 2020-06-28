@@ -2,6 +2,8 @@
 
 #include "BlackBirdBox/Renderer/Buffers/FrameBuffer.h"
 
+#include <GL/glew.h>
+
 namespace Platform {
 
 	class OpenGLFrameBuffer : public Core::FrameBuffer
@@ -14,17 +16,13 @@ namespace Platform {
 		virtual void Bind() const override;
 		virtual void Unbind() const override;
 
-		virtual const Core::Ref<Core::Texture2D>& GetTextureColorAttachment() const { return texture_color_attachment_;	};
-		virtual const Core::Ref<Core::Texture2D>& GetTextureNormalAttachment() const { return texture_normal_attachment_; };
-		virtual const Core::Ref<Core::Texture2D>& GetTextureDepthStencilAttachment() const { return texture_depth_stencil_attachment_; };
+		virtual const Core::Ref<Core::Texture2D>& GetTextureAttachment(Core::FrameBufferAttachments attachment) override;
 
-		
+	private:
+		GLenum OpenGLFrameBufferAttachments(Core::FrameBufferAttachments attachment) const;
 	private:
 		uint32_t renderer_id_;
-		Core::Ref<Core::Texture2D> texture_color_attachment_;
-		Core::Ref<Core::Texture2D> texture_normal_attachment_;
-		Core::Ref<Core::Texture2D> texture_depth_stencil_attachment_;
-
+		std::unordered_map<Core::FrameBufferAttachments, Core::Ref<Core::Texture2D>> texture_attachments_;
 
 		Core::FramebufferSpecification specification_;
 	};
