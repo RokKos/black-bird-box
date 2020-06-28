@@ -210,28 +210,6 @@ namespace EOL {
 		frame_buffer_spec.frame_buffer_attachments.push_back(Core::FrameBufferAttachments::COLOR_ATTACHMENT6);
 		frame_buffer_spec.frame_buffer_attachments.push_back(Core::FrameBufferAttachments::COLOR_ATTACHMENT7);
 		test_frame_buffer_ = Core::FrameBuffer::Create(frame_buffer_spec);
-
-		auto vertex_array_grid = Core::VertexArray::Create();
-		auto model_data_grid = Core::ModelLoader::LoadModel("assets/Models/grid.obj");
-
-		auto vertex_buffer_grid = Core::VertexBuffer::Create(model_data_grid.vertices.data(), model_data_grid.vertices.size() * sizeof(Core::Vertex));
-		Core::BufferLayout layout_grid = {
-		{ Core::ShaderDataType::Float3, "a_Position" },
-		{ Core::ShaderDataType::Float3, "a_Normal" },
-		{ Core::ShaderDataType::Float2, "a_TexCoord" },
-		};
-
-		vertex_buffer_grid->SetLayout(layout_grid);
-		vertex_array_grid->AddVertexBuffer(vertex_buffer_grid);
-
-		Core::Ref<Core::IndexBuffer> index_buffer_grid = Core::IndexBuffer::Create(model_data_grid.indices.data(), model_data_grid.indices.size());
-		vertex_array_grid->SetIndexBuffer(index_buffer_grid);
-
-		auto mat_framebuffer_texture = Core::CreateRef<Core::Material>(generic_texture_shader, Core::PhongLightingParameters(), "Generic_FrameBuffer_Texture_MAT");
-		mat_framebuffer_texture->SetTexture("FrameBuffer_Texture", test_frame_buffer_->GetTextureAttachment(Core::FrameBufferAttachments::DEPTH_STENCIL_ATTACHMENT));
-
-		frame_buffer_obj_ = Core::CreateRef<Core::Shape>(mat_framebuffer_texture, vertex_array_grid, Core::CreateRef<Core::Transform>(glm::vec3(-1, 0, 0)), model_data_grid, "Frame Buffer");
-		//scene_.AddShape(frame_buffer_obj_);
 	}
 
 	void EOLLayer::OnAttach()
@@ -287,8 +265,6 @@ namespace EOL {
 			}
 		}
 
-		//Core::Renderer::Submit(frame_buffer_obj_->GetMaterial(), frame_buffer_obj_->GetVertexArray(), frame_buffer_obj_->GetTransform()->GetTransformMatrix());
-
 		Core::RenderCommand::SetPolygonMode(Core::RendererAPI::PolygonMode::FILL);
 
 		Core::Renderer::EndScene();
@@ -303,9 +279,27 @@ namespace EOL {
 		}
 
 		ImGui::Begin("ViewPort");
+		int i = 0;
 		for (Core::FrameBufferAttachments attachment : test_frame_buffer_->GetFrameBufferSpecification().frame_buffer_attachments) {
+			// TODO(Rok Kos): Investigate why depth buffer is not rendering
+			if (attachment == Core::FrameBufferAttachments::DEPTH_STENCIL_ATTACHMENT) {
+				continue;
+			}
+			if (i != 0) {
+				ImGui::SetCursorPos(ImVec2(360 * (i % 4) + 1, 360 * (i / 4) + 1));
+			}
+			
+			ImGui::Text(FrameBufferAttachmentToName(attachment).c_str());
+			ImGui::SetCursorPos(ImVec2(360 * (i % 4) + 1, 360 * (i / 4) + 2));
 			uint32_t color_textureID = test_frame_buffer_->GetTextureAttachment(attachment)->GetRenderID();
 			ImGui::Image((void*)color_textureID, ImVec2{ 360, 360 }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+			if (i != 0) {
+				i++;
+			}
+			else {
+				i += 4;
+			}
+			
 		}
 		ImGui::End();
 
@@ -394,6 +388,36 @@ namespace EOL {
 			ASSERT(shader_path.IsString(), "Shader Path is not string");
 			shader_library_.Load(shader_path.GetString());
 		}
+	}
+
+	std::string EOLLayer::FrameBufferAttachmentToName(Core::FrameBufferAttachments attachment)
+	{
+		switch (attachment)
+		{
+		case Core::FrameBufferAttachments::COLOR_ATTACHMENT0: return "Main Color Output";
+		case Core::FrameBufferAttachments::COLOR_ATTACHMENT1: return "Normals Output";
+		case Core::FrameBufferAttachments::COLOR_ATTACHMENT2: return "UV Output";
+		case Core::FrameBufferAttachments::COLOR_ATTACHMENT3: return "vertex Positions Output";
+		case Core::FrameBufferAttachments::COLOR_ATTACHMENT4: return "Model Positions Output";
+		case Core::FrameBufferAttachments::COLOR_ATTACHMENT5: return "Light Diffuse Color";
+		case Core::FrameBufferAttachments::COLOR_ATTACHMENT6: return "Light Specular Color";
+		case Core::FrameBufferAttachments::COLOR_ATTACHMENT7: return "Light All Color";
+		case Core::FrameBufferAttachments::DEPTH_STENCIL_ATTACHMENT: return "Depth/Stencil Buffer";
+		case Core::FrameBufferAttachments::COLOR_ATTACHMENT8:
+		case Core::FrameBufferAttachments::COLOR_ATTACHMENT9:
+		case Core::FrameBufferAttachments::COLOR_ATTACHMENT10:
+		case Core::FrameBufferAttachments::COLOR_ATTACHMENT11:
+		case Core::FrameBufferAttachments::COLOR_ATTACHMENT12:
+		case Core::FrameBufferAttachments::COLOR_ATTACHMENT13:
+		case Core::FrameBufferAttachments::COLOR_ATTACHMENT14:
+		case Core::FrameBufferAttachments::COLOR_ATTACHMENT15:
+		case Core::FrameBufferAttachments::DEPTH_ATTACHMENT:
+		case Core::FrameBufferAttachments::STENCIL_ATTACHMENT:
+		default:
+			break;
+		}
+
+		return "";
 	}
 
 }

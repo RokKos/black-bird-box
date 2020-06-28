@@ -25,6 +25,7 @@ namespace EOL {
 
 		void ParseSimulationSettings();
 		void LoadAllShaders();
+		std::string FrameBufferAttachmentToName(Core::FrameBufferAttachments attachment);
 
 	private:
 		Core::TimeStep prev_time_step_;
