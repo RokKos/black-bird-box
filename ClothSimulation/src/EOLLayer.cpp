@@ -2,6 +2,8 @@
 
 #include <imgui.h>
 #include <cmath>
+#include <thread>
+#include <functional>
 #include <glm/gtc/type_ptr.hpp>
 
 namespace EOL {
@@ -11,7 +13,7 @@ namespace EOL {
 		PROFILE_FUNCTION();
 
 		LoadAllShaders();
-		// TODO(Rok Kos): LoadAllPrimitiveMeshes();
+		LoadAllPrimitiveModels();
 
 
 		perspective_camera_controller_ = Core::CreateRef<Core::PerspectiveCameraController>();
@@ -63,7 +65,7 @@ namespace EOL {
 		// Gun ------
 		{
 			auto vertex_array_gun = Core::VertexArray::Create();
-			auto model_data = Core::ModelLoader::LoadModel("assets/Models/gun.obj");
+			auto model_data = model_library_.Get("assets/Models/gun.obj");
 
 			auto vertex_buffer_gun = Core::VertexBuffer::Create(model_data.vertices.data(), model_data.vertices.size() * sizeof(Core::Vertex));
 			Core::BufferLayout layout_gun = {
@@ -96,7 +98,7 @@ namespace EOL {
 		// Ship ------
 		{
 			auto vertex_array_ship = Core::VertexArray::Create();
-			auto model_data_ship = Core::ModelLoader::LoadModel("assets/Models/LowPolyCity.obj");
+			auto model_data_ship = model_library_.Get("assets/Models/LowPolyCity.obj");
 
 			auto vertex_buffer_ship = Core::VertexBuffer::Create(model_data_ship.vertices.data(), model_data_ship.vertices.size() * sizeof(Core::Vertex));
 			Core::BufferLayout layout_ship = {
@@ -381,6 +383,7 @@ namespace EOL {
 	void EOLLayer::LoadAllShaders()
 	{
 		PROFILE_FUNCTION();
+
 		auto load_shader = Core::JsonUtil::ReadJson("assets/Configs/LoadShader.json");
 		ASSERT(load_shader["Shaders"].IsArray(), "Shaders is not an array!");
 
@@ -388,6 +391,31 @@ namespace EOL {
 			ASSERT(shader_path.IsString(), "Shader Path is not string");
 			shader_library_.Load(shader_path.GetString());
 		}
+	}
+
+	void EOLLayer::LoadAllPrimitiveModels()
+	{
+		PROFILE_FUNCTION();
+		auto load_model = Core::JsonUtil::ReadJson("assets/Configs/LoadModels.json");
+		ASSERT(load_model["Models"].IsArray(), "Models is not an array!");
+
+		std::vector<std::thread> threads;
+
+		for (auto& model_path : load_model["Models"].GetArray()) {
+			ASSERT(model_path.IsString(), "Models Path is not string");
+			threads.push_back(std::thread(&EOLLayer::LoadModelInThread, this, model_path.GetString()));
+		}
+
+		for (auto& thread : threads) {
+			thread.join();
+		}
+	}
+
+	void EOLLayer::LoadModelInThread(const std::string& filepath)
+	{
+		PROFILE_FUNCTION();
+
+		model_library_.Load(filepath);
 	}
 
 	std::string EOLLayer::FrameBufferAttachmentToName(Core::FrameBufferAttachments attachment)

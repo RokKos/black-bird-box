@@ -1,5 +1,5 @@
 #include "bbbpch.h"
-#include "ModelLoader.h"
+#include "ModelLibrary.h"
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "tiny_obj_loader.h"
@@ -8,8 +8,49 @@
 #include <glm/gtx/hash.hpp>
 
 namespace Core {
+	
+	void ModelLibrary::Add(const std::string& name, const ModelData& model)
+	{
+		PROFILE_FUNCTION();
 
-	ModelData ModelLoader::LoadModel(const std::string& model_path)
+		CORE_ASSERT(!Exists(name), "Model already exists!");
+		models_[name] = model;
+	}
+
+	const ModelData& ModelLibrary::Load(const std::string& filepath)
+	{
+		PROFILE_FUNCTION();
+
+		ModelData model = LoadModel(filepath);
+		Add(filepath, model);
+		return model;
+	}
+
+	const ModelData& ModelLibrary::Load(const std::string& name, const std::string& filepath)
+	{
+		PROFILE_FUNCTION();
+
+		ModelData model = LoadModel(filepath);
+		Add(name, model);
+		return model;
+	}
+
+	const ModelData& ModelLibrary::Get(const std::string& name)
+	{
+		PROFILE_FUNCTION();
+
+		CORE_ASSERT(Exists(name), "Model not found!");
+		return models_[name];
+	}
+
+	bool ModelLibrary::Exists(const std::string& name) const
+	{
+		PROFILE_FUNCTION();
+
+		return models_.find(name) != models_.end();
+	}
+
+	ModelData ModelLibrary::LoadModel(const std::string& model_path)
 	{
 		PROFILE_FUNCTION();
 
@@ -36,12 +77,12 @@ namespace Core {
 		for (const auto& shape : shapes) {
 			for (const auto& index : shape.mesh.indices) {
 				Vertex vertex{};
-				vertex.pos = { 
+				vertex.pos = {
 					attrib.vertices[3 * index.vertex_index + 0],
 					attrib.vertices[3 * index.vertex_index + 1],
-					attrib.vertices[3 * index.vertex_index + 2] 
+					attrib.vertices[3 * index.vertex_index + 2]
 				};
-				
+
 				if (has_normals) {
 					vertex.normal = {
 						attrib.normals[3 * index.normal_index + 0],
@@ -70,4 +111,3 @@ namespace Core {
 	}
 
 }
-

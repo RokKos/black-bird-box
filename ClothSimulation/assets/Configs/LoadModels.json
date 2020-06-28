@@ -1,0 +1,8 @@
+{
+  "Models": [
+    "assets/Models/LowPolyCity.obj",
+    "assets/Models/gun.obj",
+    "assets/Models/grid.obj",
+    "assets/Models/bunny.obj",
+  ]
+}

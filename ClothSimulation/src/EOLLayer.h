@@ -25,6 +25,8 @@ namespace EOL {
 
 		void ParseSimulationSettings();
 		void LoadAllShaders();
+		void LoadAllPrimitiveModels();
+		void LoadModelInThread(const std::string& filepath);
 		std::string FrameBufferAttachmentToName(Core::FrameBufferAttachments attachment);
 
 	private:
@@ -32,6 +34,7 @@ namespace EOL {
 		glm::vec4 bg_color_ = { 0.1f, 0.1f, 0.1f, 1 };
 		
 		Core::ShaderLibrary shader_library_;
+		Core::ModelLibrary model_library_;
 		
 		Core::Ref<Core::PerspectiveCameraController> perspective_camera_controller_;
 
