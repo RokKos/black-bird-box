@@ -192,7 +192,7 @@ namespace EOL {
 		vertex_array_grid->SetIndexBuffer(index_buffer_grid);
 
 		auto mat_framebuffer_texture = Core::CreateRef<Core::Material>(generic_texture_shader, Core::PhongLightingParameters(), "Generic_FrameBuffer_Texture_MAT");
-		mat_framebuffer_texture->SetTexture("FrameBuffer_Texture", test_frame_buffer_->GetTextureColorAttachment());
+		mat_framebuffer_texture->SetTexture("FrameBuffer_Texture", test_frame_buffer_->GetTextureDepthStencilAttachment());
 
 		frame_buffer_obj_ = Core::CreateRef<Core::Shape>(mat_framebuffer_texture, vertex_array_grid, Core::CreateRef<Core::Transform>(glm::vec3(-1, 0, 0)), model_data_grid, "Frame Buffer");
 		//scene_.AddShape(frame_buffer_obj_);
@@ -267,8 +267,10 @@ namespace EOL {
 		}
 
 		ImGui::Begin("ViewPort");
-		uint32_t textureID = test_frame_buffer_->GetTextureColorAttachment()->GetRenderID();
-		ImGui::Image((void*)textureID, ImVec2{ 360, 360 }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+		uint32_t color_textureID = test_frame_buffer_->GetTextureColorAttachment()->GetRenderID();
+		ImGui::Image((void*)color_textureID, ImVec2{ 360, 360 }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+		uint32_t depth_textureID = test_frame_buffer_->GetTextureNormalAttachment()->GetRenderID();
+		ImGui::Image((void*)depth_textureID, ImVec2{ 360, 360 }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 		ImGui::End();
 
 	}

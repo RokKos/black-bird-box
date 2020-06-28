@@ -24,6 +24,12 @@ namespace Platform {
 
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture_color_attachment_->GetRenderID(), 0);
 
+		texture_normal_attachment_ = Core::Texture2D::Create(tex_color_spec);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, texture_normal_attachment_->GetRenderID(), 0);
+
+		GLenum DrawBuffers[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+		glDrawBuffers(2, DrawBuffers);
+
 		Core::Texture2DSpecification tex_depth_stencil_spec = Core::Texture2DSpecification();
 		tex_depth_stencil_spec.Width = width;
 		tex_depth_stencil_spec.Height = height;

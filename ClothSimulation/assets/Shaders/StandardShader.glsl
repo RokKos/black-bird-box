@@ -24,6 +24,7 @@ void main()
 #version 330 core
 
 layout(location = 0) out vec4 color;
+layout(location = 1) out vec4 normal_out;
 
 in vec3 v_Normal;
 in vec2 v_TexCoord;
@@ -58,5 +59,6 @@ void main()
 
 	vec4 tex_color = texture(u_Texture, v_TexCoord);
 
-	color = vec4(light_color + tex_color.rgb, tex_color.a); 
+	color = vec4(light_color + tex_color.rgb, tex_color.a);
+	normal_out = vec4(Normal, 1.0);
 }
