@@ -47,11 +47,11 @@ namespace EOL {
 		mat_generic_texture->SetTexture("Gun_Texture", gun_texture);
 
 		auto phong_lighting_parameters = Core::PhongLightingParameters();
-		phong_lighting_parameters.diffuse_color_ = glm::vec3(0.8f, 0.0f, 0.0f);
-		phong_lighting_parameters.specular_color_ = glm::vec3(0.0f, 0.3f, 0.0f);
-		phong_lighting_parameters.specular_scattering_ = 32.0f;
-		phong_lighting_parameters.ambient_color_ = glm::vec3(0.0f, 0.0f, 1.0f);
-		phong_lighting_parameters.ambient_intensity_ = glm::vec3(0.5f, 0.5f, 0.5f);
+		phong_lighting_parameters.diffuse_color_ = glm::vec3(188.0f / 255.0f, 185.0f / 255.0f, 167.0f / 255.0f);
+		phong_lighting_parameters.specular_color_ = glm::vec3(1.0f, 1.0f, 1.0f);
+		phong_lighting_parameters.specular_scattering_ = 15.0f;
+		phong_lighting_parameters.ambient_color_ = glm::vec3(81.0f / 255.0f, 84.0f / 255.0f, 67.0f / 255.0f);
+		phong_lighting_parameters.ambient_intensity_ = glm::vec3(0.21f, 0.21f, 0.21f);
 		auto mat_generic_lighting = Core::CreateRef<Core::Material>(shader_library_.Get("GenericLighting"), phong_lighting_parameters, "Generic_Lighting_MAT");
 
 		auto standard_shader = shader_library_.Get("FrameBufferShader");
@@ -84,16 +84,42 @@ namespace EOL {
 			auto shape3 = Core::CreateRef<Core::Shape>(mat_generic_uv_coordinates, vertex_array_gun, Core::CreateRef<Core::Transform>(glm::vec3(4, 0, 0)), model_data, "Obj Texture UVs Test");
 			auto shape4 = Core::CreateRef<Core::Shape>(mat_generic_texture, vertex_array_gun, Core::CreateRef<Core::Transform>(glm::vec3(6, 0, 0)), model_data, "Obj Texture Test");
 			auto shape5 = Core::CreateRef<Core::Shape>(mat_generic_lighting, vertex_array_gun, Core::CreateRef<Core::Transform>(glm::vec3(8, 0, 0)), model_data, "Obj Lighting Test");
-			auto shape6 = Core::CreateRef<Core::Shape>(mat_stadard_shader, vertex_array_gun, Core::CreateRef<Core::Transform>(glm::vec3(10, 0, 0)), model_data, "Obj All Together");
-			scene_.AddShape(shape);
-			scene_.AddShape(shape2);
-			scene_.AddShape(shape3);
-			scene_.AddShape(shape4);
-			scene_.AddShape(shape5);
-			scene_.AddShape(shape6);
+			auto shape6 = Core::CreateRef<Core::Shape>(mat_stadard_shader, vertex_array_gun, Core::CreateRef<Core::Transform>(glm::vec3(0, 0.5, 0)), model_data, "Obj All Together");
+			//scene_.AddShape(shape);
+			//scene_.AddShape(shape2);
+			//scene_.AddShape(shape3);
+			//scene_.AddShape(shape4);
+			//scene_.AddShape(shape5);
+			//scene_.AddShape(shape6);
 		}
 
-		scene_.AddLightSource(Core::CreateRef<Core::LightSource>(Core::LightType::kDirectional, Core::CreateRef<Core::Transform>(glm::vec3(0, 0, 10)), glm::vec3(0.5f, 0.0f, 0.7f)));
+		// Ship ------
+		{
+			auto vertex_array_ship = Core::VertexArray::Create();
+			auto model_data_ship = Core::ModelLoader::LoadModel("assets/Models/LowPolyCity.obj");
+
+			auto vertex_buffer_ship = Core::VertexBuffer::Create(model_data_ship.vertices.data(), model_data_ship.vertices.size() * sizeof(Core::Vertex));
+			Core::BufferLayout layout_ship = {
+			{ Core::ShaderDataType::Float3, "a_Position" },
+			{ Core::ShaderDataType::Float3, "a_Normal" },
+			{ Core::ShaderDataType::Float2, "a_TexCoord" },
+			};
+
+			vertex_buffer_ship->SetLayout(layout_ship);
+			vertex_array_ship->AddVertexBuffer(vertex_buffer_ship);
+
+			Core::Ref<Core::IndexBuffer> index_buffer_ship = Core::IndexBuffer::Create(model_data_ship.indices.data(), model_data_ship.indices.size());
+			vertex_array_ship->SetIndexBuffer(index_buffer_ship);
+
+			auto city_texture = Core::Texture2D::Create("assets/Textures/Palette.jpg", generic_tex_2d_spec);
+			auto mat_stadard_shader_city = Core::CreateRef<Core::Material>(standard_shader, phong_lighting_parameters, "Standard_MAT");
+			mat_stadard_shader_city->SetTexture("City_Texture", city_texture);
+
+			auto ship = Core::CreateRef<Core::Shape>(mat_stadard_shader_city, vertex_array_ship, Core::CreateRef<Core::Transform>(glm::vec3(0, 0.5, 0), glm::vec3(0.0), glm::vec3(0.1, 0.1, 0.1)), model_data_ship, "Ship");
+			scene_.AddShape(ship);
+		}
+
+		scene_.AddLightSource(Core::CreateRef<Core::LightSource>(Core::LightType::kDirectional, Core::CreateRef<Core::Transform>(glm::vec3(0, 0, 10)), glm::vec3(0.8f, 0.8f, 0.8f)));
 
 		scene_.AddPoint(Core::CreateRef<Core::Point>(10, glm::vec3(0, 0, 0), glm::vec3(1, 0, 0)));
 		scene_.AddPoint(Core::CreateRef<Core::Point>(100, glm::vec3(10, 2, 5), glm::vec3(0, 1, 0)));
@@ -261,7 +287,7 @@ namespace EOL {
 			}
 		}
 
-		Core::Renderer::Submit(frame_buffer_obj_->GetMaterial(), frame_buffer_obj_->GetVertexArray(), frame_buffer_obj_->GetTransform()->GetTransformMatrix());
+		//Core::Renderer::Submit(frame_buffer_obj_->GetMaterial(), frame_buffer_obj_->GetVertexArray(), frame_buffer_obj_->GetTransform()->GetTransformMatrix());
 
 		Core::RenderCommand::SetPolygonMode(Core::RendererAPI::PolygonMode::FILL);
 
