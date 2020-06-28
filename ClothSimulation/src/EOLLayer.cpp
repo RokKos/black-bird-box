@@ -54,7 +54,7 @@ namespace EOL {
 		phong_lighting_parameters.ambient_intensity_ = glm::vec3(0.5f, 0.5f, 0.5f);
 		auto mat_generic_lighting = Core::CreateRef<Core::Material>(shader_library_.Get("GenericLighting"), phong_lighting_parameters, "Generic_Lighting_MAT");
 
-		auto standard_shader = shader_library_.Get("StandardShader");
+		auto standard_shader = shader_library_.Get("FrameBufferShader");
 		standard_shader->Bind();
 		standard_shader->SetInt("u_Texture", 0);
 		auto mat_stadard_shader = Core::CreateRef<Core::Material>(standard_shader, phong_lighting_parameters, "Standard_MAT");
@@ -177,6 +177,12 @@ namespace EOL {
 		frame_buffer_spec.width = 1920;
 		frame_buffer_spec.height = 1080;
 		frame_buffer_spec.frame_buffer_attachments.push_back(Core::FrameBufferAttachments::COLOR_ATTACHMENT1);
+		frame_buffer_spec.frame_buffer_attachments.push_back(Core::FrameBufferAttachments::COLOR_ATTACHMENT2);
+		frame_buffer_spec.frame_buffer_attachments.push_back(Core::FrameBufferAttachments::COLOR_ATTACHMENT3);
+		frame_buffer_spec.frame_buffer_attachments.push_back(Core::FrameBufferAttachments::COLOR_ATTACHMENT4);
+		frame_buffer_spec.frame_buffer_attachments.push_back(Core::FrameBufferAttachments::COLOR_ATTACHMENT5);
+		frame_buffer_spec.frame_buffer_attachments.push_back(Core::FrameBufferAttachments::COLOR_ATTACHMENT6);
+		frame_buffer_spec.frame_buffer_attachments.push_back(Core::FrameBufferAttachments::COLOR_ATTACHMENT7);
 		test_frame_buffer_ = Core::FrameBuffer::Create(frame_buffer_spec);
 
 		auto vertex_array_grid = Core::VertexArray::Create();
@@ -271,10 +277,10 @@ namespace EOL {
 		}
 
 		ImGui::Begin("ViewPort");
-		uint32_t color_textureID = test_frame_buffer_->GetTextureAttachment(Core::FrameBufferAttachments::COLOR_ATTACHMENT0)->GetRenderID();
-		ImGui::Image((void*)color_textureID, ImVec2{ 360, 360 }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
-		uint32_t depth_textureID = test_frame_buffer_->GetTextureAttachment(Core::FrameBufferAttachments::COLOR_ATTACHMENT1)->GetRenderID();
-		ImGui::Image((void*)depth_textureID, ImVec2{ 360, 360 }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+		for (Core::FrameBufferAttachments attachment : test_frame_buffer_->GetFrameBufferSpecification().frame_buffer_attachments) {
+			uint32_t color_textureID = test_frame_buffer_->GetTextureAttachment(attachment)->GetRenderID();
+			ImGui::Image((void*)color_textureID, ImVec2{ 360, 360 }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+		}
 		ImGui::End();
 
 	}

@@ -17,6 +17,7 @@ namespace Platform {
 		virtual void Unbind() const override;
 
 		virtual const Core::Ref<Core::Texture2D>& GetTextureAttachment(Core::FrameBufferAttachments attachment) override;
+		virtual const Core::FramebufferSpecification& GetFrameBufferSpecification() const { return specification_; };
 
 	private:
 		GLenum OpenGLFrameBufferAttachments(Core::FrameBufferAttachments attachment) const;

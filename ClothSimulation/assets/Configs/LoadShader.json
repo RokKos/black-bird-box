@@ -10,6 +10,7 @@
     "assets/Shaders/GenericUVCoordinates.glsl",
     "assets/Shaders/StandardShader.glsl",
     "assets/Shaders/Texture.glsl",
-    "assets/Shaders/TriangleTest.glsl"
+    "assets/Shaders/TriangleTest.glsl",
+    "assets/Shaders/FrameBufferShader.glsl"
   ]
 }

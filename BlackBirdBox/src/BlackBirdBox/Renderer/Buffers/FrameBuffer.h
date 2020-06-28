@@ -42,6 +42,7 @@ namespace Core {
 		virtual void Unbind() const = 0;
 
 		virtual const Ref<Texture2D>& GetTextureAttachment(FrameBufferAttachments attachment) = 0;
+		virtual const FramebufferSpecification& GetFrameBufferSpecification() const = 0;
 
 		static Ref<FrameBuffer> Create(const FramebufferSpecification& specification);
 
