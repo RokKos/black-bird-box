@@ -30,9 +30,9 @@ layout(location = 1) out vec4 normal_out;
 layout(location = 2) out vec4 tex_coord_out;
 layout(location = 3) out vec4 vertex_position_out;
 layout(location = 4) out vec4 model_position_out;
-layout(location = 5) out vec4 light_color_out;
-layout(location = 6) out vec4 diffuse_color_out;
-layout(location = 7) out vec4 specular_color_out;
+layout(location = 5) out vec4 diffuse_color_out;
+layout(location = 6) out vec4 specular_color_out;
+layout(location = 7) out vec4 light_color_out;
 
 in vec3 v_Normal;
 in vec2 v_TexCoord;
