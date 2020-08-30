@@ -80,7 +80,7 @@ constexpr auto CleanupOutputString(const char(&expr)[N], const char(&remove)[K])
 	return result;
 }
 
-#define PROFILE 1
+#define PROFILE 0
 #if PROFILE
 // Resolve which function signature macro will be used. Note that this only
 // is resolved when the (pre)compiler starts, so the syntax highlighting
