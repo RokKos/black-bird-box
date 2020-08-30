@@ -10,12 +10,14 @@ uniform mat4 u_Transform;
 
 out vec3 v_Normal;
 out vec2 v_TexCoord;
+out vec3 v_Position;
 out vec3 v_ModelPosition;
 
 void main()
 {
 	v_Normal = a_Normal;
 	v_TexCoord = a_TexCoord;
+    v_Position = a_Position;
 	v_ModelPosition = vec3(u_Transform * vec4(a_Position, 1.0));
 	gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
 }
@@ -23,11 +25,18 @@ void main()
 #type fragment
 #version 330 core
 
-layout(location = 0) out vec4 color;
+layout(location = 0) out vec4 color_out;
 layout(location = 1) out vec4 normal_out;
+layout(location = 2) out vec4 tex_coord_out;
+layout(location = 3) out vec4 vertex_position_out;
+layout(location = 4) out vec4 model_position_out;
+layout(location = 5) out vec4 diffuse_color_out;
+layout(location = 6) out vec4 specular_color_out;
+layout(location = 7) out vec4 light_color_out;
 
 in vec3 v_Normal;
 in vec2 v_TexCoord;
+in vec3 v_Position;
 in vec3 v_ModelPosition;
 
 uniform sampler2D u_Texture;
@@ -49,16 +58,24 @@ void main()
 	vec3 Normal = normalize(v_Normal);
 	vec3 LightDirection = normalize(u_LightPosition - v_ModelPosition);
 	float diff = max(dot(Normal, LightDirection), 0.0);
-	light_color += u_LightIntensity * u_LightColor * u_DiffuseColor * diff;
+    vec3 diffuse_color = u_LightIntensity * u_LightColor * u_DiffuseColor * diff;
+	light_color += diffuse_color;
 
 	vec3 ViewDirection = normalize(u_CameraPosition - v_ModelPosition);
 	
-	vec3 ReflectionDirection = normalize(reflect(-LightDirection, Normal));  
-	float specular = pow(max(dot(ViewDirection, ReflectionDirection), 0.0f), u_SpecularScatering);
-	light_color += u_LightIntensity * u_LightColor * u_SpecularColor * specular;
+	vec3 HalfwayDirection = normalize(reflect(-LightDirection - ViewDirection, Normal));  
+	float specular = pow(max(dot(ViewDirection, HalfwayDirection), 0.0f), u_SpecularScatering);
+    vec3 specular_color = u_LightIntensity * u_LightColor * u_SpecularColor * specular;
+	light_color += specular_color;
 
 	vec4 tex_color = texture(u_Texture, v_TexCoord);
 
-	color = vec4(light_color + tex_color.rgb, tex_color.a);
+	color_out = vec4(light_color + tex_color.rgb, tex_color.a);
 	normal_out = vec4(Normal, 1.0);
+    tex_coord_out = vec4(v_TexCoord, 0.0, 1.0);
+    vertex_position_out = vec4(v_Position, 1.0);
+    model_position_out = vec4(v_ModelPosition, 1.0);
+    light_color_out = vec4(light_color, 1.0);
+    diffuse_color_out = vec4(diffuse_color, 1.0);
+    specular_color_out = vec4(specular_color, 1.0);
 }

@@ -82,10 +82,15 @@ namespace Core {
 		for (auto light_source : lights_)
 		{
 			if (ImGui::TreeNode(light_source->GetName().c_str())) {
+                ImGui::Checkbox("Enabled", light_source->GetObjectEnabledImGui());
 				if (ImGui::TreeNode("Color Properties")) {
 					glm::vec3 t_color = light_source->GetColor();
 					ImGui::ColorEdit3("Color:", glm::value_ptr(t_color));
 					light_source->SetColor(t_color);
+
+					glm::vec3 t_intensity = light_source->GetIntensity();
+                    ImGui::Text("Intensity:");ImGui::InputFloat3("c", &t_intensity[0]);
+                    light_source->SetColor(t_intensity);
 
 					ImGui::TreePop();
 				}
@@ -102,26 +107,6 @@ namespace Core {
 					t_pos.y = pos[1];
 					t_pos.z = pos[2];
 					light_source->SetPosition(t_pos);
-
-
-					glm::vec3 t_rot = light_source->GetDirection();
-					float rot[3] = { t_rot.x, t_rot.y, t_rot.z };
-					ImGui::Text("Rot:"); ImGui::InputFloat3("b", &rot[0]);
-					t_rot.x = rot[0];
-					t_rot.y = rot[1];
-					t_rot.z = rot[2];
-					light_source->SetDirection(t_rot);
-
-
-
-					glm::vec3 t_scale = light_source->GetIntensity();
-					float scl[3] = { t_scale.x, t_scale.y, t_scale.z };
-					ImGui::Text("Scale:"); ImGui::InputFloat3("c", &scl[0]);
-					t_scale.x = scl[0];
-					t_scale.y = scl[1];
-					t_scale.z = scl[2];
-					light_source->SetIntensity(t_scale);
-
 					ImGui::TreePop();
 				}
 				ImGui::TreePop();

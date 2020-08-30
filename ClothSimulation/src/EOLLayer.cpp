@@ -95,7 +95,7 @@ namespace EOL {
 			//scene_.AddShape(shape6);
 		}
 
-		// Ship ------
+		// City01 ------
 		{
 			auto vertex_array_ship = Core::VertexArray::Create();
 			auto model_data_ship = model_library_.Get("assets/Models/LowPolyCity.obj");
@@ -117,11 +117,46 @@ namespace EOL {
 			auto mat_stadard_shader_city = Core::CreateRef<Core::Material>(standard_shader, phong_lighting_parameters, "Standard_MAT");
 			mat_stadard_shader_city->SetTexture("City_Texture", city_texture);
 
-			auto ship = Core::CreateRef<Core::Shape>(mat_stadard_shader_city, vertex_array_ship, Core::CreateRef<Core::Transform>(glm::vec3(0, 0.5, 0), glm::vec3(0.0), glm::vec3(0.1, 0.1, 0.1)), model_data_ship, "Ship");
+			auto ship = Core::CreateRef<Core::Shape>(mat_stadard_shader_city, vertex_array_ship, Core::CreateRef<Core::Transform>(glm::vec3(-1.5, 0.5, 0), glm::vec3(0.0), glm::vec3(0.1, 0.1, 0.1)), model_data_ship, "City 01");
 			scene_.AddShape(ship);
 		}
 
-		scene_.AddLightSource(Core::CreateRef<Core::LightSource>(Core::LightType::kDirectional, Core::CreateRef<Core::Transform>(glm::vec3(0, 0, 10)), glm::vec3(0.8f, 0.8f, 0.8f)));
+
+		auto blinn_phong_shader = shader_library_.Get("BlinnPhongShader");
+        blinn_phong_shader->Bind();
+        blinn_phong_shader->SetInt("u_Texture", 0);
+		// City02 ------
+        {
+            auto vertex_array_ship = Core::VertexArray::Create();
+            auto model_data_ship = model_library_.Get("assets/Models/LowPolyCity.obj");
+
+            auto vertex_buffer_ship
+                = Core::VertexBuffer::Create(model_data_ship.vertices.data(), model_data_ship.vertices.size() * sizeof(Core::Vertex));
+            Core::BufferLayout layout_ship = {
+                { Core::ShaderDataType::Float3, "a_Position" },
+                { Core::ShaderDataType::Float3, "a_Normal" },
+                { Core::ShaderDataType::Float2, "a_TexCoord" },
+            };
+
+            vertex_buffer_ship->SetLayout(layout_ship);
+            vertex_array_ship->AddVertexBuffer(vertex_buffer_ship);
+
+            Core::Ref<Core::IndexBuffer> index_buffer_ship
+                = Core::IndexBuffer::Create(model_data_ship.indices.data(), model_data_ship.indices.size());
+            vertex_array_ship->SetIndexBuffer(index_buffer_ship);
+
+            auto city_texture = Core::Texture2D::Create("assets/Textures/Palette.jpg", generic_tex_2d_spec);
+            auto mat_stadard_shader_city = Core::CreateRef<Core::Material>(blinn_phong_shader, phong_lighting_parameters, "Standard_MAT");
+            mat_stadard_shader_city->SetTexture("City_Texture", city_texture);
+
+            auto ship = Core::CreateRef<Core::Shape>(mat_stadard_shader_city, vertex_array_ship,
+                Core::CreateRef<Core::Transform>(glm::vec3(1.5, 0.5, 0), glm::vec3(0.0), glm::vec3(0.1, 0.1, 0.1)), model_data_ship, "City 02");
+            scene_.AddShape(ship);
+        }
+
+		scene_.AddLightSource(Core::CreateRef<Core::LightSource>(Core::LightType::kDirectional,
+            Core::CreateRef<Core::Transform>(glm::vec3(0, 5, 0), glm::vec3(1.0f), glm::vec3(0.1f, 0.1f, 0.1f)), glm::vec3(0.8f, 0.8f, 0.8f),
+            glm::vec3(1.f, 1.f, 1.f)));
 
 		scene_.AddPoint(Core::CreateRef<Core::Point>(10, glm::vec3(0, 0, 0), glm::vec3(1, 0, 0)));
 		scene_.AddPoint(Core::CreateRef<Core::Point>(100, glm::vec3(10, 2, 5), glm::vec3(0, 1, 0)));
@@ -252,7 +287,7 @@ namespace EOL {
 
 		test_frame_buffer_->Bind();
 
-		for (auto shape : scene_.GetShapes())
+		for (const auto& shape : scene_.GetShapes())
 		{
 			if (shape->GetObjectEnabled()) {
 				Core::Renderer::Submit(shape->GetMaterial(), shape->GetVertexArray(), shape->GetTransform()->GetTransformMatrix());
@@ -260,12 +295,19 @@ namespace EOL {
 		}
 		test_frame_buffer_->Unbind();
 		
-		for (auto shape : scene_.GetShapes())
+		for (const auto& shape : scene_.GetShapes())
 		{
 			if (shape->GetObjectEnabled()) {
 				Core::Renderer::Submit(shape->GetMaterial(), shape->GetVertexArray(), shape->GetTransform()->GetTransformMatrix());
 			}
 		}
+
+		for (const auto& light_source : scene_.GetLightSources()) {
+			if (light_source->GetObjectEnabled()) {
+                        Core::Renderer::Submit(Core::CreateRef<Core::Material>(
+                            shader_library_.Get("GenericColor"), Core::PhongLightingParameters(), "Generic_Color_MAT"), vertex_array_box_, light_source->GetTransform()->GetTransformMatrix());
+            }
+        }
 
 		Core::RenderCommand::SetPolygonMode(Core::RendererAPI::PolygonMode::FILL);
 
@@ -276,7 +318,7 @@ namespace EOL {
 	{
 		Core::Layer::OnImGuiRender();
 
-		for (auto menu : menus_) {
+		for (const auto& menu : menus_) {
 			menu->OnImGuiRender();
 		}
 

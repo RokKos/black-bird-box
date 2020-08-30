@@ -18,7 +18,7 @@ namespace Core {
 		const Ref<VertexArray>& GetVertexArray() const { return vertex_array_; }
 		const Ref<Transform>& GetTransform() const { return transform_; }
 		const std::string& GetName() const { return name_; }
-		const bool GetObjectEnabled() const { return enabled_; }
+		bool GetObjectEnabled() const { return enabled_; }
 		bool* GetObjectEnabledImGui() { return &enabled_; }
 		void SetObjectEnabled(bool enabled) { enabled_ = enabled; }
 
