@@ -98,7 +98,7 @@ namespace Core {
 		Core::Ref<Core::IndexBuffer> index_buffer_cloth = Core::IndexBuffer::Create(cloth_indices.data(), cloth_indices.size());
 		vertex_array_->SetIndexBuffer(index_buffer_cloth);
 
-		std::vector<unsigned int> graph_coloring = Util::GreedyGraphColoring(num_cloth_particles_, cloth_particle_constraints);
+		std::vector<unsigned int> graph_coloring = Util::GreedyGraphVertexColoring(num_cloth_particles_, cloth_particle_constraints);
 		std::vector<std::vector<glm::int32>> batch_ids;
 		for (int cloth_particle_index = 0; cloth_particle_index < graph_coloring.size(); ++cloth_particle_index) {
 			unsigned int color = graph_coloring[cloth_particle_index];
