@@ -52,16 +52,68 @@ std::vector<unsigned int> Util::GreedyGraphVertexColoring(unsigned int graph_siz
 }
 
 // This is fixed function for connection that I have now
-static std::vector<std::vector<glm::vec4>> ClothSeperateEdges(unsigned int graph_size, std::vector<glm::mat4> negibours)
+std::vector<std::vector<glm::vec4>> Util::ClothSeperateEdges(unsigned int graph_size)
 {
+    // Horizontal Connections
     std::vector<glm::vec4> batch_01;
+    batch_01.reserve(graph_size * (graph_size / 2));
     std::vector<glm::vec4> batch_02;
     for (int y = 0; y < graph_size; ++y) {
-        for (int x = 0; x < graph_size; x += 2) {
-            batch_01.emplace_back(glm::vec4(x, x + 1, 0, 0));
-            batch_02.emplace_back(glm::vec4(x + 1, x + 2, 0, 0));
+        for (int x = 0; x < graph_size - 1; x += 2) {
+            batch_01.emplace_back(glm::vec4(y * graph_size + x, y * graph_size + x + 1, 0, 0));
+            if (x + 2 < graph_size) {
+                batch_02.emplace_back(glm::vec4(y * graph_size + x + 1, y * graph_size + x + 2, 0, 0));
+            }
         }
     }
+
+    // Vertical Connections
+    std::vector<glm::vec4> batch_03;
+    batch_03.reserve(graph_size * (graph_size / 2));
+    std::vector<glm::vec4> batch_04;
+    for (int y = 0; y < graph_size - 1; y += 2) {
+        for (int x = 0; x < graph_size; x++) {
+            batch_03.emplace_back(glm::vec4(y * graph_size + x, (y + 1) * graph_size + x, 0, 0));
+            if (y + 2 < graph_size) {
+                batch_04.emplace_back(glm::vec4((y + 1) * graph_size + x, (y + 2) * graph_size + x, 0, 0));
+            }
+        }
+    }
+
+    // Diagonal Connections
+    std::vector<glm::vec4> batch_05;
+    for (int y = 0; y < graph_size - 1; y += 2) {
+        for (int x = 0; x < graph_size - 1; x += 2) {
+            batch_05.emplace_back(glm::vec4(y * graph_size + x, (y + 1) * graph_size + x + 1, 1, 0));
+            batch_05.emplace_back(glm::vec4(y * graph_size + x + 1, (y + 1) * graph_size + x, 1, 0));
+        }
+    }
+
+    std::vector<glm::vec4> batch_06;
+    for (int y = 1; y < graph_size - 1; y += 2) {
+        for (int x = 0; x < graph_size - 1; x += 2) {
+            batch_06.emplace_back(glm::vec4(y * graph_size + x, (y + 1) * graph_size + x + 1, 1, 0));
+            batch_06.emplace_back(glm::vec4(y * graph_size + x + 1, (y + 1) * graph_size + x, 1, 0));
+        }
+    }
+
+    std::vector<glm::vec4> batch_07;
+    for (int y = 0; y < graph_size - 1; y += 2) {
+        for (int x = 1; x < graph_size - 1; x += 2) {
+            batch_07.emplace_back(glm::vec4(y * graph_size + x, (y + 1) * graph_size + x + 1, 1, 0));
+            batch_07.emplace_back(glm::vec4(y * graph_size + x + 1, (y + 1) * graph_size + x, 1, 0));
+        }
+    }
+
+    std::vector<glm::vec4> batch_08;
+    for (int y = 1; y < graph_size - 1; y += 2) {
+        for (int x = 1; x < graph_size - 1; x += 2) {
+            batch_08.emplace_back(glm::vec4(y * graph_size + x, (y + 1) * graph_size + x + 1, 1, 0));
+            batch_08.emplace_back(glm::vec4(y * graph_size + x + 1, (y + 1) * graph_size + x, 1, 0));
+        }
+    }
+
+    return { batch_01, batch_02, batch_03, batch_04, batch_05, batch_06, batch_07, batch_08 };
 }
 
 } // namespace Core

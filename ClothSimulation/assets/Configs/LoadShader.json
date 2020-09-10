@@ -12,6 +12,8 @@
     "assets/Shaders/Texture.glsl",
     "assets/Shaders/TriangleTest.glsl",
     "assets/Shaders/FrameBufferShader.glsl",
+    "assets/Shaders/VerletIntegrationShader.glsl",
+    "assets/Shaders/ConstraintsShader.glsl",
     "assets/Shaders/BlinnPhongShader.glsl"
   ]
 }
