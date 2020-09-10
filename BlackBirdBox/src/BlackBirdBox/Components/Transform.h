@@ -12,7 +12,7 @@ namespace Core {
 		Transform(glm::vec3 position, glm::vec3 rotation);
 		Transform(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale);
 
-		const glm::mat4 GetTransformMatrix() const { return matrix_; }
+		const glm::mat4& GetTransformMatrix() const { return matrix_; }
 
 		const glm::vec3& GetPosition() const { return position_; }
 		const glm::vec3& GetRotation() const { return rotation_; }
