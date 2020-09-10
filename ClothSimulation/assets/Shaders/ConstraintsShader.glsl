@@ -5,11 +5,6 @@
 #extension GL_ARB_shader_storage_buffer_object : enable
 #extension GL_ARB_compute_variable_group_size : enable
 
-layout(std430, binding=0) buffer PrevPos
-{
-	vec4 PreviousPositions[ ];
-};
-
 layout(std430, binding=1) buffer Pos
 {
 	vec4 Positions[ ];
@@ -38,7 +33,7 @@ void main()
 	uint vertex_a_id_ = uint(pair_vertex.x);
 	uint vertex_b_id_ = uint(pair_vertex.y);
     uint is_diagonal = uint(pair_vertex.z);
-
+    
 	vec4 position_a = Positions[vertex_a_id_];
 	vec4 position_b = Positions[vertex_b_id_];
 

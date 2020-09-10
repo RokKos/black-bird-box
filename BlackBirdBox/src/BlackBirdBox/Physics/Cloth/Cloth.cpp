@@ -73,10 +73,10 @@ Cloth::Cloth(unsigned int num_cloth_dimension_size, Ref<Material> material_to_re
     Core::Ref<Core::IndexBuffer> index_buffer_cloth = Core::IndexBuffer::Create(cloth_indices.data(), cloth_indices.size());
     vertex_array_->SetIndexBuffer(index_buffer_cloth);
 
-    std::vector<std::vector<glm::vec4>> graph_coloring = Util::ClothSeperateEdges(num_cloth_dimension_size);
+    graph_colored_edges_ = Util::ClothSeperateEdges(num_cloth_dimension_size);
 
-    for (size_t i = 0; i < graph_coloring.size(); ++i) {
-        batch_id_buffers_.push_back(Core::ShaderStorageBuffer::Create(graph_coloring[i], graph_coloring[i].size() * sizeof(glm::vec4)));
+    for (size_t i = 0; i < graph_colored_edges_.size(); ++i) {
+        batch_id_buffers_.push_back(Core::ShaderStorageBuffer::Create(graph_colored_edges_[i], graph_colored_edges_[i].size() * sizeof(glm::vec4)));
     }
 
     batch_id_start_ind_ = cloth_storage_array_->AddShaderStorageBuffer(batch_id_buffers_[0]);

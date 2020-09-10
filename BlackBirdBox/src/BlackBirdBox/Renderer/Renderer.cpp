@@ -111,8 +111,8 @@ namespace Core {
 	{
 		PROFILE_FUNCTION();
 
-		shader_storage_array->Bind();
 		shader->Bind();
+		shader_storage_array->Bind();
 		shader->SetFloat3("u_Gravity", compute_shader_simulation_configuration.GetGravity());
 		shader->SetFloat("u_DeltaTime", compute_shader_simulation_configuration.GetDeltaTime());
 		shader->SetInt("u_Itterations", compute_shader_simulation_configuration.GetItterations());

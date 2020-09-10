@@ -324,12 +324,14 @@ void EOLLayer::OnUpdate(Core::TimeStep ts)
     const auto verlet_integration_shader = shader_library_.Get("VerletIntegrationShader");
 
     Core::Renderer::DispatchComputeShader(verlet_integration_shader, cloth_->GetClothStorageArray(0),
-        Core::ComputeShaderConfiguration({ 10000, 1, 1 }, { 4, 1, 1 }), compute_shader_simulation_configuration_);
+        Core::ComputeShaderConfiguration({ 9, 1, 1 }, { 1, 1, 1 }), compute_shader_simulation_configuration_);
 
     const auto constrains_shader = shader_library_.Get("ConstraintsShader");
-    for (size_t batch_id = 0; batch_id < cloth_->GetNumberOfBatchers(); ++batch_id) {
+    for (size_t batch_id = 0; batch_id < cloth_->GetNumberOfBatches(); ++batch_id) {
+        const size_t number_of_edges = cloth_->GetBatches()[batch_id].size();
+        const Core::ComputeShaderConfiguration compute_shader_configuration({ static_cast<unsigned int>(number_of_edges), 1, 1 }, { 1, 1, 1 });
         Core::Renderer::DispatchComputeShader(
-            constrains_shader, cloth_->GetClothStorageArray(batch_id), compute_shader_configuration_, compute_shader_simulation_configuration_);
+            constrains_shader, cloth_->GetClothStorageArray(batch_id), compute_shader_configuration, compute_shader_simulation_configuration_);
     }
 
     // TODO(Rok Kos): Load Models on themand
@@ -345,7 +347,7 @@ void EOLLayer::OnUpdate(Core::TimeStep ts)
     }
     test_frame_buffer_->Unbind();
 
-    for (const auto& shape : scene_.GetShapes()) {
+    for (const auto& shape : scene_.GetShapes()) {  
         if (shape->GetObjectEnabled()) {
             Core::Renderer::Submit(shape->GetMaterial(), shape->GetVertexArray(), shape->GetTransform()->GetTransformMatrix());
         }

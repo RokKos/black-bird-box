@@ -20,11 +20,6 @@ layout(std430, binding=2) buffer fixedPts
 	vec4 fixedPoints[ ];
 };
 
-layout(std430, binding=3) buffer btcIds
-{
-	vec4 batchIds[ ];
-};
-
 layout(local_size_variable) in;
 
 layout( location=1 ) uniform vec3 u_Gravity;

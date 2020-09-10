@@ -1,13 +1,24 @@
 {
-  "ClothSimulationSettings" : {
-    "ClothDimensionSize": 200,
-    "Gravity": [ 0.0, -1.0, 0.0 ],
-    "SimulationDeltaTime": 0.00016,
-    "ConstraintItteratitions": 400,
-
+  "ClothSimulationSettings": {
+    "ClothDimensionSize": 3,
+    "Gravity": [
+      0.0,
+      -9.0,
+      0.0
+    ],
+    "SimulationDeltaTime": 0.16,
+    "ConstraintItteratitions": 2,
     "ComputeShaderConfiguration": {
-      "WorkGroupSize": [ 1000, 1, 1 ],
-      "LocalGroupSize": [ 5, 1, 1 ]
+      "WorkGroupSize": [
+        9,
+        1,
+        1
+      ],
+      "LocalGroupSize": [
+        1,
+        1,
+        1
+      ]
     }
   }
 }
