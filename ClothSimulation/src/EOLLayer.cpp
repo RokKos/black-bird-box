@@ -308,7 +308,7 @@ void EOLLayer::OnAttach() { Core::Layer::OnAttach(); }
 void EOLLayer::OnDetach() { Core::Layer::OnDetach(); }
 
 void EOLLayer::OnUpdate(Core::TimeStep ts)
-{
+{   
     Core::Layer::OnUpdate(ts);
     perspective_camera_controller_->OnUpdate(ts);
 
@@ -323,8 +323,7 @@ void EOLLayer::OnUpdate(Core::TimeStep ts)
 
     const auto verlet_integration_shader = shader_library_.Get("VerletIntegrationShader");
 
-    Core::Renderer::DispatchComputeShader(verlet_integration_shader, cloth_->GetClothStorageArray(0),
-        Core::ComputeShaderConfiguration({ 9, 1, 1 }, { 1, 1, 1 }), compute_shader_simulation_configuration_);
+    Core::Renderer::DispatchComputeShader(verlet_integration_shader, cloth_->GetClothStorageArray(0), compute_shader_configuration_, compute_shader_simulation_configuration_);
 
     const auto constrains_shader = shader_library_.Get("ConstraintsShader");
     for (size_t batch_id = 0; batch_id < cloth_->GetNumberOfBatches(); ++batch_id) {
