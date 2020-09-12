@@ -1,4 +1,4 @@
-#include "bbbpch.h"
+﻿#include "bbbpch.h"
 #include "ShaderStorageBuffer.h"
 
 #include "BlackBirdBox/Renderer/Renderer.h"
@@ -6,92 +6,100 @@
 
 namespace Core {
 
+Ref<ShaderStorageBuffer> ShaderStorageBuffer::Create(uint32_t size)
+{
+    PROFILE_FUNCTION();
 
-	Ref<ShaderStorageBuffer> ShaderStorageBuffer::Create(uint32_t size)
-	{
-		PROFILE_FUNCTION();
+    switch (Renderer::GetAPI()) {
+    case RendererAPI::API::None:
+        CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
+        return nullptr;
+    case RendererAPI::API::OpenGL:
+        return CreateRef<Platform::OpenGLShaderStorageBuffer>(size);
+    }
 
-		switch (Renderer::GetAPI())
-		{
-		case RendererAPI::API::None:    CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
-		case RendererAPI::API::OpenGL:  return CreateRef<Platform::OpenGLShaderStorageBuffer>(size);
-		}
+    CORE_ASSERT(false, "Unknown RendererAPI!");
+    return nullptr;
+}
 
-		CORE_ASSERT(false, "Unknown RendererAPI!");
-		return nullptr;
-	}
+Ref<ShaderStorageBuffer> ShaderStorageBuffer::Create(const std::vector<glm::vec3>& storage_data, uint32_t size)
+{
+    PROFILE_FUNCTION();
 
-	Ref<ShaderStorageBuffer> ShaderStorageBuffer::Create(const std::vector<glm::vec3>& storage_data, uint32_t size)
-	{
-		PROFILE_FUNCTION();
+    switch (Renderer::GetAPI()) {
+    case RendererAPI::API::None:
+        CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
+        return nullptr;
+    case RendererAPI::API::OpenGL:
+        return CreateRef<Platform::OpenGLShaderStorageBuffer>(storage_data, size);
+    }
 
-		switch (Renderer::GetAPI())
-		{
-		case RendererAPI::API::None:    CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
-		case RendererAPI::API::OpenGL:  return CreateRef<Platform::OpenGLShaderStorageBuffer>(storage_data, size);
-		}
+    CORE_ASSERT(false, "Unknown RendererAPI!");
+    return nullptr;
+}
 
-		CORE_ASSERT(false, "Unknown RendererAPI!");
-		return nullptr;
-	}
+Ref<ShaderStorageBuffer> ShaderStorageBuffer::Create(const std::vector<glm::vec4>& storage_data, uint32_t size, bool persistent)
+{
+    PROFILE_FUNCTION();
 
-	Ref<ShaderStorageBuffer> ShaderStorageBuffer::Create(const std::vector<glm::vec4>& storage_data, uint32_t size)
-	{
-		PROFILE_FUNCTION();
+    switch (Renderer::GetAPI()) {
+    case RendererAPI::API::None:
+        CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
+        return nullptr;
+    case RendererAPI::API::OpenGL:
+        return CreateRef<Platform::OpenGLShaderStorageBuffer>(storage_data, size, persistent);
+    }
 
-		switch (Renderer::GetAPI())
-		{
-		case RendererAPI::API::None:    CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
-		case RendererAPI::API::OpenGL:  return CreateRef<Platform::OpenGLShaderStorageBuffer>(storage_data, size);
-		}
+    CORE_ASSERT(false, "Unknown RendererAPI!");
+    return nullptr;
+}
 
-		CORE_ASSERT(false, "Unknown RendererAPI!");
-		return nullptr;
-	}
+Ref<ShaderStorageBuffer> ShaderStorageBuffer::Create(const std::vector<glm::mat3>& storage_data, uint32_t size)
+{
+    PROFILE_FUNCTION();
 
-	Ref<ShaderStorageBuffer> ShaderStorageBuffer::Create(const std::vector<glm::mat3>& storage_data, uint32_t size)
-	{
-		PROFILE_FUNCTION();
+    switch (Renderer::GetAPI()) {
+    case RendererAPI::API::None:
+        CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
+        return nullptr;
+    case RendererAPI::API::OpenGL:
+        return CreateRef<Platform::OpenGLShaderStorageBuffer>(storage_data, size);
+    }
 
-		switch (Renderer::GetAPI())
-		{
-		case RendererAPI::API::None:    CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
-		case RendererAPI::API::OpenGL:  return CreateRef<Platform::OpenGLShaderStorageBuffer>(storage_data, size);
-		}
+    CORE_ASSERT(false, "Unknown RendererAPI!");
+    return nullptr;
+}
 
-		CORE_ASSERT(false, "Unknown RendererAPI!");
-		return nullptr;
-	}
+Ref<ShaderStorageBuffer> ShaderStorageBuffer::Create(const std::vector<glm::mat4>& storage_data, uint32_t size)
+{
+    PROFILE_FUNCTION();
 
-	Ref<ShaderStorageBuffer> ShaderStorageBuffer::Create(const std::vector<glm::mat4>& storage_data, uint32_t size)
-	{
-		PROFILE_FUNCTION();
+    switch (Renderer::GetAPI()) {
+    case RendererAPI::API::None:
+        CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
+        return nullptr;
+    case RendererAPI::API::OpenGL:
+        return CreateRef<Platform::OpenGLShaderStorageBuffer>(storage_data, size);
+    }
 
-		switch (Renderer::GetAPI())
-		{
-		case RendererAPI::API::None:    CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
-		case RendererAPI::API::OpenGL:  return CreateRef<Platform::OpenGLShaderStorageBuffer>(storage_data, size);
-		}
+    CORE_ASSERT(false, "Unknown RendererAPI!");
+    return nullptr;
+}
 
-		CORE_ASSERT(false, "Unknown RendererAPI!");
-		return nullptr;
-	}
+Ref<ShaderStorageBuffer> ShaderStorageBuffer::Create(const std::vector<glm::int32>& storage_data, uint32_t size)
+{
+    PROFILE_FUNCTION();
 
+    switch (Renderer::GetAPI()) {
+    case RendererAPI::API::None:
+        CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
+        return nullptr;
+    case RendererAPI::API::OpenGL:
+        return CreateRef<Platform::OpenGLShaderStorageBuffer>(storage_data, size);
+    }
 
-	Ref<ShaderStorageBuffer> ShaderStorageBuffer::Create(const std::vector<glm::int32>& storage_data, uint32_t size)
-	{
-		PROFILE_FUNCTION();
-
-		switch (Renderer::GetAPI())
-		{
-		case RendererAPI::API::None:    CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
-		case RendererAPI::API::OpenGL:  return CreateRef<Platform::OpenGLShaderStorageBuffer>(storage_data, size);
-		}
-
-		CORE_ASSERT(false, "Unknown RendererAPI!");
-		return nullptr;
-	}
-
-
+    CORE_ASSERT(false, "Unknown RendererAPI!");
+    return nullptr;
+}
 
 }
