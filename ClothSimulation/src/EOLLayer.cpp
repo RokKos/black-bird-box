@@ -1,4 +1,4 @@
-#include "EOLLayer.h"
+﻿#include "EOLLayer.h"
 
 #include <cmath>
 #include <functional>
@@ -288,8 +288,11 @@ EOLLayer::EOLLayer()
     ParseSimulationSettings();
 
     cloth_ = Core::CreateRef<Core::Cloth>(num_cloth_dimension_size_, mat_generic_triangle);
+    compute_shader_simulation_configuration_.SetHorizontalVerticalDistanceBetweenVertexes(cloth_->GetHorizontalVerticalDistanceBetweenVertexes());
+    compute_shader_simulation_configuration_.SetDiagonalDistanceBetweenVertexes(cloth_->GetDiagonalDistanceBetweenVertexes());
     scene_.AddShape(cloth_);
 
+    // Frame Buffer
     Core::FramebufferSpecification frame_buffer_spec = Core::FramebufferSpecification();
     frame_buffer_spec.width = 1920;
     frame_buffer_spec.height = 1080;
@@ -308,7 +311,7 @@ void EOLLayer::OnAttach() { Core::Layer::OnAttach(); }
 void EOLLayer::OnDetach() { Core::Layer::OnDetach(); }
 
 void EOLLayer::OnUpdate(Core::TimeStep ts)
-{   
+{
     Core::Layer::OnUpdate(ts);
     perspective_camera_controller_->OnUpdate(ts);
 
@@ -323,7 +326,8 @@ void EOLLayer::OnUpdate(Core::TimeStep ts)
 
     const auto verlet_integration_shader = shader_library_.Get("VerletIntegrationShader");
 
-    Core::Renderer::DispatchComputeShader(verlet_integration_shader, cloth_->GetClothStorageArray(0), compute_shader_configuration_, compute_shader_simulation_configuration_);
+    Core::Renderer::DispatchComputeShader(
+        verlet_integration_shader, cloth_->GetClothStorageArray(0), compute_shader_configuration_, compute_shader_simulation_configuration_);
 
     const auto constrains_shader = shader_library_.Get("ConstraintsShader");
     for (size_t batch_id = 0; batch_id < cloth_->GetNumberOfBatches(); ++batch_id) {
@@ -346,7 +350,7 @@ void EOLLayer::OnUpdate(Core::TimeStep ts)
     }
     test_frame_buffer_->Unbind();
 
-    for (const auto& shape : scene_.GetShapes()) {  
+    for (const auto& shape : scene_.GetShapes()) {
         if (shape->GetObjectEnabled()) {
             Core::Renderer::Submit(shape->GetMaterial(), shape->GetVertexArray(), shape->GetTransform()->GetTransformMatrix());
         }
@@ -375,7 +379,8 @@ void EOLLayer::OnImGuiRender()
 
     /*ImGui::Begin("ViewPort");
     int i = 0;
-    for (Core::FrameBufferAttachments attachment : test_frame_buffer_->GetFrameBufferSpecification().frame_buffer_attachments) {
+    for (Core::FrameBufferAttachments attachment :
+    test_frame_buffer_->GetFrameBufferSpecification().frame_buffer_attachments) {
         // TODO(Rok Kos): Investigate why depth buffer is not rendering
         if (attachment == Core::FrameBufferAttachments::DEPTH_STENCIL_ATTACHMENT) {
             continue;
@@ -546,4 +551,4 @@ std::string EOLLayer::FrameBufferAttachmentToName(Core::FrameBufferAttachments a
     return "";
 }
 
-}
+} // namespace EOL

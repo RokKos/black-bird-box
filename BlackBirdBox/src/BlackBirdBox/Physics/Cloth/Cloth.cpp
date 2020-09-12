@@ -1,4 +1,4 @@
-#include "bbbpch.h"
+﻿#include "bbbpch.h"
 #include "Cloth.h"
 
 #include "BlackBirdBox/Core/Util.h"
@@ -20,19 +20,19 @@ Cloth::Cloth(unsigned int num_cloth_dimension_size, Ref<Material> material_to_re
     std::vector<glm::vec4> cloth_particle_fixed_pos;
     cloth_particle_fixed_pos.reserve(num_cloth_particles_);
 
-    float horizontal_distance_between_vertexes = 1.0f / static_cast<float>(num_cloth_dimension_size_);
-    float diagonal_distance_between_vertexes = horizontal_distance_between_vertexes * std::sqrt(2.0f);
+    horizontal_vertical_distance_between_vertexes_ = 1.0f / static_cast<float>(num_cloth_dimension_size_);
+    diagonal_distance_between_vertexes_ = horizontal_vertical_distance_between_vertexes_ * std::sqrt(2.0f);
     for (unsigned int i = 0; i < num_cloth_particles_; ++i) {
         int x = i % num_cloth_dimension_size_;
         int y = i / num_cloth_dimension_size_;
         glm::vec4 starting_position = glm::vec4((float)(x) / (float)num_cloth_dimension_size_, (float)(y) / (float)num_cloth_dimension_size_, 0, 0);
         prev_cloth_particle_positons.push_back(starting_position);
         cloth_particle_positons.push_back(starting_position);
-    	
+
         if (i == num_cloth_particles_ - 1 || i == num_cloth_particles_ - num_cloth_dimension_size_) {
-            cloth_particle_fixed_pos.push_back(glm::vec4(1.0, horizontal_distance_between_vertexes, diagonal_distance_between_vertexes, 0.0f));
+            cloth_particle_fixed_pos.push_back(glm::vec4(starting_position.x, starting_position.y, starting_position.z, 1.0f));
         } else {
-            cloth_particle_fixed_pos.push_back(glm::vec4(0.0, horizontal_distance_between_vertexes, diagonal_distance_between_vertexes, 0.0f));
+            cloth_particle_fixed_pos.push_back(glm::vec4(starting_position.x, starting_position.y, starting_position.z, 0.0f));
         }
     }
 

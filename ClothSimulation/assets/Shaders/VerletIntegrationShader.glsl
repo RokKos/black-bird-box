@@ -24,7 +24,6 @@ layout(local_size_variable) in;
 
 layout( location=1 ) uniform vec3 u_Gravity;
 layout( location=2 ) uniform float u_DeltaTime;
-layout( location=3 ) uniform int u_Itterations;
 
 
 void main()
@@ -32,14 +31,11 @@ void main()
     uint vertex_id = gl_GlobalInvocationID.x;
 	vec4 position = Positions[vertex_id];
     vec4 prev_position = PreviousPositions[vertex_id];
-
-    int is_fixed_position = int(fixedPoints[vertex_id].x);
-	if (is_fixed_position == 1) {
-		Positions[vertex_id] = prev_position;
-		PreviousPositions[vertex_id] = prev_position;
-	} else {
-		vec4 new_position = 2 * position - prev_position + vec4(u_Gravity * u_DeltaTime * u_DeltaTime, 0.0);
-        Positions[vertex_id] = new_position;
-		PreviousPositions[vertex_id] = position;
-    }    		
+	vec4 fixed_position = fixedPoints[vertex_id];
+    
+	vec4 new_position = 2 * position - prev_position + vec4(u_Gravity * u_DeltaTime * u_DeltaTime, 0.0);
+	new_position = mix(new_position, vec4(fixed_position.xyz, 0.0), fixed_position.w);
+	Positions[vertex_id] = new_position;
+	PreviousPositions[vertex_id] = position;
+        		
 }
