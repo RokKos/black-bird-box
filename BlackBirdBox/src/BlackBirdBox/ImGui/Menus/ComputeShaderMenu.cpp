@@ -27,9 +27,17 @@ void ComputeShaderMenu::OnImGuiRender()
     ImGui::InputFloat("Delta Time", &delta_time, 0.0f, 0.0f, "%.10f");
     compute_shader_simulation_configuration_.SetDeltaTime(delta_time);
 
-    int itterations = compute_shader_simulation_configuration_.GetIterations();
-    ImGui::InputInt("Itterations", &itterations);
-    compute_shader_simulation_configuration_.SetIterations(itterations);
+    int iterations = compute_shader_simulation_configuration_.GetIterations();
+    ImGui::InputInt("Iterations", &iterations);
+    compute_shader_simulation_configuration_.SetIterations(iterations);
+
+    float horizontal_vertical_distance = compute_shader_simulation_configuration_.GetHorizontalVerticalDistanceBetweenVertexes();
+    ImGui::InputFloat("Horizontal Vertical Distance Between Vertexes", &horizontal_vertical_distance, 0.0f, 0.0f, "%.10f");
+    compute_shader_simulation_configuration_.SetHorizontalVerticalDistanceBetweenVertexes(horizontal_vertical_distance);
+
+    float diagonal_vertical_distance = compute_shader_simulation_configuration_.GetDiagonalDistanceBetweenVertexes();
+    ImGui::InputFloat("Diagonal Distance Between Vertexes", &diagonal_vertical_distance, 0.0f, 0.0f, "%.10f");
+    compute_shader_simulation_configuration_.SetDiagonalDistanceBetweenVertexes(diagonal_vertical_distance);
 
     ImGui::End();
 }
