@@ -31,7 +31,7 @@ void main()
 	vec4 pair_vertex = batchIds[gl_GlobalInvocationID.x];
 	uint vertex_a_id_ = uint(pair_vertex.x);
 	uint vertex_b_id_ = uint(pair_vertex.y);
-    uint is_diagonal = uint(pair_vertex.z);
+    float is_diagonal = pair_vertex.z;
     
 	vec4 position_a = Positions[vertex_a_id_];
     vec4 fixed_position_a = fixedPoints[vertex_a_id_];
