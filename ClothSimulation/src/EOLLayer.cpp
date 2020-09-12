@@ -377,6 +377,16 @@ void EOLLayer::OnImGuiRender()
         menu->OnImGuiRender();
     }
 
+    ImGui::Begin("Cloth");
+
+    ImGui::InputFloat4("Gravity", glm::value_ptr(fixed_point_to_move_), 10);
+
+    const std::vector<Core::Ref<Core::ShaderStorageBuffer>>& cloth_shader_storage_buffers
+        = cloth_->GetClothStorageArray(0)->GetShaderStorageBuffers();
+    const Core::Ref<Core::ShaderStorageBuffer> fixed_points_shader_storage_buffer = cloth_shader_storage_buffers[2];
+    fixed_points_shader_storage_buffer->SetPersistentDataIndex(fixed_point_to_move_, num_cloth_dimension_size_ * num_cloth_dimension_size_ - 1);
+
+    ImGui::End();
     /*ImGui::Begin("ViewPort");
     int i = 0;
     for (Core::FrameBufferAttachments attachment :

@@ -27,7 +27,11 @@ OpenGLShaderStorageBuffer::OpenGLShaderStorageBuffer(const std::vector<glm::vec4
     PROFILE_FUNCTION();
 
     glCreateBuffers(1, &m_RendererID);
-    SetData(storage_data, size);
+    if (persistent) {
+        SetPersistentData(storage_data, size);
+    } else {
+        SetData(storage_data, size);
+    }
 }
 
 OpenGLShaderStorageBuffer::OpenGLShaderStorageBuffer(const std::vector<glm::mat3>& storage_data, uint32_t size)
@@ -153,6 +157,24 @@ void OpenGLShaderStorageBuffer::SetData(const std::vector<glm::mat4>& storage_da
     std::copy(storage_data.begin(), storage_data.end(), mapped_buffer);
 
     glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+}
+
+void OpenGLShaderStorageBuffer::SetPersistentData(const std::vector<glm::vec4>& storage_data, uint32_t size)
+{
+    PROFILE_FUNCTION();
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_RendererID);
+
+    GLint buffer_mask = GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
+    glBufferStorage(GL_SHADER_STORAGE_BUFFER, size, nullptr, buffer_mask);
+
+    persistent_mapped_buffer_ = reinterpret_cast<glm::vec4*>(glMapBufferRange(GL_SHADER_STORAGE_BUFFER, 0, size, buffer_mask));
+
+    std::copy(storage_data.begin(), storage_data.end(), persistent_mapped_buffer_);
+}
+
+void OpenGLShaderStorageBuffer::SetPersistentDataIndex(const glm::vec4& value, size_t index)
+{
+    reinterpret_cast<glm::vec4*>(persistent_mapped_buffer_)[index] = value;
 }
 
 std::vector<glm::vec3> OpenGLShaderStorageBuffer::GetData(uint32_t size)

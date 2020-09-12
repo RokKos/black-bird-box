@@ -19,6 +19,9 @@ public:
     virtual void SetData(const std::vector<glm::mat4>& storage_data, uint32_t size) = 0;
     virtual void SetData(const std::vector<glm::int32>& storage_data, uint32_t size) = 0;
 
+    virtual void SetPersistentData(const std::vector<glm::vec4>& storage_data, uint32_t size) = 0;
+    virtual void SetPersistentDataIndex(const glm::vec4& value, size_t index) = 0;
+
     virtual std::vector<glm::vec3> GetData(uint32_t size) = 0;
     // virtual std::vector<glm::vec4> GetData(uint32_t size) = 0;
 

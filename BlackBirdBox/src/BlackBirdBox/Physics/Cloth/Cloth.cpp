@@ -37,9 +37,9 @@ Cloth::Cloth(unsigned int num_cloth_dimension_size, Ref<Material> material_to_re
     }
 
     auto prev_positions_buffer
-        = Core::ShaderStorageBuffer::Create(prev_cloth_particle_positons, prev_cloth_particle_positons.size() * sizeof(glm::vec4));
-    auto positions_buffer = Core::ShaderStorageBuffer::Create(cloth_particle_positons, cloth_particle_positons.size() * sizeof(glm::vec4));
-    auto fixed_pos_buffer = Core::ShaderStorageBuffer::Create(cloth_particle_fixed_pos, cloth_particle_fixed_pos.size() * sizeof(glm::vec4));
+        = Core::ShaderStorageBuffer::Create(prev_cloth_particle_positons, prev_cloth_particle_positons.size() * sizeof(glm::vec4), false);
+    auto positions_buffer = Core::ShaderStorageBuffer::Create(cloth_particle_positons, cloth_particle_positons.size() * sizeof(glm::vec4), false);
+    auto fixed_pos_buffer = Core::ShaderStorageBuffer::Create(cloth_particle_fixed_pos, cloth_particle_fixed_pos.size() * sizeof(glm::vec4), true);
     cloth_storage_array_ = Core::ShaderStorageArray::Create();
     cloth_storage_array_->AddShaderStorageBuffer(prev_positions_buffer);
     cloth_storage_array_->AddShaderStorageBuffer(positions_buffer);
@@ -76,7 +76,8 @@ Cloth::Cloth(unsigned int num_cloth_dimension_size, Ref<Material> material_to_re
     graph_colored_edges_ = Util::ClothSeperateEdges(num_cloth_dimension_size);
 
     for (size_t i = 0; i < graph_colored_edges_.size(); ++i) {
-        batch_id_buffers_.push_back(Core::ShaderStorageBuffer::Create(graph_colored_edges_[i], graph_colored_edges_[i].size() * sizeof(glm::vec4)));
+        batch_id_buffers_.push_back(
+            Core::ShaderStorageBuffer::Create(graph_colored_edges_[i], graph_colored_edges_[i].size() * sizeof(glm::vec4), false));
     }
 
     batch_id_start_ind_ = cloth_storage_array_->AddShaderStorageBuffer(batch_id_buffers_[0]);

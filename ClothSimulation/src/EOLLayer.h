@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "BlackBirdBox.h"
 
@@ -48,6 +48,7 @@ private:
     Core::Ref<Core::Cloth> cloth_;
     Core::ComputeShaderConfiguration compute_shader_configuration_;
     Core::ComputeShaderSimulationConfiguration compute_shader_simulation_configuration_;
+    glm::vec4 fixed_point_to_move_ = glm::vec4(1.0f, 1.0f, 0.0f, 1.0f);
     unsigned int num_cloth_dimension_size_;
 
     int polygon_mode_ = 1;
