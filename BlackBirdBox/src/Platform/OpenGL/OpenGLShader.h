@@ -23,7 +23,7 @@ public:
     virtual void SetFloat4(const std::string& name, const glm::vec4& value) override;
     virtual void SetMat4(const std::string& name, const glm::mat4& value) override;
 
-    virtual const std::string& GetName() const override { return m_Name; }
+    virtual const std::string& GetName() const override { return name_; }
 
     void UploadUniformInt(const std::string& name, int value);
     void UploadUniformIntArray(const std::string& name, int* values, uint32_t count);
@@ -41,9 +41,12 @@ private:
     std::unordered_map<GLenum, std::string> PreProcess(const std::string& source);
     void Compile(const std::unordered_map<GLenum, std::string>& shaderSources);
 
+    GLint GetUniformLocation(const std::string& name);
+
 private:
-    uint32_t m_RendererID;
-    std::string m_Name;
+    uint32_t renderer_id_;
+    std::string name_;
+    std::unordered_map<std::string, GLint> uniform_location_cache_;
 };
 
 }

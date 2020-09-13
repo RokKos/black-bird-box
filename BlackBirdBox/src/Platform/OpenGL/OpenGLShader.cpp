@@ -37,11 +37,11 @@ OpenGLShader::OpenGLShader(const std::string& filepath)
     lastSlash = lastSlash == std::string::npos ? 0 : lastSlash + 1;
     auto lastDot = filepath.rfind('.');
     auto count = lastDot == std::string::npos ? filepath.size() - lastSlash : lastDot - lastSlash;
-    m_Name = filepath.substr(lastSlash, count);
+    name_ = filepath.substr(lastSlash, count);
 }
 
 OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc)
-    : m_Name(name)
+    : name_(name)
 {
     PROFILE_FUNCTION();
 
@@ -56,7 +56,7 @@ OpenGLShader::~OpenGLShader()
 {
     PROFILE_FUNCTION();
 
-    glDeleteProgram(m_RendererID);
+    glDeleteProgram(renderer_id_);
 }
 
 std::string OpenGLShader::ReadFile(const std::string& filepath)
@@ -149,7 +149,7 @@ void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string>& shader
         glShaderIDs[glShaderIDIndex++] = shader;
     }
 
-    m_RendererID = program;
+    renderer_id_ = program;
 
     // Link our program
     glLinkProgram(program);
@@ -183,11 +183,22 @@ void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string>& shader
     }
 }
 
+GLint OpenGLShader::GetUniformLocation(const std::string& name)
+{
+    if (uniform_location_cache_.find(name) != uniform_location_cache_.end()) {
+        return uniform_location_cache_[name];
+    }
+
+    GLint location = glGetUniformLocation(renderer_id_, name.c_str());
+    uniform_location_cache_[name] = location;
+    return location;
+}
+
 void OpenGLShader::Bind() const
 {
     PROFILE_FUNCTION();
 
-    glUseProgram(m_RendererID);
+    glUseProgram(renderer_id_);
 }
 
 void OpenGLShader::Unbind() const
@@ -243,7 +254,7 @@ void OpenGLShader::UploadUniformInt(const std::string& name, int value)
 {
     PROFILE_FUNCTION();
 
-    GLint location = glGetUniformLocation(m_RendererID, name.c_str());
+    GLint location = GetUniformLocation(name);
     glUniform1i(location, value);
 }
 
@@ -251,7 +262,7 @@ void OpenGLShader::UploadUniformIntArray(const std::string& name, int* values, u
 {
     PROFILE_FUNCTION();
 
-    GLint location = glGetUniformLocation(m_RendererID, name.c_str());
+    GLint location = GetUniformLocation(name);
     glUniform1iv(location, count, values);
 }
 
@@ -259,7 +270,7 @@ void OpenGLShader::UploadUniformFloat(const std::string& name, float value)
 {
     PROFILE_FUNCTION();
 
-    GLint location = glGetUniformLocation(m_RendererID, name.c_str());
+    GLint location = GetUniformLocation(name);
     glUniform1f(location, value);
 }
 
@@ -267,7 +278,7 @@ void OpenGLShader::UploadUniformFloat2(const std::string& name, const glm::vec2&
 {
     PROFILE_FUNCTION();
 
-    GLint location = glGetUniformLocation(m_RendererID, name.c_str());
+    GLint location = GetUniformLocation(name);
     glUniform2f(location, value.x, value.y);
 }
 
@@ -275,7 +286,7 @@ void OpenGLShader::UploadUniformFloat3(const std::string& name, const glm::vec3&
 {
     PROFILE_FUNCTION();
 
-    GLint location = glGetUniformLocation(m_RendererID, name.c_str());
+    GLint location = GetUniformLocation(name);
     glUniform3f(location, value.x, value.y, value.z);
 }
 
@@ -283,7 +294,7 @@ void OpenGLShader::UploadUniformFloat4(const std::string& name, const glm::vec4&
 {
     PROFILE_FUNCTION();
 
-    GLint location = glGetUniformLocation(m_RendererID, name.c_str());
+    GLint location = GetUniformLocation(name);
     glUniform4f(location, value.x, value.y, value.z, value.w);
 }
 
@@ -291,7 +302,7 @@ void OpenGLShader::UploadUniformMat3(const std::string& name, const glm::mat3& m
 {
     PROFILE_FUNCTION();
 
-    GLint location = glGetUniformLocation(m_RendererID, name.c_str());
+    GLint location = GetUniformLocation(name);
     glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
@@ -299,7 +310,7 @@ void OpenGLShader::UploadUniformMat4(const std::string& name, const glm::mat4& m
 {
     PROFILE_FUNCTION();
 
-    GLint location = glGetUniformLocation(m_RendererID, name.c_str());
+    GLint location = GetUniformLocation(name);
     glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
