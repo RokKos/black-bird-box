@@ -440,7 +440,7 @@ void EOLLayer::ParseSimulationSettings()
 {
     auto simulation_config = Core::JsonUtil::ReadJson("assets/Configs/SimulationConfig.json");
     ASSERT(simulation_config["ClothSimulationSettings"].IsObject(), "ClothSimulationSettings is not an object!");
-    auto cloth_simulation_settings = simulation_config["ClothSimulationSettings"].GetObject();
+    const auto cloth_simulation_settings = simulation_config["ClothSimulationSettings"].GetObject();
 
     ASSERT(cloth_simulation_settings["ClothDimensionSize"].IsInt(), "ClothDimensionSize is not an int!");
     num_cloth_dimension_size_ = cloth_simulation_settings["ClothDimensionSize"].GetInt();
@@ -449,18 +449,25 @@ void EOLLayer::ParseSimulationSettings()
     auto& gravity_json = cloth_simulation_settings["Gravity"];
     ASSERT(gravity_json.Size() == 3, "Gravity is not size 3!");
 
-    glm::vec3 gravity;
+    glm::vec3 gravity = glm::vec3(0.0);
     for (rapidjson::SizeType i = 0; i < gravity_json.Size(); i++) {
         gravity[i] = gravity_json[i].GetFloat();
     }
 
-    ASSERT(cloth_simulation_settings["SimulationDeltaTime"].IsFloat(), "SimulationDeltaTime is not an int!");
-    float simulation_delta_time = cloth_simulation_settings["SimulationDeltaTime"].GetFloat();
+    ASSERT(cloth_simulation_settings["SimulationDeltaTime"].IsFloat(), "SimulationDeltaTime is not an float!");
+    const float simulation_delta_time = cloth_simulation_settings["SimulationDeltaTime"].GetFloat();
 
-    ASSERT(cloth_simulation_settings["ConstraintItteratitions"].IsInt(), "ConstraintItteratitions is not an int!");
-    int constraint_itterations = cloth_simulation_settings["ConstraintItteratitions"].GetInt();
+    ASSERT(cloth_simulation_settings["ConstraintIterations"].IsInt(), "ConstraintIteratitions is not an int!");
+    const int constraint_iterations = cloth_simulation_settings["ConstraintIterations"].GetInt();
 
-    compute_shader_simulation_configuration_ = Core::ComputeShaderSimulationConfiguration(gravity, simulation_delta_time, constraint_itterations);
+    ASSERT(cloth_simulation_settings["StructuralStiffness"].IsFloat(), "StructuralStiffness is not an float!");
+    const float structural_stiffness = cloth_simulation_settings["StructuralStiffness"].GetFloat();
+
+    ASSERT(cloth_simulation_settings["ShearStiffness"].IsFloat(), "ShearStiffness is not an float!");
+    const float shear_stiffness = cloth_simulation_settings["ShearStiffness"].GetFloat();
+
+    compute_shader_simulation_configuration_
+        = Core::ComputeShaderSimulationConfiguration(gravity, simulation_delta_time, constraint_iterations, structural_stiffness, shear_stiffness);
 
     ASSERT(cloth_simulation_settings["ComputeShaderConfiguration"].IsObject(), "ComputeShaderConfiguration is not an object!");
     auto compute_shader_configuration = cloth_simulation_settings["ComputeShaderConfiguration"].GetObject();

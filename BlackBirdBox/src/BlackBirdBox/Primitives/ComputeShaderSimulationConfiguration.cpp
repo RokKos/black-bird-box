@@ -5,10 +5,12 @@
 namespace Core {
 
 ComputeShaderSimulationConfiguration::ComputeShaderSimulationConfiguration(glm::vec3 gravity, float delta_time, int iterations,
-    float horizontal_vertical_distance_between_vertexes_, float diagonal_distance_between_vertexes)
+    float structural_stiffness, float shear_stiffness, float horizontal_vertical_distance_between_vertexes_, float diagonal_distance_between_vertexes)
     : gravity_(gravity)
     , delta_time_(delta_time)
     , iterations_(iterations)
+    , structural_stiffness_(structural_stiffness)
+    , shear_stiffness_(shear_stiffness)
     , horizontal_vertical_distance_between_vertexes_(horizontal_vertical_distance_between_vertexes_)
     , diagonal_distance_between_vertexes_(diagonal_distance_between_vertexes)
 {
@@ -19,6 +21,8 @@ ComputeShaderSimulationConfiguration::ComputeShaderSimulationConfiguration()
     : gravity_(glm::vec3(0.0f, -9.81f, 0.0f))
     , delta_time_(0.001f)
     , iterations_(30)
+    , structural_stiffness_(1.0f)
+    , shear_stiffness_(1.0f)
     , horizontal_vertical_distance_between_vertexes_(1.0f)
     , diagonal_distance_between_vertexes_(1.0f)
 {
@@ -40,4 +44,8 @@ void ComputeShaderSimulationConfiguration::SetDiagonalDistanceBetweenVertexes(fl
 {
     diagonal_distance_between_vertexes_ = diagonal_distance_between_vertexes;
 }
+
+void ComputeShaderSimulationConfiguration::SetStructuralStiffness(float structural_stiffness) { structural_stiffness_ = structural_stiffness; }
+
+void ComputeShaderSimulationConfiguration::SetShearStiffness(float shear_stiffness) { shear_stiffness_ = shear_stiffness; }
 } // namespace Core

@@ -114,6 +114,8 @@ void Renderer::DispatchComputeShader(const Ref<Shader> shader, const Ref<ShaderS
     shader->SetInt("u_Iterations", compute_shader_simulation_configuration.GetIterations());
     shader->SetFloat("u_Horizontal_Vertical_Rest_Lenght", compute_shader_simulation_configuration.GetHorizontalVerticalDistanceBetweenVertexes());
     shader->SetFloat("u_Diagonal_Rest_Lenght", compute_shader_simulation_configuration.GetDiagonalDistanceBetweenVertexes());
+    shader->SetFloat("u_Structural_Stiffness", compute_shader_simulation_configuration.GetStructuralStiffness());
+    shader->SetFloat("u_Shear_Stiffness", compute_shader_simulation_configuration.GetShearStiffness());
     RenderCommand::DispatchCompute(compute_shader_configuration);
     RenderCommand::WaitMemoryBarrier();
 }

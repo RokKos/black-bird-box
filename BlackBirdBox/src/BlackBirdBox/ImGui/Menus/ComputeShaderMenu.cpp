@@ -39,6 +39,14 @@ void ComputeShaderMenu::OnImGuiRender()
     ImGui::InputFloat("Diagonal Distance Between Vertexes", &diagonal_vertical_distance, 0.0f, 0.0f, "%.10f");
     compute_shader_simulation_configuration_.SetDiagonalDistanceBetweenVertexes(diagonal_vertical_distance);
 
+    float structural_stiffness = compute_shader_simulation_configuration_.GetStructuralStiffness();
+    ImGui::InputFloat("Structural Stiffness", &structural_stiffness, 0.0f, 0.0f, "%.10f");
+    compute_shader_simulation_configuration_.SetStructuralStiffness(structural_stiffness);
+
+    float shear_stiffness = compute_shader_simulation_configuration_.GetShearStiffness();
+    ImGui::InputFloat("Shear Stiffness", &shear_stiffness, 0.0f, 0.0f, "%.10f");
+    compute_shader_simulation_configuration_.SetShearStiffness(shear_stiffness);
+
     ImGui::End();
 }
 

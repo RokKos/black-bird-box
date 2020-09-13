@@ -25,6 +25,8 @@ layout(local_size_variable) in;
 layout( location=3 ) uniform int u_Iterations;
 layout( location=4 ) uniform float u_Horizontal_Vertical_Rest_Lenght;
 layout( location=5 ) uniform float u_Diagonal_Rest_Lenght;
+layout( location=6 ) uniform float u_Structural_Stiffness;
+layout( location=7 ) uniform float u_Shear_Stiffness;
 
 void main()
 {
@@ -39,16 +41,17 @@ void main()
     vec4 fixed_position_b = fixedPoints[vertex_b_id_];
 
     float rest_lenght = mix(u_Horizontal_Vertical_Rest_Lenght, u_Diagonal_Rest_Lenght, is_diagonal);
+    float stiffness = mix(u_Structural_Stiffness, u_Shear_Stiffness, is_diagonal);
 
     for (uint it = 0; it < u_Iterations; ++it) {
         vec4 delta = position_a -  position_b;
         float distance = length(delta);
         float diff = (rest_lenght - distance) * 0.5;
-        vec4 normalized_delta = normalize(delta);
-        normalized_delta *= diff;
-            
-        position_a += normalized_delta;
-        position_b -= normalized_delta;
+        vec4 normalized_delta = delta / distance;
+        vec4 force_spring_offset = stiffness * diff * normalized_delta;
+
+        position_a += force_spring_offset;
+        position_b -= force_spring_offset;
     }
 
     position_a = mix(position_a, vec4(fixed_position_a.xyz, 0.0), fixed_position_a.w);

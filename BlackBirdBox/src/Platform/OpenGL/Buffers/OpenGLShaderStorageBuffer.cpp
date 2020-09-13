@@ -195,7 +195,7 @@ std::vector<glm::vec3> OpenGLShaderStorageBuffer::GetData(uint32_t size)
 /*std::vector<glm::vec4> OpenGLShaderStorageBuffer::GetData(uint32_t size)
 {
         // TODO(Rok Kos): Improve this function not to copy whole buffer
-        glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_RendererID);
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, renderer_id_);
         GLint buffer_mask = GL_MAP_READ_BIT;
 
         glm::vec4* mapped_buffer = reinterpret_cast<glm::vec4*>(
