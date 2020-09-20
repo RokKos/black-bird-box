@@ -7,7 +7,8 @@ class ComputeShaderSimulationConfiguration {
 public:
     ComputeShaderSimulationConfiguration();
     ComputeShaderSimulationConfiguration(glm::vec3 gravity, float delta_time, int iterations, float structural_stiffness, float shear_stiffness,
-        float horizontal_vertical_distance_between_vertexes = 0.0f, float diagonal_distance_between_vertexes = 0.0f);
+        float flexion_stiffness, float horizontal_vertical_distance_between_vertexes = 0.0f, float diagonal_distance_between_vertexes = 0.0f,
+        float bend_distance_between_vertexes = 0.0f);
 
     const glm::vec3& GetGravity() const { return gravity_; }
     void SetGravity(const glm::vec3& gravity);
@@ -24,20 +25,29 @@ public:
     float GetDiagonalDistanceBetweenVertexes() const { return diagonal_distance_between_vertexes_; }
     void SetDiagonalDistanceBetweenVertexes(float diagonal_distance_between_vertexes);
 
+    float GetBendDistanceBetweenVertexes() const { return bend_distance_between_vertexes_; }
+    void SetBendDistanceBetweenVertexes(float bend_distance_between_vertexes);
+
     float GetStructuralStiffness() const { return structural_stiffness_; }
     void SetStructuralStiffness(float structural_stiffness);
 
     float GetShearStiffness() const { return shear_stiffness_; }
     void SetShearStiffness(float shear_stiffness);
 
+    float GetFlexionStiffness() const { return flexion_stiffness_; }
+    void SetFlexionStiffness(float flexion_stiffness);
+
 private:
     glm::vec3 gravity_;
     float delta_time_;
     int iterations_;
+
     float horizontal_vertical_distance_between_vertexes_ = 0.0f;
     float diagonal_distance_between_vertexes_ = 0.0f;
+    float bend_distance_between_vertexes_ = 0.0f;
 
     float structural_stiffness_ = 1.0f;
     float shear_stiffness_ = 1.0f;
+    float flexion_stiffness_ = 1.0f;
 };
 } // namespace Core

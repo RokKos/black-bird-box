@@ -288,8 +288,10 @@ EOLLayer::EOLLayer()
     ParseSimulationSettings();
 
     cloth_ = Core::CreateRef<Core::Cloth>(num_cloth_dimension_size_, mat_generic_triangle);
+    // TODO(Rok Kos): Move this
     compute_shader_simulation_configuration_.SetHorizontalVerticalDistanceBetweenVertexes(cloth_->GetHorizontalVerticalDistanceBetweenVertexes());
     compute_shader_simulation_configuration_.SetDiagonalDistanceBetweenVertexes(cloth_->GetDiagonalDistanceBetweenVertexes());
+    compute_shader_simulation_configuration_.SetBendDistanceBetweenVertexes(cloth_->GetBendDistanceBetweenVertexes());
     scene_.AddShape(cloth_);
 
     // Frame Buffer
@@ -466,8 +468,11 @@ void EOLLayer::ParseSimulationSettings()
     ASSERT(cloth_simulation_settings["ShearStiffness"].IsFloat(), "ShearStiffness is not an float!");
     const float shear_stiffness = cloth_simulation_settings["ShearStiffness"].GetFloat();
 
-    compute_shader_simulation_configuration_
-        = Core::ComputeShaderSimulationConfiguration(gravity, simulation_delta_time, constraint_iterations, structural_stiffness, shear_stiffness);
+    ASSERT(cloth_simulation_settings["FlexionStiffness"].IsFloat(), "FlexionStiffness is not an float!");
+    const float flexion_stiffness = cloth_simulation_settings["FlexionStiffness"].GetFloat();
+
+    compute_shader_simulation_configuration_ = Core::ComputeShaderSimulationConfiguration(
+        gravity, simulation_delta_time, constraint_iterations, structural_stiffness, shear_stiffness, flexion_stiffness);
 
     ASSERT(cloth_simulation_settings["ComputeShaderConfiguration"].IsObject(), "ComputeShaderConfiguration is not an object!");
     auto compute_shader_configuration = cloth_simulation_settings["ComputeShaderConfiguration"].GetObject();

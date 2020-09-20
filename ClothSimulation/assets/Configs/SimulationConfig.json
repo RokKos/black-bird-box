@@ -6,10 +6,11 @@
       -9.81,
       0.0
     ],
-    "SimulationDeltaTime": 0.000016,
-    "ConstraintIterations": 400,
+    "SimulationDeltaTime": 0.00016,
+    "ConstraintIterations": 100,
     "StructuralStiffness": 1.0,
     "ShearStiffness": 1.0,
+    "FlexionStiffness": 1.0,
     "ComputeShaderConfiguration": {
       "WorkGroupSize": [
         40000,

@@ -22,6 +22,7 @@ Cloth::Cloth(unsigned int num_cloth_dimension_size, Ref<Material> material_to_re
 
     horizontal_vertical_distance_between_vertexes_ = 1.0f / static_cast<float>(num_cloth_dimension_size_ - 1);
     diagonal_distance_between_vertexes_ = horizontal_vertical_distance_between_vertexes_ * std::sqrt(2.0f);
+    bend_distance_between_vertexes_ = 2.0f * horizontal_vertical_distance_between_vertexes_;
     for (unsigned int i = 0; i < num_cloth_particles_; ++i) {
         int x = i % num_cloth_dimension_size_;
         int y = i / num_cloth_dimension_size_;
@@ -30,9 +31,9 @@ Cloth::Cloth(unsigned int num_cloth_dimension_size, Ref<Material> material_to_re
         cloth_particle_positons.push_back(starting_position);
 
         if (i == num_cloth_particles_ - 1 || i == num_cloth_particles_ - num_cloth_dimension_size_) {
-            cloth_particle_fixed_pos.push_back(glm::vec4(starting_position.x, starting_position.y, starting_position.z, 1.0f));
+            cloth_particle_fixed_pos.emplace_back(glm::vec4(starting_position.x, starting_position.y, starting_position.z, 1.0f));
         } else {
-            cloth_particle_fixed_pos.push_back(glm::vec4(starting_position.x, starting_position.y, starting_position.z, 0.0f));
+            cloth_particle_fixed_pos.emplace_back(glm::vec4(starting_position.x, starting_position.y, starting_position.z, 0.0f));
         }
     }
 

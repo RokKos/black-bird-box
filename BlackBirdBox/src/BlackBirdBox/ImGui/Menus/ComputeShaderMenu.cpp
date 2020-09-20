@@ -39,6 +39,10 @@ void ComputeShaderMenu::OnImGuiRender()
     ImGui::InputFloat("Diagonal Distance Between Vertexes", &diagonal_vertical_distance, 0.0f, 0.0f, "%.10f");
     compute_shader_simulation_configuration_.SetDiagonalDistanceBetweenVertexes(diagonal_vertical_distance);
 
+    float bend_distance = compute_shader_simulation_configuration_.GetBendDistanceBetweenVertexes();
+    ImGui::InputFloat("Bend Between Vertexes", &bend_distance, 0.0f, 0.0f, "%.10f");
+    compute_shader_simulation_configuration_.SetBendDistanceBetweenVertexes(bend_distance);
+
     float structural_stiffness = compute_shader_simulation_configuration_.GetStructuralStiffness();
     ImGui::InputFloat("Structural Stiffness", &structural_stiffness, 0.0f, 0.0f, "%.10f");
     compute_shader_simulation_configuration_.SetStructuralStiffness(structural_stiffness);
@@ -46,6 +50,10 @@ void ComputeShaderMenu::OnImGuiRender()
     float shear_stiffness = compute_shader_simulation_configuration_.GetShearStiffness();
     ImGui::InputFloat("Shear Stiffness", &shear_stiffness, 0.0f, 0.0f, "%.10f");
     compute_shader_simulation_configuration_.SetShearStiffness(shear_stiffness);
+
+    float flexion_stiffness = compute_shader_simulation_configuration_.GetFlexionStiffness();
+    ImGui::InputFloat("Flexion Stiffness", &flexion_stiffness, 0.0f, 0.0f, "%.10f");
+    compute_shader_simulation_configuration_.SetFlexionStiffness(flexion_stiffness);
 
     ImGui::End();
 }
