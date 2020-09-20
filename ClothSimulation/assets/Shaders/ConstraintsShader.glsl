@@ -36,15 +36,15 @@ void main()
 	uint vertex_a_id_ = uint(pair_vertex.x);
 	uint vertex_b_id_ = uint(pair_vertex.y);
     float is_diagonal = pair_vertex.z;
-    float is_flexion = pair_vertex.w;
+    //float is_flexion = pair_vertex.w;
     
 	vec4 position_a = Positions[vertex_a_id_];
     vec4 fixed_position_a = fixedPoints[vertex_a_id_];
 	vec4 position_b = Positions[vertex_b_id_];
     vec4 fixed_position_b = fixedPoints[vertex_b_id_];
 
-    float rest_lenght = mix(mix(u_Horizontal_Vertical_Rest_Lenght, u_Diagonal_Rest_Lenght, is_diagonal), u_Bend_Lenght, is_flexion);
-    float stiffness = mix(mix(u_Structural_Stiffness, u_Shear_Stiffness, is_diagonal), u_Flexion_Stiffness, is_flexion);
+    float rest_lenght = mix(u_Horizontal_Vertical_Rest_Lenght, u_Diagonal_Rest_Lenght, is_diagonal);//, u_Bend_Lenght, is_flexion);
+    float stiffness = mix(u_Structural_Stiffness, u_Shear_Stiffness, is_diagonal);//, u_Flexion_Stiffness, is_flexion);
 
     for (uint it = 0; it < u_Iterations; ++it) {
         vec4 delta = position_a -  position_b;
