@@ -40,39 +40,48 @@ void Renderer::Submit(const Ref<Material>& material, const Ref<VertexArray>& ver
 {
     PROFILE_FUNCTION();
 
+    // TODO(Rok Kos): This is only temporary
+    material->SetUniform("u_ViewProjection", s_SceneData->ViewProjectionMatrix);
+    material->SetUniform("u_Transform", transform);
+    if (material->HasUniform("u_CameraPosition")) {
+        material->SetUniform("u_CameraPosition", s_SceneData->camera_position_);
+    }
+
+    if (material->HasUniform("u_LightPosition")) {
+        // TODO(Rok Kos): Temporary, find solution for multiple lights
+        for (auto light_source : s_SceneData->light_sources_) {
+            material->SetUniform("u_LightPosition", light_source->GetPosition());
+            material->SetUniform("u_LightDirection", light_source->GetDirection());
+            material->SetUniform("u_LightIntensity", light_source->GetIntensity());
+            material->SetUniform("u_LightColor", light_source->GetColor());
+        }
+    }
+
     material->BindTextures();
 
-    Ref<Shader> shader = material->GetShader();
+    const Ref<Shader>& shader = material->GetShader();
     shader->Bind();
-    shader->SetMat4("u_ViewProjection", s_SceneData->ViewProjectionMatrix);
-    shader->SetFloat3("u_CameraPosition", s_SceneData->camera_position_);
-    shader->SetMat4("u_Transform", transform);
-
-    material->BindLightData();
-    // TODO(Rok Kos): Temporary, find solution for multiple lights
-    for (auto light_source : s_SceneData->light_sources_) {
-        shader->SetFloat3("u_LightPosition", light_source->GetPosition());
-        shader->SetFloat3("u_LightDirection", light_source->GetDirection());
-        shader->SetFloat3("u_LightIntensity", light_source->GetIntensity());
-        shader->SetFloat3("u_LightColor", light_source->GetColor());
-    }
+    material->BindUniforms();
 
     vertexArray->Bind();
     RenderCommand::DrawIndexed(vertexArray);
 }
 
-void Renderer::Submit(const Ref<Shader>& shader, const Ref<CubeMap>& cube_map, const Ref<VertexArray>& vertexArray, const glm::mat4& transform)
+void Renderer::Submit(const Ref<Material>& material, const Ref<CubeMap>& cube_map, const Ref<VertexArray>& vertexArray, const glm::mat4& transform)
 {
     PROFILE_FUNCTION();
 
     // TODO(Rok Kos): This is only temporary
-    RenderCommand::SetDepthFunction(RendererAPI::DepthFunction::LEQUAL);
-    shader->Bind();
+    glm::mat4 view_matrix = glm::mat4(glm::mat3(s_SceneData->ViewMatrix));
+    material->SetUniform("u_ViewProjection", s_SceneData->ProjectionMatrix * view_matrix);
+    material->SetUniform("u_Transform", transform);
+
+    const Ref<Shader>& shader = material->GetShader();
 
     // TODO(Rok Kos): This is only temporary
-    glm::mat4 view_matrix = glm::mat4(glm::mat3(s_SceneData->ViewMatrix));
-    shader->SetMat4("u_ViewProjection", s_SceneData->ProjectionMatrix * view_matrix);
-    shader->SetMat4("u_Transform", transform);
+    RenderCommand::SetDepthFunction(RendererAPI::DepthFunction::LEQUAL);
+    shader->Bind();
+    material->BindUniforms();
 
     vertexArray->Bind();
     cube_map->Bind();
@@ -82,13 +91,17 @@ void Renderer::Submit(const Ref<Shader>& shader, const Ref<CubeMap>& cube_map, c
 }
 
 void Renderer::Submit(
-    Ref<FrameBuffer> frame_buffer, const Ref<Shader>& shader, const Ref<VertexArray>& vertexArray, const glm::mat4& transform /*= glm::mat4(1.0f)*/)
+    const Ref<FrameBuffer>& frame_buffer, const Ref<Material>& material, const Ref<VertexArray>& vertexArray, const glm::mat4& transform)
 {
     PROFILE_FUNCTION();
 
+    // TODO(Rok Kos): This is only temporary
+    material->SetUniform("u_ViewProjection", s_SceneData->ViewProjectionMatrix);
+    material->SetUniform("u_Transform", transform);
+
+    const Ref<Shader>& shader = material->GetShader();
     shader->Bind();
-    shader->SetMat4("u_ViewProjection", s_SceneData->ViewProjectionMatrix);
-    shader->SetMat4("u_Transform", transform);
+    material->BindUniforms();
 
     vertexArray->Bind();
 
@@ -101,23 +114,16 @@ void Renderer::Submit(
     RenderCommand::Enable(RendererAPI::RenderCapabilities::DEPTH_TEST);
 }
 
-void Renderer::DispatchComputeShader(const Ref<Shader> shader, const Ref<ShaderStorageArray>& shader_storage_array,
-    const ComputeShaderConfiguration& compute_shader_configuration,
-    const ComputeShaderSimulationConfiguration& compute_shader_simulation_configuration)
+void Renderer::DispatchComputeShader(const Ref<Material>& material, const Ref<ShaderStorageArray>& shader_storage_array,
+    const ComputeShaderConfiguration& compute_shader_configuration)
 {
     PROFILE_FUNCTION();
 
+    const Ref<Shader>& shader = material->GetShader();
     shader->Bind();
+    material->BindUniforms();
     shader_storage_array->Bind();
-    shader->SetFloat3("u_Gravity", compute_shader_simulation_configuration.GetGravity());
-    shader->SetFloat("u_DeltaTime", compute_shader_simulation_configuration.GetDeltaTime());
-    shader->SetInt("u_Iterations", compute_shader_simulation_configuration.GetIterations());
-    shader->SetFloat("u_Horizontal_Vertical_Rest_Lenght", compute_shader_simulation_configuration.GetHorizontalVerticalDistanceBetweenVertexes());
-    shader->SetFloat("u_Diagonal_Rest_Lenght", compute_shader_simulation_configuration.GetDiagonalDistanceBetweenVertexes());
-    shader->SetFloat("u_Bend_Lenght", compute_shader_simulation_configuration.GetBendDistanceBetweenVertexes());
-    shader->SetFloat("u_Structural_Stiffness", compute_shader_simulation_configuration.GetStructuralStiffness());
-    shader->SetFloat("u_Shear_Stiffness", compute_shader_simulation_configuration.GetShearStiffness());
-    shader->SetFloat("u_Flexion_Stiffness", compute_shader_simulation_configuration.GetFlexionStiffness());
+
     RenderCommand::DispatchCompute(compute_shader_configuration);
     RenderCommand::WaitMemoryBarrier();
 }
