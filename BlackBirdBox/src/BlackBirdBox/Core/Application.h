@@ -18,12 +18,13 @@ public:
     Application();
     virtual ~Application();
 
-    void OnEvent(Event& e);
+    virtual void OnEvent(Event& e);
 
-    void PushLayer(Layer* layer);
-    void PushOverlay(Layer* layer);
+    void PushLayer(const Ref<Layer>& layer);
+    void PopLayer(const Ref<Layer>& layer);
+    void PushOverlay(const Ref<Layer>& layer);
 
-    inline Window& GetWindow() { return *m_Window; }
+    inline Window& GetWindow() { return *window_; }
 
     inline static Application& Get() { return *s_Instance; }
 
@@ -34,12 +35,13 @@ private:
     bool OnKeyPressedEvent(KeyPressedEvent& e);
 
 private:
-    Scope<Window> m_Window;
-    ImGuiLayer* m_ImGuiLayer; // TODO(Rok Kos): Move this to smart pointer if possible
-    bool m_Running = true;
-    bool m_Minimized = false;
-    LayerStack m_LayerStack;
-    float m_LastFrameTime = 0.0f;
+    Scope<Window> window_;
+    Ref<ImGuiLayer> im_gui_layer_;
+    bool running_ = true;
+    bool are_layers_paused = false;
+    bool minimized_ = false;
+    LayerStack layer_stack_;
+    float last_frame_time_ = 0.0f;
 
 private:
     static Application* s_Instance; // TODO(Rok Kos): Move this to smart pointer if possible

@@ -18,13 +18,13 @@ Application::Application()
 
     CORE_ASSERT(!s_Instance, "Application already exists!");
     s_Instance = this;
-    m_Window = Window::Create();
-    m_Window->SetEventCallback(BIND_EVENT_FN(Application::OnEvent));
+    window_ = Window::Create();
+    window_->SetEventCallback(BIND_EVENT_FN(Application::OnEvent));
 
     Renderer::Init();
 
-    m_ImGuiLayer = new ImGuiLayer();
-    PushOverlay(m_ImGuiLayer);
+    im_gui_layer_ = CreateRef<ImGuiLayer>();
+    PushOverlay(im_gui_layer_);
 }
 
 Application::~Application()
@@ -34,21 +34,29 @@ Application::~Application()
     Renderer::Shutdown();
 }
 
-void Application::PushLayer(Layer* layer)
+void Application::PushLayer(const Ref<Layer>& layer)
 {
     PROFILE_FUNCTION();
 
     LOG_TRACE("Pushing Layer: {0}", layer->GetName());
-    m_LayerStack.PushLayer(layer);
+    layer_stack_.PushLayer(layer);
     layer->OnAttach();
 }
 
-void Application::PushOverlay(Layer* layer)
+void Application::PopLayer(const Ref<Layer>& layer)
+{
+    PROFILE_FUNCTION();
+
+    LOG_TRACE("Poping Layer: {0}", layer->GetName());
+    layer_stack_.PopLayer(layer);
+}
+
+void Application::PushOverlay(const Ref<Layer>& layer)
 {
     PROFILE_FUNCTION();
 
     LOG_TRACE("Pushing Overlay: {0}", layer->GetName());
-    m_LayerStack.PushOverlay(layer);
+    layer_stack_.PushOverlay(layer);
     layer->OnAttach();
 }
 
@@ -61,7 +69,7 @@ void Application::OnEvent(Event& e)
     dispatcher.Dispatch<WindowResizeEvent>(BIND_EVENT_FN(Application::OnWindowResize));
     dispatcher.Dispatch<KeyPressedEvent>(BIND_EVENT_FN(Application::OnKeyPressedEvent));
 
-    for (auto it = m_LayerStack.rbegin(); it != m_LayerStack.rend(); ++it) {
+    for (auto it = layer_stack_.rbegin(); it != layer_stack_.rend(); ++it) {
         (*it)->OnEvent(e);
         if (e.Handled)
             break;
@@ -73,27 +81,27 @@ void Application::Run()
 
     PROFILE_FUNCTION();
 
-    while (m_Running) {
+    while (running_) {
         float time = (float)glfwGetTime();
-        TimeStep timestep = time - m_LastFrameTime;
-        m_LastFrameTime = time;
+        TimeStep timestep = time - last_frame_time_;
+        last_frame_time_ = time;
 
-        if (!m_Minimized) {
-            {
-                for (Layer* layer : m_LayerStack)
+        if (!minimized_) {
+            if (!are_layers_paused) {
+                for (const Ref<Layer>& layer : layer_stack_)
                     layer->OnUpdate(timestep);
             }
 
-            m_ImGuiLayer->Begin();
+            im_gui_layer_->Begin();
             {
 
-                for (Layer* layer : m_LayerStack)
+                for (const Ref<Layer>& layer : layer_stack_)
                     layer->OnImGuiRender();
             }
-            m_ImGuiLayer->End();
+            im_gui_layer_->End();
         }
 
-        m_Window->OnUpdate();
+        window_->OnUpdate();
     }
 }
 
@@ -101,7 +109,7 @@ bool Application::OnWindowClose(WindowCloseEvent& e)
 {
     PROFILE_FUNCTION();
 
-    m_Running = false;
+    running_ = false;
     return true;
 }
 
@@ -111,11 +119,10 @@ bool Application::OnWindowResize(WindowResizeEvent& e)
     PROFILE_FUNCTION();
 
     if (e.GetWidth() == 0 || e.GetHeight() == 0) {
-        m_Minimized = true;
+        minimized_ = true;
         return false;
     }
 
-    m_Minimized = false;
     Renderer::OnWindowResize(e.GetWidth(), e.GetHeight());
 
     return false;
