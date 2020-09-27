@@ -1,4 +1,4 @@
-#include "bbbpch.h"
+﻿#include "bbbpch.h"
 #include "SceneViewMenu.h"
 
 #include <glm/gtc/type_ptr.hpp>
@@ -60,16 +60,54 @@ void SceneViewMenu::OnImGuiRender()
             if (ImGui::TreeNode("Material")) {
                 auto shape_material = shape->GetMaterial();
                 ImGui::Text(shape_material->GetName().c_str());
-                auto lighting_data = shape_material->GetPhongLightingParameters();
 
-                ImGui::ColorEdit3("Diffuse Color:", glm::value_ptr(lighting_data.diffuse_color_));
-                ImGui::ColorEdit3("Specular Color:", glm::value_ptr(lighting_data.specular_color_));
-                ImGui::ColorEdit3("Ambient Color:", glm::value_ptr(lighting_data.ambient_color_));
-                ImGui::InputFloat3("Ambient Intensity:", glm::value_ptr(lighting_data.ambient_intensity_));
+                for (Uniform& uniform : shape_material->GetUniforms()) {
+                    switch (uniform.type_) {
+                    case UniformType::Int: {
+                        ImGui::InputInt(uniform.name_.c_str(), &uniform.integer_value);
+                        break;
+                    }
 
-                ImGui::SliderFloat("Specular scattering:", &lighting_data.specular_scattering_, 0.0f, 256.0f);
+                    case UniformType::Float: {
+                        ImGui::InputFloat(uniform.name_.c_str(), &uniform.float_value);
+                        break;
+                    }
 
-                shape_material->SetPhongLightingParameters(lighting_data);
+                    case UniformType::Vec2: {
+                        ImGui::InputFloat2(uniform.name_.c_str(), glm::value_ptr(uniform.vec2_value));
+                        break;
+                    }
+
+                    case UniformType::Vec3: {
+                        if (uniform.name_.find("Color") != std::string::npos || uniform.name_.find("color") != std::string::npos) {
+                            ImGui::ColorEdit3(uniform.name_.c_str(), glm::value_ptr(uniform.vec3_value));
+                        } else {
+                            ImGui::InputFloat3(uniform.name_.c_str(), glm::value_ptr(uniform.vec3_value));
+                        }
+
+                        break;
+                    }
+
+                    case UniformType::Vec4: {
+                        if (uniform.name_.find("Color") != std::string::npos || uniform.name_.find("color") != std::string::npos) {
+                            ImGui::ColorEdit4(uniform.name_.c_str(), glm::value_ptr(uniform.vec4_value));
+                        } else {
+                            ImGui::InputFloat4(uniform.name_.c_str(), glm::value_ptr(uniform.vec4_value));
+                        }
+
+                        break;
+                    }
+                    case UniformType::Mat4:
+                    case UniformType::Sampler2D:
+                    case UniformType::SamplerCube: {
+                        // TODO(Rok Kos): Find A way
+                        break;
+                    }
+
+                    default:
+                        CORE_ASSERT(false, "Unsuported type on Uniform: %s", uniform.name_.c_str());
+                    }
+                }
 
                 ImGui::TreePop();
             }
