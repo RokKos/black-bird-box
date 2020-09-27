@@ -27,6 +27,7 @@ private:
     void LoadAllPrimitiveModels();
     void LoadModelInThread(const std::string& filepath);
     std::string FrameBufferAttachmentToName(Core::FrameBufferAttachments attachment);
+    void SetPhongParameters(const Core::Ref<Core::Material>& material, Core::PhongLightingParameters phong_lighting_parameters);
 
 private:
     Core::TimeStep prev_time_step_;
@@ -43,9 +44,12 @@ private:
 
     Core::Ref<Core::VertexArray> vertex_array_box_;
     Core::Ref<Core::CubeMap> enviroment_map_;
+    Core::Ref<Core::Material> enviroment_map_material_;
     Core::Ref<Core::FrameBuffer> test_frame_buffer_;
     Core::Ref<Core::Shape> frame_buffer_obj_;
     Core::Ref<Core::Cloth> cloth_;
+    Core::Ref<Core::Material> vertlet_compute_material_;
+    Core::Ref<Core::Material> constraint_compute_material_;
     Core::ComputeShaderConfiguration compute_shader_configuration_;
     Core::ComputeShaderSimulationConfiguration compute_shader_simulation_configuration_;
     glm::vec4 fixed_point_to_move_ = glm::vec4(1.0f, 1.0f, 0.0f, 1.0f);

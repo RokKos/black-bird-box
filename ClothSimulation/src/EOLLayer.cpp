@@ -22,33 +22,28 @@ EOLLayer::EOLLayer()
     menus_.push_back(Core::CreateRef<Core::ComputeShaderMenu>("Compute Shader Simulation Controls", compute_shader_simulation_configuration_));
     menus_.push_back(Core::CreateRef<Core::MiscMenu>("Misc Menu", prev_time_step_, bg_color_, polygon_mode_));
 
-    auto mat_generic_triangle
-        = Core::CreateRef<Core::Material>(shader_library_.Get("TriangleTest"), Core::PhongLightingParameters(), "Generic_Triangle_MAT");
-    auto mat_generic_color
-        = Core::CreateRef<Core::Material>(shader_library_.Get("GenericColor"), Core::PhongLightingParameters(), "Generic_Color_MAT");
+    const auto& mat_generic_triangle = Core::CreateRef<Core::Material>(shader_library_.Get("TriangleTest"), "Generic_Triangle_MAT");
+    const auto& mat_generic_color = Core::CreateRef<Core::Material>(shader_library_.Get("GenericColor"), "Generic_Color_MAT");
+    const auto& mat_generic_normals = Core::CreateRef<Core::Material>(shader_library_.Get("GenericNormals"), "Generic_Normals_MAT");
 
-    auto mat_generic_normals
-        = Core::CreateRef<Core::Material>(shader_library_.Get("GenericNormals"), Core::PhongLightingParameters(), "Generic_Normals_MAT");
-
-    auto generic_uv_coordinates_shader = shader_library_.Get("GenericUVCoordinates");
+    const auto& generic_uv_coordinates_shader = shader_library_.Get("GenericUVCoordinates");
     generic_uv_coordinates_shader->Bind();
-    generic_uv_coordinates_shader->SetInt("u_Texture", 0);
 
     Core::Texture2DSpecification generic_tex_2d_spec = Core::Texture2DSpecification();
     generic_tex_2d_spec.TextureMinFilter = Core::TextureMinifyingFilter::LINEAR;
     generic_tex_2d_spec.TextureMagFilter = Core::TextureMagnificationFilter::NEAREST;
 
     auto uv_texture = Core::Texture2D::Create("assets/Textures/uv_texture.png", generic_tex_2d_spec);
-    auto mat_generic_uv_coordinates
-        = Core::CreateRef<Core::Material>(generic_uv_coordinates_shader, Core::PhongLightingParameters(), "Generic_UV_Coordinates_MAT");
+    auto mat_generic_uv_coordinates = Core::CreateRef<Core::Material>(generic_uv_coordinates_shader, "Generic_UV_Coordinates_MAT");
     mat_generic_uv_coordinates->SetTexture("UV_TEST_Texture", uv_texture);
+    mat_generic_uv_coordinates->SetUniform("u_Texture", 0);
 
-    auto generic_texture_shader = shader_library_.Get("GenericTexture");
+    const auto& generic_texture_shader = shader_library_.Get("GenericTexture");
     generic_texture_shader->Bind();
-    generic_texture_shader->SetInt("u_Texture", 0);
     auto gun_texture = Core::Texture2D::Create("assets/Textures/Cerberus_A.tga", generic_tex_2d_spec);
-    auto mat_generic_texture = Core::CreateRef<Core::Material>(generic_texture_shader, Core::PhongLightingParameters(), "Generic_Texture_MAT");
+    auto mat_generic_texture = Core::CreateRef<Core::Material>(generic_texture_shader, "Generic_Texture_MAT");
     mat_generic_texture->SetTexture("Gun_Texture", gun_texture);
+    mat_generic_texture->SetUniform("u_Texture", 0);
 
     auto phong_lighting_parameters = Core::PhongLightingParameters();
     phong_lighting_parameters.diffuse_color_ = glm::vec3(188.0f / 255.0f, 185.0f / 255.0f, 167.0f / 255.0f);
@@ -56,14 +51,16 @@ EOLLayer::EOLLayer()
     phong_lighting_parameters.specular_scattering_ = 15.0f;
     phong_lighting_parameters.ambient_color_ = glm::vec3(81.0f / 255.0f, 84.0f / 255.0f, 67.0f / 255.0f);
     phong_lighting_parameters.ambient_intensity_ = glm::vec3(0.21f, 0.21f, 0.21f);
-    auto mat_generic_lighting
-        = Core::CreateRef<Core::Material>(shader_library_.Get("GenericLighting"), phong_lighting_parameters, "Generic_Lighting_MAT");
+    const auto& mat_generic_lighting = Core::CreateRef<Core::Material>(shader_library_.Get("GenericLighting"), "Generic_Lighting_MAT");
+    mat_generic_lighting->SetUniform("u_Texture", 0);
+    SetPhongParameters(mat_generic_lighting, phong_lighting_parameters);
 
-    auto standard_shader = shader_library_.Get("FrameBufferShader");
+    const auto& standard_shader = shader_library_.Get("FrameBufferShader");
     standard_shader->Bind();
-    standard_shader->SetInt("u_Texture", 0);
-    auto mat_stadard_shader = Core::CreateRef<Core::Material>(standard_shader, phong_lighting_parameters, "Standard_MAT");
-    mat_stadard_shader->SetTexture("Gun_Texture", gun_texture);
+    auto mat_standard_shader = Core::CreateRef<Core::Material>(standard_shader, "Standard_MAT");
+    mat_standard_shader->SetTexture("Gun_Texture", gun_texture);
+    mat_standard_shader->SetUniform("u_Texture", 0);
+    SetPhongParameters(mat_standard_shader, phong_lighting_parameters);
 
     // Gun ------
     {
@@ -95,7 +92,7 @@ EOLLayer::EOLLayer()
         auto shape5 = Core::CreateRef<Core::Shape>(
             mat_generic_lighting, vertex_array_gun, Core::CreateRef<Core::Transform>(glm::vec3(8, 0, 0)), model_data, "Obj Lighting Test");
         auto shape6 = Core::CreateRef<Core::Shape>(
-            mat_stadard_shader, vertex_array_gun, Core::CreateRef<Core::Transform>(glm::vec3(0, 0.5, 0)), model_data, "Obj All Together");
+            mat_standard_shader, vertex_array_gun, Core::CreateRef<Core::Transform>(glm::vec3(0, 0.5, 0)), model_data, "Obj All Together");
         // scene_.AddShape(shape);
         // scene_.AddShape(shape2);
         // scene_.AddShape(shape3);
@@ -123,17 +120,18 @@ EOLLayer::EOLLayer()
         vertex_array_ship->SetIndexBuffer(index_buffer_ship);
 
         auto city_texture = Core::Texture2D::Create("assets/Textures/Palette.jpg", generic_tex_2d_spec);
-        auto mat_stadard_shader_city = Core::CreateRef<Core::Material>(standard_shader, phong_lighting_parameters, "Standard_MAT");
+        auto mat_stadard_shader_city = Core::CreateRef<Core::Material>(standard_shader, "Standard_City_MAT");
         mat_stadard_shader_city->SetTexture("City_Texture", city_texture);
+        mat_stadard_shader_city->SetUniform("u_Texture", 0);
+        SetPhongParameters(mat_stadard_shader_city, phong_lighting_parameters);
 
         auto ship = Core::CreateRef<Core::Shape>(mat_stadard_shader_city, vertex_array_ship,
             Core::CreateRef<Core::Transform>(glm::vec3(-1.5, 0.5, 0), glm::vec3(0.0), glm::vec3(0.1, 0.1, 0.1)), model_data_ship, "City 01");
         // scene_.AddShape(ship);
     }
 
-    auto blinn_phong_shader = shader_library_.Get("BlinnPhongShader");
+    const auto& blinn_phong_shader = shader_library_.Get("BlinnPhongShader");
     blinn_phong_shader->Bind();
-    blinn_phong_shader->SetInt("u_Texture", 0);
     // City02 ------
     {
         auto vertex_array_ship = Core::VertexArray::Create();
@@ -153,7 +151,8 @@ EOLLayer::EOLLayer()
         vertex_array_ship->SetIndexBuffer(index_buffer_ship);
 
         auto city_texture = Core::Texture2D::Create("assets/Textures/Palette.jpg", generic_tex_2d_spec);
-        auto mat_stadard_shader_city = Core::CreateRef<Core::Material>(blinn_phong_shader, phong_lighting_parameters, "Standard_MAT");
+        auto mat_stadard_shader_city = Core::CreateRef<Core::Material>(blinn_phong_shader, "Standard_MAT");
+        mat_stadard_shader_city->SetUniform("u_Texture", 0);
         mat_stadard_shader_city->SetTexture("City_Texture", city_texture);
 
         auto ship = Core::CreateRef<Core::Shape>(mat_stadard_shader_city, vertex_array_ship,
@@ -169,9 +168,10 @@ EOLLayer::EOLLayer()
     scene_.AddPoint(Core::CreateRef<Core::Point>(100, glm::vec3(10, 2, 5), glm::vec3(0, 1, 0)));
 
     // Enviroment map ------
-    auto enviroment_map_shader = shader_library_.Get("EnviromentMapShader");
+    const auto& enviroment_map_shader = shader_library_.Get("EnviromentMapShader");
     enviroment_map_shader->Bind();
-    enviroment_map_shader->SetInt("u_EnviromentMap", 0);
+    enviroment_map_material_ = Core::CreateRef<Core::Material>(enviroment_map_shader, "EnviromentMap_MAT");
+    enviroment_map_material_->SetUniform("u_EnviromentMap", 0);
 
     vertex_array_box_ = Core::VertexArray::Create();
 
@@ -294,6 +294,24 @@ EOLLayer::EOLLayer()
     compute_shader_simulation_configuration_.SetBendDistanceBetweenVertexes(cloth_->GetBendDistanceBetweenVertexes());
     scene_.AddShape(cloth_);
 
+    const auto& verlet_integration_shader = shader_library_.Get("VerletIntegrationShader");
+    vertlet_compute_material_ = Core::CreateRef<Core::Material>(verlet_integration_shader, "VerletIntegration_MAT");
+    vertlet_compute_material_->SetUniform("u_Gravity", compute_shader_simulation_configuration_.GetGravity());
+    vertlet_compute_material_->SetUniform("u_DeltaTime", compute_shader_simulation_configuration_.GetDeltaTime());
+    vertlet_compute_material_->SetUniform("u_External_Force", compute_shader_simulation_configuration_.GetExternalForce());
+    vertlet_compute_material_->SetUniform("u_Wind_Resistance", compute_shader_simulation_configuration_.GetWindResistance());
+
+    const auto& constrains_shader = shader_library_.Get("ConstraintsShader");
+    constraint_compute_material_ = Core::CreateRef<Core::Material>(constrains_shader, "Constraints_MAT");
+    constraint_compute_material_->SetUniform("u_Iterations", compute_shader_simulation_configuration_.GetIterations());
+    constraint_compute_material_->SetUniform(
+        "u_Horizontal_Vertical_Rest_Lenght", compute_shader_simulation_configuration_.GetHorizontalVerticalDistanceBetweenVertexes());
+    constraint_compute_material_->SetUniform("u_Diagonal_Rest_Lenght", compute_shader_simulation_configuration_.GetDiagonalDistanceBetweenVertexes());
+    constraint_compute_material_->SetUniform("u_Bend_Lenght", compute_shader_simulation_configuration_.GetBendDistanceBetweenVertexes());
+    constraint_compute_material_->SetUniform("u_Structural_Stiffness", compute_shader_simulation_configuration_.GetStructuralStiffness());
+    constraint_compute_material_->SetUniform("u_Shear_Stiffness", compute_shader_simulation_configuration_.GetShearStiffness());
+    constraint_compute_material_->SetUniform("u_Flexion_Stiffness", compute_shader_simulation_configuration_.GetFlexionStiffness());
+
     // Frame Buffer
     Core::FramebufferSpecification frame_buffer_spec = Core::FramebufferSpecification();
     frame_buffer_spec.width = 1920;
@@ -324,19 +342,14 @@ void EOLLayer::OnUpdate(Core::TimeStep ts)
     Core::RenderCommand::SetClearColor(bg_color_);
     Core::RenderCommand::Clear();
 
-    Core::Renderer::Submit(shader_library_.Get("EnviromentMapShader"), enviroment_map_, vertex_array_box_);
+    Core::Renderer::Submit(enviroment_map_material_, enviroment_map_, vertex_array_box_);
 
-    const auto verlet_integration_shader = shader_library_.Get("VerletIntegrationShader");
+    Core::Renderer::DispatchComputeShader(vertlet_compute_material_, cloth_->GetClothStorageArray(0), compute_shader_configuration_);
 
-    Core::Renderer::DispatchComputeShader(
-        verlet_integration_shader, cloth_->GetClothStorageArray(0), compute_shader_configuration_, compute_shader_simulation_configuration_);
-
-    const auto constrains_shader = shader_library_.Get("ConstraintsShader");
     for (size_t batch_id = 0; batch_id < cloth_->GetNumberOfBatches(); ++batch_id) {
         const size_t number_of_edges = cloth_->GetBatches()[batch_id].size();
         const Core::ComputeShaderConfiguration compute_shader_configuration({ static_cast<unsigned int>(number_of_edges), 1, 1 }, { 1, 1, 1 });
-        Core::Renderer::DispatchComputeShader(
-            constrains_shader, cloth_->GetClothStorageArray(batch_id), compute_shader_configuration, compute_shader_simulation_configuration_);
+        Core::Renderer::DispatchComputeShader(constraint_compute_material_, cloth_->GetClothStorageArray(batch_id), compute_shader_configuration);
     }
 
     // TODO(Rok Kos): Load Models on themand
@@ -360,9 +373,8 @@ void EOLLayer::OnUpdate(Core::TimeStep ts)
 
     for (const auto& light_source : scene_.GetLightSources()) {
         if (light_source->GetObjectEnabled()) {
-            Core::Renderer::Submit(
-                Core::CreateRef<Core::Material>(shader_library_.Get("GenericColor"), Core::PhongLightingParameters(), "Generic_Color_MAT"),
-                vertex_array_box_, light_source->GetTransform()->GetTransformMatrix());
+            Core::Renderer::Submit(Core::CreateRef<Core::Material>(shader_library_.Get("GenericColor"), "Generic_Color_MAT"), vertex_array_box_,
+                light_source->GetTransform()->GetTransformMatrix());
         }
     }
 
@@ -573,4 +585,12 @@ std::string EOLLayer::FrameBufferAttachmentToName(Core::FrameBufferAttachments a
     return "";
 }
 
+void EOLLayer::SetPhongParameters(const Core::Ref<Core::Material>& material, Core::PhongLightingParameters phong_lighting_parameters)
+{
+    material->SetUniform("u_DiffuseColor", phong_lighting_parameters.diffuse_color_);
+    material->SetUniform("u_SpecularColor", phong_lighting_parameters.specular_color_);
+    material->SetUniform("u_SpecularScatering", phong_lighting_parameters.specular_scattering_);
+    material->SetUniform("u_AmbientColor", phong_lighting_parameters.ambient_color_);
+    material->SetUniform("u_AmbientIntensity", phong_lighting_parameters.ambient_color_);
+}
 } // namespace EOL
