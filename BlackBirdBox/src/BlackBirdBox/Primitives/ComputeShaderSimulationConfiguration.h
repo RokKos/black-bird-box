@@ -6,9 +6,9 @@ namespace Core {
 class ComputeShaderSimulationConfiguration {
 public:
     ComputeShaderSimulationConfiguration();
-    ComputeShaderSimulationConfiguration(glm::vec3 gravity, float delta_time, int iterations, float structural_stiffness, float shear_stiffness,
-        float flexion_stiffness, float horizontal_vertical_distance_between_vertexes = 0.0f, float diagonal_distance_between_vertexes = 0.0f,
-        float bend_distance_between_vertexes = 0.0f);
+    ComputeShaderSimulationConfiguration(glm::vec3 gravity, float delta_time, glm::vec3 external_force, glm::vec3 wind_resistance, int iterations,
+        float structural_stiffness, float shear_stiffness, float flexion_stiffness, float horizontal_vertical_distance_between_vertexes = 0.0f,
+        float diagonal_distance_between_vertexes = 0.0f, float bend_distance_between_vertexes = 0.0f);
 
     const glm::vec3& GetGravity() const { return gravity_; }
     void SetGravity(const glm::vec3& gravity);
@@ -37,6 +37,12 @@ public:
     float GetFlexionStiffness() const { return flexion_stiffness_; }
     void SetFlexionStiffness(float flexion_stiffness);
 
+    const glm::vec3& GetExternalForce() const { return external_force_; }
+    void SetExternalForces(glm::vec3 external_force);
+
+    const glm::vec3& GetWindResistance() const { return wind_resistance_; }
+    void SetWindResistance(glm::vec3 wind_resistance);
+
 private:
     glm::vec3 gravity_;
     float delta_time_;
@@ -49,5 +55,8 @@ private:
     float structural_stiffness_ = 1.0f;
     float shear_stiffness_ = 1.0f;
     float flexion_stiffness_ = 1.0f;
+
+    glm::vec3 external_force_;
+    glm::vec3 wind_resistance_;
 };
 } // namespace Core

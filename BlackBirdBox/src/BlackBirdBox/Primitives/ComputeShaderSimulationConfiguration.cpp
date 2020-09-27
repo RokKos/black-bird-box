@@ -4,9 +4,9 @@
 
 namespace Core {
 
-ComputeShaderSimulationConfiguration::ComputeShaderSimulationConfiguration(glm::vec3 gravity, float delta_time, int iterations,
-    float structural_stiffness, float shear_stiffness, float flexion_stiffness, float horizontal_vertical_distance_between_vertexes_,
-    float diagonal_distance_between_vertexes, float bend_distance_between_vertexes)
+ComputeShaderSimulationConfiguration::ComputeShaderSimulationConfiguration(glm::vec3 gravity, float delta_time, glm::vec3 external_force,
+    glm::vec3 wind_resistance, int iterations, float structural_stiffness, float shear_stiffness, float flexion_stiffness,
+    float horizontal_vertical_distance_between_vertexes_, float diagonal_distance_between_vertexes, float bend_distance_between_vertexes)
     : gravity_(gravity)
     , delta_time_(delta_time)
     , iterations_(iterations)
@@ -16,6 +16,8 @@ ComputeShaderSimulationConfiguration::ComputeShaderSimulationConfiguration(glm::
     , horizontal_vertical_distance_between_vertexes_(horizontal_vertical_distance_between_vertexes_)
     , diagonal_distance_between_vertexes_(diagonal_distance_between_vertexes)
     , bend_distance_between_vertexes_(bend_distance_between_vertexes)
+    , external_force_(external_force)
+    , wind_resistance_(wind_resistance)
 {
     PROFILE_FUNCTION();
 }
@@ -30,6 +32,8 @@ ComputeShaderSimulationConfiguration::ComputeShaderSimulationConfiguration()
     , horizontal_vertical_distance_between_vertexes_(1.0f)
     , diagonal_distance_between_vertexes_(1.0f)
     , bend_distance_between_vertexes_(1.0f)
+    , external_force_(glm::vec3(0.0f))
+    , wind_resistance_(glm::vec3(0.0f))
 {
     PROFILE_FUNCTION();
 }
@@ -60,4 +64,8 @@ void ComputeShaderSimulationConfiguration::SetStructuralStiffness(float structur
 void ComputeShaderSimulationConfiguration::SetShearStiffness(float shear_stiffness) { shear_stiffness_ = shear_stiffness; }
 
 void ComputeShaderSimulationConfiguration::SetFlexionStiffness(float flexion_stiffness) { flexion_stiffness_ = flexion_stiffness; }
+
+void ComputeShaderSimulationConfiguration::SetExternalForces(glm::vec3 external_force) { external_force_ = external_force; }
+
+void ComputeShaderSimulationConfiguration::SetWindResistance(glm::vec3 wind_resistance) { wind_resistance_ = wind_resistance; }
 } // namespace Core
