@@ -229,18 +229,25 @@ void OpenGLShader::SetFloat(const std::string& name, float value)
     UploadUniformFloat(name, value);
 }
 
-void OpenGLShader::SetFloat3(const std::string& name, const glm::vec3& value)
+void OpenGLShader::SetVec2(const std::string& name, const glm::vec2& value)
 {
     PROFILE_FUNCTION();
 
-    UploadUniformFloat3(name, value);
+    UploadUniformVec2(name, value);
 }
 
-void OpenGLShader::SetFloat4(const std::string& name, const glm::vec4& value)
+void OpenGLShader::SetVec3(const std::string& name, const glm::vec3& value)
 {
     PROFILE_FUNCTION();
 
-    UploadUniformFloat4(name, value);
+    UploadUniformVec3(name, value);
+}
+
+void OpenGLShader::SetVec4(const std::string& name, const glm::vec4& value)
+{
+    PROFILE_FUNCTION();
+
+    UploadUniformVec4(name, value);
 }
 
 void OpenGLShader::SetMat4(const std::string& name, const glm::mat4& value)
@@ -274,7 +281,7 @@ void OpenGLShader::UploadUniformFloat(const std::string& name, float value)
     glUniform1f(location, value);
 }
 
-void OpenGLShader::UploadUniformFloat2(const std::string& name, const glm::vec2& value)
+void OpenGLShader::UploadUniformVec2(const std::string& name, const glm::vec2& value)
 {
     PROFILE_FUNCTION();
 
@@ -282,7 +289,7 @@ void OpenGLShader::UploadUniformFloat2(const std::string& name, const glm::vec2&
     glUniform2f(location, value.x, value.y);
 }
 
-void OpenGLShader::UploadUniformFloat3(const std::string& name, const glm::vec3& value)
+void OpenGLShader::UploadUniformVec3(const std::string& name, const glm::vec3& value)
 {
     PROFILE_FUNCTION();
 
@@ -290,7 +297,7 @@ void OpenGLShader::UploadUniformFloat3(const std::string& name, const glm::vec3&
     glUniform3f(location, value.x, value.y, value.z);
 }
 
-void OpenGLShader::UploadUniformFloat4(const std::string& name, const glm::vec4& value)
+void OpenGLShader::UploadUniformVec4(const std::string& name, const glm::vec4& value)
 {
     PROFILE_FUNCTION();
 
