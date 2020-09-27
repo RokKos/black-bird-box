@@ -468,6 +468,22 @@ void EOLLayer::ParseSimulationSettings()
         gravity[i] = gravity_json[i].GetFloat();
     }
 
+    ASSERT(cloth_simulation_settings["ExternalForce"].IsArray(), "ExternalForce is not an array!");
+    auto& external_force_json = cloth_simulation_settings["ExternalForce"];
+    ASSERT(gravity_json.Size() == 3, "ExternalForce is not size 3!");
+    glm::vec3 external_force = glm::vec3(0.0);
+    for (rapidjson::SizeType i = 0; i < external_force_json.Size(); i++) {
+        external_force[i] = external_force_json[i].GetFloat();
+    }
+
+    ASSERT(cloth_simulation_settings["WindResistance"].IsArray(), "WindResistance is not an array!");
+    auto& wind_resistance_json = cloth_simulation_settings["WindResistance"];
+    ASSERT(gravity_json.Size() == 3, "WindResistance is not size 3!");
+    glm::vec3 wind_resistance = glm::vec3(0.0);
+    for (rapidjson::SizeType i = 0; i < wind_resistance_json.Size(); i++) {
+        wind_resistance[i] = wind_resistance_json[i].GetFloat();
+    }
+
     ASSERT(cloth_simulation_settings["SimulationDeltaTime"].IsFloat(), "SimulationDeltaTime is not an float!");
     const float simulation_delta_time = cloth_simulation_settings["SimulationDeltaTime"].GetFloat();
 
@@ -483,8 +499,8 @@ void EOLLayer::ParseSimulationSettings()
     ASSERT(cloth_simulation_settings["FlexionStiffness"].IsFloat(), "FlexionStiffness is not an float!");
     const float flexion_stiffness = cloth_simulation_settings["FlexionStiffness"].GetFloat();
 
-    compute_shader_simulation_configuration_ = Core::ComputeShaderSimulationConfiguration(
-        gravity, simulation_delta_time, constraint_iterations, structural_stiffness, shear_stiffness, flexion_stiffness);
+    compute_shader_simulation_configuration_ = Core::ComputeShaderSimulationConfiguration(gravity, simulation_delta_time, external_force,
+        wind_resistance, constraint_iterations, structural_stiffness, shear_stiffness, flexion_stiffness);
 
     ASSERT(cloth_simulation_settings["ComputeShaderConfiguration"].IsObject(), "ComputeShaderConfiguration is not an object!");
     auto compute_shader_configuration = cloth_simulation_settings["ComputeShaderConfiguration"].GetObject();
