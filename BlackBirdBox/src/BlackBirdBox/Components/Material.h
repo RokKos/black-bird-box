@@ -1,5 +1,4 @@
-#pragma once
-
+﻿#pragma once
 
 #include "BlackBirdBox/Core/Core.h"
 
@@ -8,34 +7,59 @@
 #include "BlackBirdBox/Renderer/Texture/Texture.h"
 
 namespace Core {
+enum class UniformType { None = 0, Int = 1, Float = 2, Vec2 = 3, Vec3 = 4, Vec4 = 5, Mat4 = 6, Sampler2D = 7, SamplerCube = 8 };
 
-	class Material
-	{
-	public:
-		Material() = default;
-		Material(const Ref<Shader>& shader, const PhongLightingParameters& phong_lighting_parameters = PhongLightingParameters(), const std::string& name = "material");
+struct Uniform {
+    Uniform() = default;
 
-		const Ref<Shader>& GetShader() const { return shader_; }
+    Uniform(std::string name, const std::string& type);
 
-		void SetTexture(const std::string& tex_name, const Ref<Texture>& texture);
-		Ref<Texture> GetTexture(const std::string& tex_name);
-		void BindTextures() const;
-		void BindLightData() const;
+    union {
+        int integer_value;
+        float float_value;
+        glm::vec2 vec2_value;
+        glm::vec3 vec3_value;
+        glm::vec4 vec4_value;
+        glm::mat4 mat4_value;
+    };
+    std::string name_ = "Uniform";
+    UniformType type_ = UniformType::None;
+};
 
-		const std::string& GetName() const { return name_; }
-		
-		const PhongLightingParameters& GetPhongLightingParameters() const { return phong_lighting_parameters_; }
-		void SetPhongLightingParameters(const PhongLightingParameters& phong_lighting_parameters) { phong_lighting_parameters_ = phong_lighting_parameters; }
+class Material {
+public:
+    Material() = default;
+    Material(const Ref<Shader>& shader, std::string name = "material");
 
+    const std::string& GetName() const { return name_; }
+    [[nodiscard]] const Ref<Shader>& GetShader() const { return shader_; }
 
-	private:
-		bool TextureExists(const std::string& name) const;
-	private:
-		std::string name_ = "material";
+    void SetTexture(const std::string& tex_name, const Ref<Texture>& texture);
+    [[nodiscard]] Ref<Texture> GetTexture(const std::string& tex_name);
+    void BindTextures() const;
 
-		Ref<Shader> shader_;
-		std::unordered_map<std::string, Ref<Texture>> textures_;
-		PhongLightingParameters phong_lighting_parameters_;
-	};
+    void BindUniforms();
+    [[nodiscard]] const std::vector<Uniform>& GetUniforms() const;
+    [[nodiscard]] std::vector<Uniform>& GetUniforms();
+    [[nodiscard]] const Uniform& GetUniformByName(const std::string& name) const;
+    [[nodiscard]] Uniform& GetUniformByName(const std::string& name);
+    [[nodiscard]] bool HasUniform(const std::string& name);
+    void SetUniform(const std::string& name, int integer_value);
+    void SetUniform(const std::string& name, float float_value);
+    void SetUniform(const std::string& name, glm::vec2 vec2_value);
+    void SetUniform(const std::string& name, glm::vec3 vec3_value);
+    void SetUniform(const std::string& name, glm::vec4 vec4_value);
+    void SetUniform(const std::string& name, glm::mat4 mat4_value);
+
+private:
+    bool TextureExists(const std::string& name) const;
+
+private:
+    std::string name_ = "material";
+
+    Ref<Shader> shader_;
+    std::vector<Uniform> uniforms_;
+    std::unordered_map<std::string, Ref<Texture>> textures_;
+};
 
 }
