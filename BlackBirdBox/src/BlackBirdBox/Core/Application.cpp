@@ -123,6 +123,7 @@ bool Application::OnWindowResize(WindowResizeEvent& e)
         return false;
     }
 
+    minimized_ = false;
     Renderer::OnWindowResize(e.GetWidth(), e.GetHeight());
 
     return false;
@@ -133,7 +134,12 @@ bool Application::OnKeyPressedEvent(KeyPressedEvent& e)
     PROFILE_FUNCTION();
 
     if (e.GetKeyCode() == KeyCode::Escape) {
-        m_Running = false;
+        running_ = false;
+        return true;
+    }
+
+    if (e.GetKeyCode() == KeyCode::F5) {
+        are_layers_paused = !are_layers_paused;
         return true;
     }
 
