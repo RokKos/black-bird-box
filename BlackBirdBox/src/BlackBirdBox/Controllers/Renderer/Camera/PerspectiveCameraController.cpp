@@ -3,7 +3,7 @@
 
 #include "BlackBirdBox/Core/Input.h"
 
-namespace Core {
+namespace BlackBirdBox {
 
 PerspectiveCameraController::PerspectiveCameraController()
     : camera_(16.0f / 9.0f, 45.0f, 0.01f, 1000.0f)

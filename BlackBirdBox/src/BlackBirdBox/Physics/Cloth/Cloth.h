@@ -5,7 +5,7 @@
 #include "BlackBirdBox/Renderer/Buffers/ShaderStorageArray.h"
 #include "BlackBirdBox/Renderer/Buffers/ShaderStorageBuffer.h"
 
-namespace Core {
+namespace BlackBirdBox {
 class Cloth : public Shape {
 public:
     Cloth(unsigned int num_cloth_dimension_size, Ref<Material> material_to_render_cloth);
@@ -29,4 +29,4 @@ private:
     float diagonal_distance_between_vertexes_ = 0.0f;
     float bend_distance_between_vertexes_ = 0.0f;
 };
-} // namespace Core
+} // namespace BlackBirdBox

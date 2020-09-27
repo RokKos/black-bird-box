@@ -6,7 +6,7 @@
 
 namespace EOL {
 
-class EOLLayer : public Core::Layer {
+class EOLLayer : public BlackBirdBox::Layer {
 public:
     EOLLayer();
     virtual ~EOLLayer() = default;
@@ -14,44 +14,45 @@ public:
     virtual void OnAttach() override;
     virtual void OnDetach() override;
 
-    void OnUpdate(Core::TimeStep ts) override;
+    void OnUpdate(BlackBirdBox::TimeStep ts) override;
     virtual void OnImGuiRender() override;
-    void OnEvent(Core::Event& e) override;
+    void OnEvent(BlackBirdBox::Event& e) override;
 
 private:
-    bool OnKeyPressedEvent(Core::KeyPressedEvent& e);
-    bool OnKeyTypedEvent(Core::KeyTypedEvent& e);
+    bool OnKeyPressedEvent(BlackBirdBox::KeyPressedEvent& e);
+    bool OnKeyTypedEvent(BlackBirdBox::KeyTypedEvent& e);
 
     void ParseSimulationSettings();
     void LoadAllShaders();
     void LoadAllPrimitiveModels();
     void LoadModelInThread(const std::string& filepath);
-    std::string FrameBufferAttachmentToName(Core::FrameBufferAttachments attachment);
-    void SetPhongParameters(const Core::Ref<Core::Material>& material, Core::PhongLightingParameters phong_lighting_parameters);
+    std::string FrameBufferAttachmentToName(BlackBirdBox::FrameBufferAttachments attachment);
+    void SetPhongParameters(
+        const BlackBirdBox::Ref<BlackBirdBox::Material>& material, BlackBirdBox::PhongLightingParameters phong_lighting_parameters);
 
 private:
-    Core::TimeStep prev_time_step_;
+    BlackBirdBox::TimeStep prev_time_step_;
     glm::vec4 bg_color_ = { 0.1f, 0.1f, 0.1f, 1 };
 
-    Core::ShaderLibrary shader_library_;
-    Core::ModelLibrary model_library_;
+    BlackBirdBox::ShaderLibrary shader_library_;
+    BlackBirdBox::ModelLibrary model_library_;
 
-    Core::Ref<Core::PerspectiveCameraController> perspective_camera_controller_;
+    BlackBirdBox::Ref<BlackBirdBox::PerspectiveCameraController> perspective_camera_controller_;
 
-    std::vector<Core::Ref<Core::BaseMenu>> menus_;
+    std::vector<BlackBirdBox::Ref<BlackBirdBox::BaseMenu>> menus_;
 
-    Core::Scene scene_;
+    BlackBirdBox::Scene scene_;
 
-    Core::Ref<Core::VertexArray> vertex_array_box_;
-    Core::Ref<Core::CubeMap> enviroment_map_;
-    Core::Ref<Core::Material> enviroment_map_material_;
-    Core::Ref<Core::FrameBuffer> test_frame_buffer_;
-    Core::Ref<Core::Shape> frame_buffer_obj_;
-    Core::Ref<Core::Cloth> cloth_;
-    Core::Ref<Core::Material> vertlet_compute_material_;
-    Core::Ref<Core::Material> constraint_compute_material_;
-    Core::ComputeShaderConfiguration compute_shader_configuration_;
-    Core::ComputeShaderSimulationConfiguration compute_shader_simulation_configuration_;
+    BlackBirdBox::Ref<BlackBirdBox::VertexArray> vertex_array_box_;
+    BlackBirdBox::Ref<BlackBirdBox::CubeMap> enviroment_map_;
+    BlackBirdBox::Ref<BlackBirdBox::Material> enviroment_map_material_;
+    BlackBirdBox::Ref<BlackBirdBox::FrameBuffer> test_frame_buffer_;
+    BlackBirdBox::Ref<BlackBirdBox::Shape> frame_buffer_obj_;
+    BlackBirdBox::Ref<BlackBirdBox::Cloth> cloth_;
+    BlackBirdBox::Ref<BlackBirdBox::Material> vertlet_compute_material_;
+    BlackBirdBox::Ref<BlackBirdBox::Material> constraint_compute_material_;
+    BlackBirdBox::ComputeShaderConfiguration compute_shader_configuration_;
+    BlackBirdBox::ComputeShaderSimulationConfiguration compute_shader_simulation_configuration_;
     glm::vec4 fixed_point_to_move_ = glm::vec4(1.0f, 1.0f, 0.0f, 1.0f);
     unsigned int num_cloth_dimension_size_;
 

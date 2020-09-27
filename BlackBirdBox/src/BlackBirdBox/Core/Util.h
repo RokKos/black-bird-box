@@ -1,8 +1,8 @@
-#pragma once
+﻿#pragma once
 
 #include <glm/glm.hpp>
 
-namespace Core {
+namespace BlackBirdBox {
 
 class Util {
 public:

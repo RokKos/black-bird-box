@@ -2,7 +2,7 @@
 
 #include "glm/glm.hpp"
 
-namespace Core {
+namespace BlackBirdBox {
 class ComputeShaderSimulationConfiguration {
 public:
     ComputeShaderSimulationConfiguration();
@@ -59,4 +59,4 @@ private:
     glm::vec3 external_force_;
     glm::vec3 wind_resistance_;
 };
-} // namespace Core
+} // namespace BlackBirdBox

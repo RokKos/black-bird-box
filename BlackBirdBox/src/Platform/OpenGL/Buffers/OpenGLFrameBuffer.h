@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "BlackBirdBox/Renderer/Buffers/FrameBuffer.h"
 
@@ -6,26 +6,26 @@
 
 namespace Platform {
 
-	class OpenGLFrameBuffer : public Core::FrameBuffer
-	{
-	public:
-		OpenGLFrameBuffer(const Core::FramebufferSpecification& specification);
-		
-		virtual ~OpenGLFrameBuffer();
+class OpenGLFrameBuffer : public BlackBirdBox::FrameBuffer {
+public:
+    OpenGLFrameBuffer(const BlackBirdBox::FramebufferSpecification& specification);
 
-		virtual void Bind() const override;
-		virtual void Unbind() const override;
+    virtual ~OpenGLFrameBuffer();
 
-		virtual const Core::Ref<Core::Texture2D>& GetTextureAttachment(Core::FrameBufferAttachments attachment) override;
-		virtual const Core::FramebufferSpecification& GetFrameBufferSpecification() const { return specification_; };
+    virtual void Bind() const override;
+    virtual void Unbind() const override;
 
-	private:
-		GLenum OpenGLFrameBufferAttachments(Core::FrameBufferAttachments attachment) const;
-	private:
-		uint32_t renderer_id_;
-		std::unordered_map<Core::FrameBufferAttachments, Core::Ref<Core::Texture2D>> texture_attachments_;
+    virtual const BlackBirdBox::Ref<BlackBirdBox::Texture2D>& GetTextureAttachment(BlackBirdBox::FrameBufferAttachments attachment) override;
+    virtual const BlackBirdBox::FramebufferSpecification& GetFrameBufferSpecification() const { return specification_; };
 
-		Core::FramebufferSpecification specification_;
-	};
+private:
+    GLenum OpenGLFrameBufferAttachments(BlackBirdBox::FrameBufferAttachments attachment) const;
+
+private:
+    uint32_t renderer_id_;
+    std::unordered_map<BlackBirdBox::FrameBufferAttachments, BlackBirdBox::Ref<BlackBirdBox::Texture2D>> texture_attachments_;
+
+    BlackBirdBox::FramebufferSpecification specification_;
+};
 
 }

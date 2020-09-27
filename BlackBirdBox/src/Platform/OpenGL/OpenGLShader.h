@@ -7,7 +7,7 @@
 
 namespace Platform {
 
-class OpenGLShader : public Core::Shader {
+class OpenGLShader : public BlackBirdBox::Shader {
 public:
     OpenGLShader(const std::string& filepath);
     OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc);

@@ -1,7 +1,7 @@
 ﻿#include "bbbpch.h"
 #include "ShaderLibrary.h"
 
-namespace Core {
+namespace BlackBirdBox {
 
 void ShaderLibrary::Add(const std::string& name, const Ref<Shader>& shader)
 {

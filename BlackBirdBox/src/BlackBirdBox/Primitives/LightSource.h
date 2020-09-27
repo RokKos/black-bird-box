@@ -1,8 +1,9 @@
-#pragma once
+﻿#pragma once
 
 #include "BlackBirdBox/Components/Transform.h"
+#include "glm/glm.hpp"
 
-namespace Core {
+namespace BlackBirdBox {
 
 enum class LightType : unsigned char {
     kNone = 0,
@@ -34,7 +35,7 @@ public:
 
     void SetPosition(const glm::vec3& pos) { transform_->SetPosition(pos); }
     void SetDirection(const glm::vec3& dir) { transform_->SetRotation(dir); }
-    void SetIntensity(const glm::vec3& intensity) {intensity_ = intensity; }
+    void SetIntensity(const glm::vec3& intensity) { intensity_ = intensity; }
     void SetColor(const glm::vec3& color) { color_ = color; }
 
 private:

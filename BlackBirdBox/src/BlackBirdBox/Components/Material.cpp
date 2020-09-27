@@ -3,7 +3,7 @@
 
 #include <limits>
 
-namespace Core {
+namespace BlackBirdBox {
 Uniform::Uniform(std::string name, const std::string& type)
     : name_(std::move(name))
 {

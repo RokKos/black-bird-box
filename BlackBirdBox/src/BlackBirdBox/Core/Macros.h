@@ -1,13 +1,13 @@
-#pragma once
+﻿#pragma once
 
 // Platform detection using predefined macros
 #ifdef _WIN32
-	/* Windows x64/x86 */
+/* Windows x64/x86 */
 #ifdef _WIN64
-	/* Windows x64  */
+/* Windows x64  */
 #define PLATFORM_WINDOWS
 #else
-	/* Windows x86 */
+/* Windows x86 */
 #error "x86 Builds are not supported!"
 #endif
 #elif defined(__APPLE__) || defined(__MACH__)
@@ -27,9 +27,9 @@
 #else
 #error "Unknown Apple platform!"
 #endif
- /* We also have to check __ANDROID__ before __linux__
-  * since android is based on the linux kernel
-  * it has __linux__ defined */
+/* We also have to check __ANDROID__ before __linux__
+ * since android is based on the linux kernel
+ * it has __linux__ defined */
 #elif defined(__ANDROID__)
 #define PLATFORM_ANDROID
 #error "Android is not supported!"
@@ -37,7 +37,7 @@
 #define PLATFORM_LINUX
 #error "Linux is not supported!"
 #else
-	/* Unknown compiler/platform */
+/* Unknown compiler/platform */
 #error "Unknown platform!"
 #endif // End of platform detection
 
@@ -49,35 +49,30 @@
 
 #define BIND_EVENT_FN(fn) std::bind(&fn, this, std::placeholders::_1)
 
-
 #include "BlackBirdBox/Tools/Instrumentator.h"
+
 #include "BlackBirdBox/Tools/InstrumentationTimer.h"
 
-
-template <size_t N>
-struct ChangeResult
-{
-	char Data[N];
+template <size_t N> struct ChangeResult {
+    char Data[N];
 };
 
-template <size_t N, size_t K>
-constexpr auto CleanupOutputString(const char(&expr)[N], const char(&remove)[K])
+template <size_t N, size_t K> constexpr auto CleanupOutputString(const char (&expr)[N], const char (&remove)[K])
 {
-	ChangeResult<N> result = {};
+    ChangeResult<N> result = {};
 
-	size_t srcIndex = 0;
-	size_t dstIndex = 0;
-	while (srcIndex < N)
-	{
-		size_t matchIndex = 0;
-		while (matchIndex < K - 1 && srcIndex + matchIndex < N - 1 && expr[srcIndex + matchIndex] == remove[matchIndex])
-			matchIndex++;
-		if (matchIndex == K - 1)
-			srcIndex += matchIndex;
-		result.Data[dstIndex++] = expr[srcIndex] == '"' ? '\'' : expr[srcIndex];
-		srcIndex++;
-	}
-	return result;
+    size_t srcIndex = 0;
+    size_t dstIndex = 0;
+    while (srcIndex < N) {
+        size_t matchIndex = 0;
+        while (matchIndex < K - 1 && srcIndex + matchIndex < N - 1 && expr[srcIndex + matchIndex] == remove[matchIndex])
+            matchIndex++;
+        if (matchIndex == K - 1)
+            srcIndex += matchIndex;
+        result.Data[dstIndex++] = expr[srcIndex] == '"' ? '\'' : expr[srcIndex];
+        srcIndex++;
+    }
+    return result;
 }
 
 #define PROFILE 0
@@ -103,10 +98,11 @@ constexpr auto CleanupOutputString(const char(&expr)[N], const char(&remove)[K])
 #define FUNC_SIG "FUNC_SIG unknown!"
 #endif
 
-#define PROFILE_BEGIN_SESSION(filepath) ::Core::Instrumentor::Get().BeginSession(filepath)
-#define PROFILE_END_SESSION() ::Core::Instrumentor::Get().EndSession()
-#define PROFILE_SCOPE(name) constexpr auto fixedName = CleanupOutputString(name, "__cdecl ");\
-									::Core::InstrumentationTimer timer##__LINE__(fixedName.Data)
+#define PROFILE_BEGIN_SESSION(filepath) ::BlackBirdBox::Instrumentor::Get().BeginSession(filepath)
+#define PROFILE_END_SESSION() ::BlackBirdBox::Instrumentor::Get().EndSession()
+#define PROFILE_SCOPE(name)                                                                                                                          \
+    constexpr auto fixedName = CleanupOutputString(name, "__cdecl ");                                                                                \
+    ::BlackBirdBox::InstrumentationTimer timer##__LINE__(fixedName.Data)
 #define PROFILE_FUNCTION() PROFILE_SCOPE(FUNC_SIG)
 #else
 #define PROFILE_BEGIN_SESSION(name, filepath)

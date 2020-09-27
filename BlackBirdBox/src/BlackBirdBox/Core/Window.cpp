@@ -1,21 +1,20 @@
-#include "bbbpch.h"
+﻿#include "bbbpch.h"
 #include "Window.h"
 
 #ifdef PLATFORM_WINDOWS
-	#include "Platform/Windows/WindowsWindow.h"
+#include "Platform/Windows/WindowsWindow.h"
 #endif
 
-namespace Core
+namespace BlackBirdBox {
+
+Scope<Window> Window::Create(const WindowProps& props)
 {
-
-	Scope<Window> Window::Create(const WindowProps& props)
-	{
 #ifdef PLATFORM_WINDOWS
-		return CreateScope<Platform::WindowsWindow>(props);
+    return CreateScope<Platform::WindowsWindow>(props);
 #else
-		CORE_ASSERT(false, "Unknown platform!");
-		return nullptr;
+    CORE_ASSERT(false, "Unknown platform!");
+    return nullptr;
 #endif
-	}
+}
 
 }

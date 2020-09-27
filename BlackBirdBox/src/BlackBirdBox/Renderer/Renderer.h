@@ -11,7 +11,7 @@
 #include "RendererAPI.h"
 #include "Shader.h"
 
-namespace Core {
+namespace BlackBirdBox {
 
 class Renderer {
 public:

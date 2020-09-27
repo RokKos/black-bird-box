@@ -3,7 +3,7 @@
 #include "BlackBirdBox/Core/Core.h"
 #include "BlackBirdBox/Renderer/Shader.h"
 
-namespace Core {
+namespace BlackBirdBox {
 
 class ShaderLibrary {
 public:

@@ -1,13 +1,12 @@
-#pragma once
+﻿#pragma once
 
 #include "rapidjson/document.h"
 
-namespace Core {
+namespace BlackBirdBox {
 
-	class JsonUtil
-	{
-	public:
-		static rapidjson::Document ReadJson(std::string file_path);
-	};
+class JsonUtil {
+public:
+    static rapidjson::Document ReadJson(std::string file_path);
+};
 
 }

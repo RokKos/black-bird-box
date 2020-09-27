@@ -2,7 +2,7 @@
 
 #include "ComputeShaderSimulationConfiguration.h"
 
-namespace Core {
+namespace BlackBirdBox {
 
 ComputeShaderSimulationConfiguration::ComputeShaderSimulationConfiguration(glm::vec3 gravity, float delta_time, glm::vec3 external_force,
     glm::vec3 wind_resistance, int iterations, float structural_stiffness, float shear_stiffness, float flexion_stiffness,
@@ -68,4 +68,4 @@ void ComputeShaderSimulationConfiguration::SetFlexionStiffness(float flexion_sti
 void ComputeShaderSimulationConfiguration::SetExternalForces(glm::vec3 external_force) { external_force_ = external_force; }
 
 void ComputeShaderSimulationConfiguration::SetWindResistance(glm::vec3 wind_resistance) { wind_resistance_ = wind_resistance; }
-} // namespace Core
+} // namespace BlackBirdBox

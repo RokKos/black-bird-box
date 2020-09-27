@@ -1,4 +1,4 @@
-#include "bbbpch.h"
+﻿#include "bbbpch.h"
 #include "ModelLibrary.h"
 
 #define TINYOBJLOADER_IMPLEMENTATION
@@ -7,107 +7,102 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/hash.hpp>
 
-namespace Core {
-	
-	void ModelLibrary::Add(const std::string& name, const ModelData& model)
-	{
-		PROFILE_FUNCTION();
+namespace BlackBirdBox {
 
-		CORE_ASSERT(!Exists(name), "Model already exists!");
-		models_[name] = model;
-	}
+void ModelLibrary::Add(const std::string& name, const ModelData& model)
+{
+    PROFILE_FUNCTION();
 
-	const ModelData& ModelLibrary::Load(const std::string& filepath)
-	{
-		PROFILE_FUNCTION();
+    CORE_ASSERT(!Exists(name), "Model already exists!");
+    models_[name] = model;
+}
 
-		ModelData model = LoadModel(filepath);
-		Add(filepath, model);
-		return model;
-	}
+const ModelData& ModelLibrary::Load(const std::string& filepath)
+{
+    PROFILE_FUNCTION();
 
-	const ModelData& ModelLibrary::Load(const std::string& name, const std::string& filepath)
-	{
-		PROFILE_FUNCTION();
+    ModelData model = LoadModel(filepath);
+    Add(filepath, model);
+    return model;
+}
 
-		ModelData model = LoadModel(filepath);
-		Add(name, model);
-		return model;
-	}
+const ModelData& ModelLibrary::Load(const std::string& name, const std::string& filepath)
+{
+    PROFILE_FUNCTION();
 
-	const ModelData& ModelLibrary::Get(const std::string& name)
-	{
-		PROFILE_FUNCTION();
+    ModelData model = LoadModel(filepath);
+    Add(name, model);
+    return model;
+}
 
-		CORE_ASSERT(Exists(name), "Model not found!");
-		return models_[name];
-	}
+const ModelData& ModelLibrary::Get(const std::string& name)
+{
+    PROFILE_FUNCTION();
 
-	bool ModelLibrary::Exists(const std::string& name) const
-	{
-		PROFILE_FUNCTION();
+    CORE_ASSERT(Exists(name), "Model not found!");
+    return models_[name];
+}
 
-		return models_.find(name) != models_.end();
-	}
+bool ModelLibrary::Exists(const std::string& name) const
+{
+    PROFILE_FUNCTION();
 
-	ModelData ModelLibrary::LoadModel(const std::string& model_path)
-	{
-		PROFILE_FUNCTION();
+    return models_.find(name) != models_.end();
+}
 
-		ModelData model_data;
-		tinyobj::attrib_t attrib;
-		std::vector<tinyobj::shape_t> shapes;
-		std::vector<tinyobj::material_t> materials;
-		std::string warn, err;
+ModelData ModelLibrary::LoadModel(const std::string& model_path)
+{
+    PROFILE_FUNCTION();
 
-		bool is_object_not_loaded = !tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, model_path.c_str());
-		if (is_object_not_loaded) {
-			LOG_WARN("{0}", warn);
-			LOG_ERROR("{0}", err);
-			CORE_ASSERT(false, "Object {0} was not loaded succesfully", model_path.c_str())
-		}
+    ModelData model_data;
+    tinyobj::attrib_t attrib;
+    std::vector<tinyobj::shape_t> shapes;
+    std::vector<tinyobj::material_t> materials;
+    std::string warn, err;
 
-		LOG_WARN("{0}", warn);
+    bool is_object_not_loaded = !tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, model_path.c_str());
+    if (is_object_not_loaded) {
+        LOG_WARN("{0}", warn);
+        LOG_ERROR("{0}", err);
+        CORE_ASSERT(false, "Object {0} was not loaded succesfully", model_path.c_str())
+    }
 
-		std::unordered_map<Vertex, uint32_t> unique_vertices = {};
+    LOG_WARN("{0}", warn);
 
-		bool has_texture_cordinates = attrib.texcoords.size() > 0;
-		bool has_normals = attrib.normals.size() > 0;
+    std::unordered_map<Vertex, uint32_t> unique_vertices = {};
 
-		for (const auto& shape : shapes) {
-			for (const auto& index : shape.mesh.indices) {
-				Vertex vertex{};
-				vertex.pos = {
-					attrib.vertices[3 * index.vertex_index + 0],
-					attrib.vertices[3 * index.vertex_index + 1],
-					attrib.vertices[3 * index.vertex_index + 2]
-				};
+    bool has_texture_cordinates = attrib.texcoords.size() > 0;
+    bool has_normals = attrib.normals.size() > 0;
 
-				if (has_normals) {
-					vertex.normal = {
-						attrib.normals[3 * index.normal_index + 0],
-						attrib.normals[3 * index.normal_index + 1],
-						attrib.normals[3 * index.normal_index + 2],
-					};
-				}
+    for (const auto& shape : shapes) {
+        for (const auto& index : shape.mesh.indices) {
+            Vertex vertex{};
+            vertex.pos = { attrib.vertices[3 * index.vertex_index + 0], attrib.vertices[3 * index.vertex_index + 1],
+                attrib.vertices[3 * index.vertex_index + 2] };
 
-				if (has_texture_cordinates) {
-					vertex.tex_coord = {
-						attrib.texcoords[2 * index.texcoord_index + 0],
-						attrib.texcoords[2 * index.texcoord_index + 1]
-					};
-				}
+            if (has_normals) {
+                vertex.normal = {
+                    attrib.normals[3 * index.normal_index + 0],
+                    attrib.normals[3 * index.normal_index + 1],
+                    attrib.normals[3 * index.normal_index + 2],
+                };
+            }
 
-				if (unique_vertices.count(vertex) == 0) {  // TODO(Rok Kos): Check if this is true: There probably aren't two vertexes with same positions and different texture cordinates
-					unique_vertices[vertex] = static_cast<uint32_t>(model_data.vertices.size());
-					model_data.vertices.push_back(vertex);
-				}
+            if (has_texture_cordinates) {
+                vertex.tex_coord = { attrib.texcoords[2 * index.texcoord_index + 0], attrib.texcoords[2 * index.texcoord_index + 1] };
+            }
 
-				model_data.indices.push_back(unique_vertices[vertex]);
-			}
-		}
+            if (unique_vertices.count(vertex) == 0) { // TODO(Rok Kos): Check if this is true: There probably aren't two vertexes with same positions
+                                                      // and different texture cordinates
+                unique_vertices[vertex] = static_cast<uint32_t>(model_data.vertices.size());
+                model_data.vertices.push_back(vertex);
+            }
 
-		return model_data;
-	}
+            model_data.indices.push_back(unique_vertices[vertex]);
+        }
+    }
+
+    return model_data;
+}
 
 }

@@ -3,7 +3,7 @@
 
 #include "RenderCommand.h"
 
-namespace Core {
+namespace BlackBirdBox {
 
 Scope<Renderer::SceneData> Renderer::s_SceneData = CreateScope<Renderer::SceneData>();
 

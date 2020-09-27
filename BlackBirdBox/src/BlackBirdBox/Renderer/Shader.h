@@ -4,7 +4,7 @@
 
 #include <glm/glm.hpp>
 
-namespace Core {
+namespace BlackBirdBox {
 
 class Shader {
 public:

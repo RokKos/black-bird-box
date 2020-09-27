@@ -1,8 +1,8 @@
-#include "bbbpch.h"
+﻿#include "bbbpch.h"
 #include "RenderCommand.h"
 
-namespace Core {
+namespace BlackBirdBox {
 
-	Scope<RendererAPI> RenderCommand::s_RendererAPI = RendererAPI::Create();
+Scope<RendererAPI> RenderCommand::s_RendererAPI = RendererAPI::Create();
 
 }

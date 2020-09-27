@@ -4,7 +4,7 @@
 
 namespace Platform {
 
-class OpenGLShaderStorageBuffer : public Core::ShaderStorageBuffer {
+class OpenGLShaderStorageBuffer : public BlackBirdBox::ShaderStorageBuffer {
 public:
     OpenGLShaderStorageBuffer(uint32_t size);
     OpenGLShaderStorageBuffer(const std::vector<glm::vec3>& storage_data, uint32_t size);

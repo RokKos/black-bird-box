@@ -8,91 +8,95 @@
 
 namespace EOL {
 EOLLayer::EOLLayer()
-    : Core::Layer("EOLLayer")
+    : BlackBirdBox::Layer("EOLLayer")
 {
     PROFILE_FUNCTION();
 
     LoadAllShaders();
     LoadAllPrimitiveModels();
 
-    perspective_camera_controller_ = Core::CreateRef<Core::PerspectiveCameraController>();
+    perspective_camera_controller_ = BlackBirdBox::CreateRef<BlackBirdBox::PerspectiveCameraController>();
     perspective_camera_controller_->GetCamera().SetPosition(glm::vec3(0.0f, 0.5f, 1.5f));
-    menus_.push_back(Core::CreateRef<Core::CameraMenu>("Camera Controls", perspective_camera_controller_));
-    menus_.push_back(Core::CreateRef<Core::SceneViewMenu>("Scene View", scene_.GetShapes(), scene_.GetLightSources()));
-    menus_.push_back(Core::CreateRef<Core::ComputeShaderMenu>("Compute Shader Simulation Controls", compute_shader_simulation_configuration_));
-    menus_.push_back(Core::CreateRef<Core::MiscMenu>("Misc Menu", prev_time_step_, bg_color_, polygon_mode_));
+    menus_.push_back(BlackBirdBox::CreateRef<BlackBirdBox::CameraMenu>("Camera Controls", perspective_camera_controller_));
+    menus_.push_back(BlackBirdBox::CreateRef<BlackBirdBox::SceneViewMenu>("Scene View", scene_.GetShapes(), scene_.GetLightSources()));
+    menus_.push_back(
+        BlackBirdBox::CreateRef<BlackBirdBox::ComputeShaderMenu>("Compute Shader Simulation Controls", compute_shader_simulation_configuration_));
+    menus_.push_back(BlackBirdBox::CreateRef<BlackBirdBox::MiscMenu>("Misc Menu", prev_time_step_, bg_color_, polygon_mode_));
 
-    const auto& mat_generic_triangle = Core::CreateRef<Core::Material>(shader_library_.Get("TriangleTest"), "Generic_Triangle_MAT");
-    const auto& mat_generic_color = Core::CreateRef<Core::Material>(shader_library_.Get("GenericColor"), "Generic_Color_MAT");
-    const auto& mat_generic_normals = Core::CreateRef<Core::Material>(shader_library_.Get("GenericNormals"), "Generic_Normals_MAT");
+    const auto& mat_generic_triangle = BlackBirdBox::CreateRef<BlackBirdBox::Material>(shader_library_.Get("TriangleTest"), "Generic_Triangle_MAT");
+    const auto& mat_generic_color = BlackBirdBox::CreateRef<BlackBirdBox::Material>(shader_library_.Get("GenericColor"), "Generic_Color_MAT");
+    const auto& mat_generic_normals = BlackBirdBox::CreateRef<BlackBirdBox::Material>(shader_library_.Get("GenericNormals"), "Generic_Normals_MAT");
 
     const auto& generic_uv_coordinates_shader = shader_library_.Get("GenericUVCoordinates");
     generic_uv_coordinates_shader->Bind();
 
-    Core::Texture2DSpecification generic_tex_2d_spec = Core::Texture2DSpecification();
-    generic_tex_2d_spec.TextureMinFilter = Core::TextureMinifyingFilter::LINEAR;
-    generic_tex_2d_spec.TextureMagFilter = Core::TextureMagnificationFilter::NEAREST;
+    BlackBirdBox::Texture2DSpecification generic_tex_2d_spec = BlackBirdBox::Texture2DSpecification();
+    generic_tex_2d_spec.TextureMinFilter = BlackBirdBox::TextureMinifyingFilter::LINEAR;
+    generic_tex_2d_spec.TextureMagFilter = BlackBirdBox::TextureMagnificationFilter::NEAREST;
 
-    auto uv_texture = Core::Texture2D::Create("assets/Textures/uv_texture.png", generic_tex_2d_spec);
-    auto mat_generic_uv_coordinates = Core::CreateRef<Core::Material>(generic_uv_coordinates_shader, "Generic_UV_Coordinates_MAT");
+    auto uv_texture = BlackBirdBox::Texture2D::Create("assets/Textures/uv_texture.png", generic_tex_2d_spec);
+    auto mat_generic_uv_coordinates = BlackBirdBox::CreateRef<BlackBirdBox::Material>(generic_uv_coordinates_shader, "Generic_UV_Coordinates_MAT");
     mat_generic_uv_coordinates->SetTexture("UV_TEST_Texture", uv_texture);
     mat_generic_uv_coordinates->SetUniform("u_Texture", 0);
 
     const auto& generic_texture_shader = shader_library_.Get("GenericTexture");
     generic_texture_shader->Bind();
-    auto gun_texture = Core::Texture2D::Create("assets/Textures/Cerberus_A.tga", generic_tex_2d_spec);
-    auto mat_generic_texture = Core::CreateRef<Core::Material>(generic_texture_shader, "Generic_Texture_MAT");
+    auto gun_texture = BlackBirdBox::Texture2D::Create("assets/Textures/Cerberus_A.tga", generic_tex_2d_spec);
+    auto mat_generic_texture = BlackBirdBox::CreateRef<BlackBirdBox::Material>(generic_texture_shader, "Generic_Texture_MAT");
     mat_generic_texture->SetTexture("Gun_Texture", gun_texture);
     mat_generic_texture->SetUniform("u_Texture", 0);
 
-    auto phong_lighting_parameters = Core::PhongLightingParameters();
+    auto phong_lighting_parameters = BlackBirdBox::PhongLightingParameters();
     phong_lighting_parameters.diffuse_color_ = glm::vec3(188.0f / 255.0f, 185.0f / 255.0f, 167.0f / 255.0f);
     phong_lighting_parameters.specular_color_ = glm::vec3(1.0f, 1.0f, 1.0f);
     phong_lighting_parameters.specular_scattering_ = 15.0f;
     phong_lighting_parameters.ambient_color_ = glm::vec3(81.0f / 255.0f, 84.0f / 255.0f, 67.0f / 255.0f);
     phong_lighting_parameters.ambient_intensity_ = glm::vec3(0.21f, 0.21f, 0.21f);
-    const auto& mat_generic_lighting = Core::CreateRef<Core::Material>(shader_library_.Get("GenericLighting"), "Generic_Lighting_MAT");
+    const auto& mat_generic_lighting
+        = BlackBirdBox::CreateRef<BlackBirdBox::Material>(shader_library_.Get("GenericLighting"), "Generic_Lighting_MAT");
     mat_generic_lighting->SetUniform("u_Texture", 0);
     SetPhongParameters(mat_generic_lighting, phong_lighting_parameters);
 
     const auto& standard_shader = shader_library_.Get("FrameBufferShader");
     standard_shader->Bind();
-    auto mat_standard_shader = Core::CreateRef<Core::Material>(standard_shader, "Standard_MAT");
+    auto mat_standard_shader = BlackBirdBox::CreateRef<BlackBirdBox::Material>(standard_shader, "Standard_MAT");
     mat_standard_shader->SetTexture("Gun_Texture", gun_texture);
     mat_standard_shader->SetUniform("u_Texture", 0);
     SetPhongParameters(mat_standard_shader, phong_lighting_parameters);
 
     // Gun ------
     {
-        auto vertex_array_gun = Core::VertexArray::Create();
+        auto vertex_array_gun = BlackBirdBox::VertexArray::Create();
         auto model_data = model_library_.Get("assets/Models/gun.obj");
 
-        auto vertex_buffer_gun = Core::VertexBuffer::Create(model_data.vertices.data(), model_data.vertices.size() * sizeof(Core::Vertex));
-        Core::BufferLayout layout_gun = {
-            { Core::ShaderDataType::Float3, "a_Position" },
-            { Core::ShaderDataType::Float3, "a_Normal" },
-            { Core::ShaderDataType::Float2, "a_TexCoord" },
+        auto vertex_buffer_gun
+            = BlackBirdBox::VertexBuffer::Create(model_data.vertices.data(), model_data.vertices.size() * sizeof(BlackBirdBox::Vertex));
+        BlackBirdBox::BufferLayout layout_gun = {
+            { BlackBirdBox::ShaderDataType::Float3, "a_Position" },
+            { BlackBirdBox::ShaderDataType::Float3, "a_Normal" },
+            { BlackBirdBox::ShaderDataType::Float2, "a_TexCoord" },
         };
 
         vertex_buffer_gun->SetLayout(layout_gun);
         vertex_array_gun->AddVertexBuffer(vertex_buffer_gun);
 
-        Core::Ref<Core::IndexBuffer> index_buffer_gun = Core::IndexBuffer::Create(model_data.indices.data(), model_data.indices.size());
+        BlackBirdBox::Ref<BlackBirdBox::IndexBuffer> index_buffer_gun
+            = BlackBirdBox::IndexBuffer::Create(model_data.indices.data(), model_data.indices.size());
         vertex_array_gun->SetIndexBuffer(index_buffer_gun);
 
         // TODO(Rok Kos): Read from JSON file
-        auto shape = Core::CreateRef<Core::Shape>(
-            mat_generic_color, vertex_array_gun, Core::CreateRef<Core::Transform>(glm::vec3(0, 0.5, 0)), model_data, "Obj Model Test");
-        auto shape2 = Core::CreateRef<Core::Shape>(
-            mat_generic_normals, vertex_array_gun, Core::CreateRef<Core::Transform>(glm::vec3(1, 0, 0)), model_data, "Obj Model Normals Test");
-        auto shape3 = Core::CreateRef<Core::Shape>(
-            mat_generic_uv_coordinates, vertex_array_gun, Core::CreateRef<Core::Transform>(glm::vec3(4, 0, 0)), model_data, "Obj Texture UVs Test");
-        auto shape4 = Core::CreateRef<Core::Shape>(
-            mat_generic_texture, vertex_array_gun, Core::CreateRef<Core::Transform>(glm::vec3(6, 0, 0)), model_data, "Obj Texture Test");
-        auto shape5 = Core::CreateRef<Core::Shape>(
-            mat_generic_lighting, vertex_array_gun, Core::CreateRef<Core::Transform>(glm::vec3(8, 0, 0)), model_data, "Obj Lighting Test");
-        auto shape6 = Core::CreateRef<Core::Shape>(
-            mat_standard_shader, vertex_array_gun, Core::CreateRef<Core::Transform>(glm::vec3(0, 0.5, 0)), model_data, "Obj All Together");
+        auto shape = BlackBirdBox::CreateRef<BlackBirdBox::Shape>(mat_generic_color, vertex_array_gun,
+            BlackBirdBox::CreateRef<BlackBirdBox::Transform>(glm::vec3(0, 0.5, 0)), model_data, "Obj Model Test");
+        auto shape2 = BlackBirdBox::CreateRef<BlackBirdBox::Shape>(mat_generic_normals, vertex_array_gun,
+            BlackBirdBox::CreateRef<BlackBirdBox::Transform>(glm::vec3(1, 0, 0)), model_data, "Obj Model Normals Test");
+        auto shape3 = BlackBirdBox::CreateRef<BlackBirdBox::Shape>(mat_generic_uv_coordinates, vertex_array_gun,
+            BlackBirdBox::CreateRef<BlackBirdBox::Transform>(glm::vec3(4, 0, 0)), model_data, "Obj Texture UVs Test");
+        auto shape4 = BlackBirdBox::CreateRef<BlackBirdBox::Shape>(mat_generic_texture, vertex_array_gun,
+            BlackBirdBox::CreateRef<BlackBirdBox::Transform>(glm::vec3(6, 0, 0)), model_data, "Obj Texture Test");
+        auto shape5 = BlackBirdBox::CreateRef<BlackBirdBox::Shape>(mat_generic_lighting, vertex_array_gun,
+            BlackBirdBox::CreateRef<BlackBirdBox::Transform>(glm::vec3(8, 0, 0)), model_data, "Obj Lighting Test");
+        auto shape6 = BlackBirdBox::CreateRef<BlackBirdBox::Shape>(mat_standard_shader, vertex_array_gun,
+            BlackBirdBox::CreateRef<BlackBirdBox::Transform>(glm::vec3(0, 0.5, 0)), model_data, "Obj All Together");
         // scene_.AddShape(shape);
         // scene_.AddShape(shape2);
         // scene_.AddShape(shape3);
@@ -103,30 +107,33 @@ EOLLayer::EOLLayer()
 
     // City01 ------
     {
-        auto vertex_array_ship = Core::VertexArray::Create();
+        auto vertex_array_ship = BlackBirdBox::VertexArray::Create();
         auto model_data_ship = model_library_.Get("assets/Models/LowPolyCity.obj");
 
-        auto vertex_buffer_ship = Core::VertexBuffer::Create(model_data_ship.vertices.data(), model_data_ship.vertices.size() * sizeof(Core::Vertex));
-        Core::BufferLayout layout_ship = {
-            { Core::ShaderDataType::Float3, "a_Position" },
-            { Core::ShaderDataType::Float3, "a_Normal" },
-            { Core::ShaderDataType::Float2, "a_TexCoord" },
+        auto vertex_buffer_ship
+            = BlackBirdBox::VertexBuffer::Create(model_data_ship.vertices.data(), model_data_ship.vertices.size() * sizeof(BlackBirdBox::Vertex));
+        BlackBirdBox::BufferLayout layout_ship = {
+            { BlackBirdBox::ShaderDataType::Float3, "a_Position" },
+            { BlackBirdBox::ShaderDataType::Float3, "a_Normal" },
+            { BlackBirdBox::ShaderDataType::Float2, "a_TexCoord" },
         };
 
         vertex_buffer_ship->SetLayout(layout_ship);
         vertex_array_ship->AddVertexBuffer(vertex_buffer_ship);
 
-        Core::Ref<Core::IndexBuffer> index_buffer_ship = Core::IndexBuffer::Create(model_data_ship.indices.data(), model_data_ship.indices.size());
+        BlackBirdBox::Ref<BlackBirdBox::IndexBuffer> index_buffer_ship
+            = BlackBirdBox::IndexBuffer::Create(model_data_ship.indices.data(), model_data_ship.indices.size());
         vertex_array_ship->SetIndexBuffer(index_buffer_ship);
 
-        auto city_texture = Core::Texture2D::Create("assets/Textures/Palette.jpg", generic_tex_2d_spec);
-        auto mat_stadard_shader_city = Core::CreateRef<Core::Material>(standard_shader, "Standard_City_MAT");
+        auto city_texture = BlackBirdBox::Texture2D::Create("assets/Textures/Palette.jpg", generic_tex_2d_spec);
+        auto mat_stadard_shader_city = BlackBirdBox::CreateRef<BlackBirdBox::Material>(standard_shader, "Standard_City_MAT");
         mat_stadard_shader_city->SetTexture("City_Texture", city_texture);
         mat_stadard_shader_city->SetUniform("u_Texture", 0);
         SetPhongParameters(mat_stadard_shader_city, phong_lighting_parameters);
 
-        auto ship = Core::CreateRef<Core::Shape>(mat_stadard_shader_city, vertex_array_ship,
-            Core::CreateRef<Core::Transform>(glm::vec3(-1.5, 0.5, 0), glm::vec3(0.0), glm::vec3(0.1, 0.1, 0.1)), model_data_ship, "City 01");
+        auto ship = BlackBirdBox::CreateRef<BlackBirdBox::Shape>(mat_stadard_shader_city, vertex_array_ship,
+            BlackBirdBox::CreateRef<BlackBirdBox::Transform>(glm::vec3(-1.5, 0.5, 0), glm::vec3(0.0), glm::vec3(0.1, 0.1, 0.1)), model_data_ship,
+            "City 01");
         // scene_.AddShape(ship);
     }
 
@@ -134,46 +141,49 @@ EOLLayer::EOLLayer()
     blinn_phong_shader->Bind();
     // City02 ------
     {
-        auto vertex_array_ship = Core::VertexArray::Create();
+        auto vertex_array_ship = BlackBirdBox::VertexArray::Create();
         auto model_data_ship = model_library_.Get("assets/Models/LowPolyCity.obj");
 
-        auto vertex_buffer_ship = Core::VertexBuffer::Create(model_data_ship.vertices.data(), model_data_ship.vertices.size() * sizeof(Core::Vertex));
-        Core::BufferLayout layout_ship = {
-            { Core::ShaderDataType::Float3, "a_Position" },
-            { Core::ShaderDataType::Float3, "a_Normal" },
-            { Core::ShaderDataType::Float2, "a_TexCoord" },
+        auto vertex_buffer_ship
+            = BlackBirdBox::VertexBuffer::Create(model_data_ship.vertices.data(), model_data_ship.vertices.size() * sizeof(BlackBirdBox::Vertex));
+        BlackBirdBox::BufferLayout layout_ship = {
+            { BlackBirdBox::ShaderDataType::Float3, "a_Position" },
+            { BlackBirdBox::ShaderDataType::Float3, "a_Normal" },
+            { BlackBirdBox::ShaderDataType::Float2, "a_TexCoord" },
         };
 
         vertex_buffer_ship->SetLayout(layout_ship);
         vertex_array_ship->AddVertexBuffer(vertex_buffer_ship);
 
-        Core::Ref<Core::IndexBuffer> index_buffer_ship = Core::IndexBuffer::Create(model_data_ship.indices.data(), model_data_ship.indices.size());
+        BlackBirdBox::Ref<BlackBirdBox::IndexBuffer> index_buffer_ship
+            = BlackBirdBox::IndexBuffer::Create(model_data_ship.indices.data(), model_data_ship.indices.size());
         vertex_array_ship->SetIndexBuffer(index_buffer_ship);
 
-        auto city_texture = Core::Texture2D::Create("assets/Textures/Palette.jpg", generic_tex_2d_spec);
-        auto mat_stadard_shader_city = Core::CreateRef<Core::Material>(blinn_phong_shader, "Standard_MAT");
+        auto city_texture = BlackBirdBox::Texture2D::Create("assets/Textures/Palette.jpg", generic_tex_2d_spec);
+        auto mat_stadard_shader_city = BlackBirdBox::CreateRef<BlackBirdBox::Material>(blinn_phong_shader, "Standard_MAT");
         mat_stadard_shader_city->SetUniform("u_Texture", 0);
         mat_stadard_shader_city->SetTexture("City_Texture", city_texture);
 
-        auto ship = Core::CreateRef<Core::Shape>(mat_stadard_shader_city, vertex_array_ship,
-            Core::CreateRef<Core::Transform>(glm::vec3(1.5, 0.5, 0), glm::vec3(0.0), glm::vec3(0.1, 0.1, 0.1)), model_data_ship, "City 02");
+        auto ship = BlackBirdBox::CreateRef<BlackBirdBox::Shape>(mat_stadard_shader_city, vertex_array_ship,
+            BlackBirdBox::CreateRef<BlackBirdBox::Transform>(glm::vec3(1.5, 0.5, 0), glm::vec3(0.0), glm::vec3(0.1, 0.1, 0.1)), model_data_ship,
+            "City 02");
         // scene_.AddShape(ship);
     }
 
-    scene_.AddLightSource(Core::CreateRef<Core::LightSource>(Core::LightType::kDirectional,
-        Core::CreateRef<Core::Transform>(glm::vec3(0, 5, 0), glm::vec3(1.0f), glm::vec3(0.1f, 0.1f, 0.1f)), glm::vec3(0.8f, 0.8f, 0.8f),
-        glm::vec3(1.f, 1.f, 1.f)));
+    scene_.AddLightSource(BlackBirdBox::CreateRef<BlackBirdBox::LightSource>(BlackBirdBox::LightType::kDirectional,
+        BlackBirdBox::CreateRef<BlackBirdBox::Transform>(glm::vec3(0, 5, 0), glm::vec3(1.0f), glm::vec3(0.1f, 0.1f, 0.1f)),
+        glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.f, 1.f, 1.f)));
 
-    scene_.AddPoint(Core::CreateRef<Core::Point>(10, glm::vec3(0, 0, 0), glm::vec3(1, 0, 0)));
-    scene_.AddPoint(Core::CreateRef<Core::Point>(100, glm::vec3(10, 2, 5), glm::vec3(0, 1, 0)));
+    scene_.AddPoint(BlackBirdBox::CreateRef<BlackBirdBox::Point>(10, glm::vec3(0, 0, 0), glm::vec3(1, 0, 0)));
+    scene_.AddPoint(BlackBirdBox::CreateRef<BlackBirdBox::Point>(100, glm::vec3(10, 2, 5), glm::vec3(0, 1, 0)));
 
     // Enviroment map ------
     const auto& enviroment_map_shader = shader_library_.Get("EnviromentMapShader");
     enviroment_map_shader->Bind();
-    enviroment_map_material_ = Core::CreateRef<Core::Material>(enviroment_map_shader, "EnviromentMap_MAT");
+    enviroment_map_material_ = BlackBirdBox::CreateRef<BlackBirdBox::Material>(enviroment_map_shader, "EnviromentMap_MAT");
     enviroment_map_material_->SetUniform("u_EnviromentMap", 0);
 
-    vertex_array_box_ = Core::VertexArray::Create();
+    vertex_array_box_ = BlackBirdBox::VertexArray::Create();
 
     float enviroment_map_box_vertices[] = {
         // Front face
@@ -270,24 +280,25 @@ EOLLayer::EOLLayer()
         20, 21, 22, 20, 22, 23, // left
     };
 
-    auto vertex_buffer_box = Core::VertexBuffer::Create(enviroment_map_box_vertices, sizeof(enviroment_map_box_vertices));
-    Core::BufferLayout layout_box = {
-        { Core::ShaderDataType::Float3, "a_Position" },
+    auto vertex_buffer_box = BlackBirdBox::VertexBuffer::Create(enviroment_map_box_vertices, sizeof(enviroment_map_box_vertices));
+    BlackBirdBox::BufferLayout layout_box = {
+        { BlackBirdBox::ShaderDataType::Float3, "a_Position" },
     };
 
     vertex_buffer_box->SetLayout(layout_box);
     vertex_array_box_->AddVertexBuffer(vertex_buffer_box);
 
-    Core::Ref<Core::IndexBuffer> index_buffer_box = Core::IndexBuffer::Create(enviroment_map_box_indices, sizeof(enviroment_map_box_indices));
+    BlackBirdBox::Ref<BlackBirdBox::IndexBuffer> index_buffer_box
+        = BlackBirdBox::IndexBuffer::Create(enviroment_map_box_indices, sizeof(enviroment_map_box_indices));
     vertex_array_box_->SetIndexBuffer(index_buffer_box);
 
-    enviroment_map_ = Core::CubeMap::Create("assets/Textures/CubeMap/");
+    enviroment_map_ = BlackBirdBox::CubeMap::Create("assets/Textures/CubeMap/");
 
     // Compute Cloth
 
     ParseSimulationSettings();
 
-    cloth_ = Core::CreateRef<Core::Cloth>(num_cloth_dimension_size_, mat_generic_triangle);
+    cloth_ = BlackBirdBox::CreateRef<BlackBirdBox::Cloth>(num_cloth_dimension_size_, mat_generic_triangle);
     // TODO(Rok Kos): Move this
     compute_shader_simulation_configuration_.SetHorizontalVerticalDistanceBetweenVertexes(cloth_->GetHorizontalVerticalDistanceBetweenVertexes());
     compute_shader_simulation_configuration_.SetDiagonalDistanceBetweenVertexes(cloth_->GetDiagonalDistanceBetweenVertexes());
@@ -295,14 +306,14 @@ EOLLayer::EOLLayer()
     scene_.AddShape(cloth_);
 
     const auto& verlet_integration_shader = shader_library_.Get("VerletIntegrationShader");
-    vertlet_compute_material_ = Core::CreateRef<Core::Material>(verlet_integration_shader, "VerletIntegration_MAT");
+    vertlet_compute_material_ = BlackBirdBox::CreateRef<BlackBirdBox::Material>(verlet_integration_shader, "VerletIntegration_MAT");
     vertlet_compute_material_->SetUniform("u_Gravity", compute_shader_simulation_configuration_.GetGravity());
     vertlet_compute_material_->SetUniform("u_DeltaTime", compute_shader_simulation_configuration_.GetDeltaTime());
     vertlet_compute_material_->SetUniform("u_External_Force", compute_shader_simulation_configuration_.GetExternalForce());
     vertlet_compute_material_->SetUniform("u_Wind_Resistance", compute_shader_simulation_configuration_.GetWindResistance());
 
     const auto& constrains_shader = shader_library_.Get("ConstraintsShader");
-    constraint_compute_material_ = Core::CreateRef<Core::Material>(constrains_shader, "Constraints_MAT");
+    constraint_compute_material_ = BlackBirdBox::CreateRef<BlackBirdBox::Material>(constrains_shader, "Constraints_MAT");
     constraint_compute_material_->SetUniform("u_Iterations", compute_shader_simulation_configuration_.GetIterations());
     constraint_compute_material_->SetUniform(
         "u_Horizontal_Vertical_Rest_Lenght", compute_shader_simulation_configuration_.GetHorizontalVerticalDistanceBetweenVertexes());
@@ -313,79 +324,81 @@ EOLLayer::EOLLayer()
     constraint_compute_material_->SetUniform("u_Flexion_Stiffness", compute_shader_simulation_configuration_.GetFlexionStiffness());
 
     // Frame Buffer
-    Core::FramebufferSpecification frame_buffer_spec = Core::FramebufferSpecification();
+    BlackBirdBox::FramebufferSpecification frame_buffer_spec = BlackBirdBox::FramebufferSpecification();
     frame_buffer_spec.width = 1920;
     frame_buffer_spec.height = 1080;
-    frame_buffer_spec.frame_buffer_attachments.push_back(Core::FrameBufferAttachments::COLOR_ATTACHMENT1);
-    frame_buffer_spec.frame_buffer_attachments.push_back(Core::FrameBufferAttachments::COLOR_ATTACHMENT2);
-    frame_buffer_spec.frame_buffer_attachments.push_back(Core::FrameBufferAttachments::COLOR_ATTACHMENT3);
-    frame_buffer_spec.frame_buffer_attachments.push_back(Core::FrameBufferAttachments::COLOR_ATTACHMENT4);
-    frame_buffer_spec.frame_buffer_attachments.push_back(Core::FrameBufferAttachments::COLOR_ATTACHMENT5);
-    frame_buffer_spec.frame_buffer_attachments.push_back(Core::FrameBufferAttachments::COLOR_ATTACHMENT6);
-    frame_buffer_spec.frame_buffer_attachments.push_back(Core::FrameBufferAttachments::COLOR_ATTACHMENT7);
-    test_frame_buffer_ = Core::FrameBuffer::Create(frame_buffer_spec);
+    frame_buffer_spec.frame_buffer_attachments.push_back(BlackBirdBox::FrameBufferAttachments::COLOR_ATTACHMENT1);
+    frame_buffer_spec.frame_buffer_attachments.push_back(BlackBirdBox::FrameBufferAttachments::COLOR_ATTACHMENT2);
+    frame_buffer_spec.frame_buffer_attachments.push_back(BlackBirdBox::FrameBufferAttachments::COLOR_ATTACHMENT3);
+    frame_buffer_spec.frame_buffer_attachments.push_back(BlackBirdBox::FrameBufferAttachments::COLOR_ATTACHMENT4);
+    frame_buffer_spec.frame_buffer_attachments.push_back(BlackBirdBox::FrameBufferAttachments::COLOR_ATTACHMENT5);
+    frame_buffer_spec.frame_buffer_attachments.push_back(BlackBirdBox::FrameBufferAttachments::COLOR_ATTACHMENT6);
+    frame_buffer_spec.frame_buffer_attachments.push_back(BlackBirdBox::FrameBufferAttachments::COLOR_ATTACHMENT7);
+    test_frame_buffer_ = BlackBirdBox::FrameBuffer::Create(frame_buffer_spec);
 }
 
-void EOLLayer::OnAttach() { Core::Layer::OnAttach(); }
+void EOLLayer::OnAttach() { BlackBirdBox::Layer::OnAttach(); }
 
-void EOLLayer::OnDetach() { Core::Layer::OnDetach(); }
+void EOLLayer::OnDetach() { BlackBirdBox::Layer::OnDetach(); }
 
-void EOLLayer::OnUpdate(Core::TimeStep ts)
+void EOLLayer::OnUpdate(BlackBirdBox::TimeStep ts)
 {
-    Core::Layer::OnUpdate(ts);
+    BlackBirdBox::Layer::OnUpdate(ts);
     perspective_camera_controller_->OnUpdate(ts);
 
-    Core::Renderer::BeginScene(perspective_camera_controller_->GetCamera(), scene_.GetLightSources());
+    BlackBirdBox::Renderer::BeginScene(perspective_camera_controller_->GetCamera(), scene_.GetLightSources());
 
     prev_time_step_ = ts;
 
-    Core::RenderCommand::SetClearColor(bg_color_);
-    Core::RenderCommand::Clear();
+    BlackBirdBox::RenderCommand::SetClearColor(bg_color_);
+    BlackBirdBox::RenderCommand::Clear();
 
-    Core::Renderer::Submit(enviroment_map_material_, enviroment_map_, vertex_array_box_);
+    BlackBirdBox::Renderer::Submit(enviroment_map_material_, enviroment_map_, vertex_array_box_);
 
-    Core::Renderer::DispatchComputeShader(vertlet_compute_material_, cloth_->GetClothStorageArray(0), compute_shader_configuration_);
+    BlackBirdBox::Renderer::DispatchComputeShader(vertlet_compute_material_, cloth_->GetClothStorageArray(0), compute_shader_configuration_);
 
     for (size_t batch_id = 0; batch_id < cloth_->GetNumberOfBatches(); ++batch_id) {
         const size_t number_of_edges = cloth_->GetBatches()[batch_id].size();
-        const Core::ComputeShaderConfiguration compute_shader_configuration({ static_cast<unsigned int>(number_of_edges), 1, 1 }, { 1, 1, 1 });
-        Core::Renderer::DispatchComputeShader(constraint_compute_material_, cloth_->GetClothStorageArray(batch_id), compute_shader_configuration);
+        const BlackBirdBox::ComputeShaderConfiguration compute_shader_configuration(
+            { static_cast<unsigned int>(number_of_edges), 1, 1 }, { 1, 1, 1 });
+        BlackBirdBox::Renderer::DispatchComputeShader(
+            constraint_compute_material_, cloth_->GetClothStorageArray(batch_id), compute_shader_configuration);
     }
 
     // TODO(Rok Kos): Load Models on themand
 
-    Core::RenderCommand::SetPolygonMode((Core::RendererAPI::PolygonMode)polygon_mode_);
+    BlackBirdBox::RenderCommand::SetPolygonMode((BlackBirdBox::RendererAPI::PolygonMode)polygon_mode_);
 
     test_frame_buffer_->Bind();
 
     for (const auto& shape : scene_.GetShapes()) {
         if (shape->GetObjectEnabled()) {
-            Core::Renderer::Submit(shape->GetMaterial(), shape->GetVertexArray(), shape->GetTransform()->GetTransformMatrix());
+            BlackBirdBox::Renderer::Submit(shape->GetMaterial(), shape->GetVertexArray(), shape->GetTransform()->GetTransformMatrix());
         }
     }
     test_frame_buffer_->Unbind();
 
     for (const auto& shape : scene_.GetShapes()) {
         if (shape->GetObjectEnabled()) {
-            Core::Renderer::Submit(shape->GetMaterial(), shape->GetVertexArray(), shape->GetTransform()->GetTransformMatrix());
+            BlackBirdBox::Renderer::Submit(shape->GetMaterial(), shape->GetVertexArray(), shape->GetTransform()->GetTransformMatrix());
         }
     }
 
     for (const auto& light_source : scene_.GetLightSources()) {
         if (light_source->GetObjectEnabled()) {
-            Core::Renderer::Submit(Core::CreateRef<Core::Material>(shader_library_.Get("GenericColor"), "Generic_Color_MAT"), vertex_array_box_,
-                light_source->GetTransform()->GetTransformMatrix());
+            BlackBirdBox::Renderer::Submit(BlackBirdBox::CreateRef<BlackBirdBox::Material>(shader_library_.Get("GenericColor"), "Generic_Color_MAT"),
+                vertex_array_box_, light_source->GetTransform()->GetTransformMatrix());
         }
     }
 
-    Core::RenderCommand::SetPolygonMode(Core::RendererAPI::PolygonMode::FILL);
+    BlackBirdBox::RenderCommand::SetPolygonMode(BlackBirdBox::RendererAPI::PolygonMode::FILL);
 
-    Core::Renderer::EndScene();
+    BlackBirdBox::Renderer::EndScene();
 }
 
 void EOLLayer::OnImGuiRender()
 {
-    Core::Layer::OnImGuiRender();
+    BlackBirdBox::Layer::OnImGuiRender();
 
     for (const auto& menu : menus_) {
         menu->OnImGuiRender();
@@ -395,18 +408,18 @@ void EOLLayer::OnImGuiRender()
 
     ImGui::InputFloat4("Gravity", glm::value_ptr(fixed_point_to_move_), 10);
 
-    const std::vector<Core::Ref<Core::ShaderStorageBuffer>>& cloth_shader_storage_buffers
+    const std::vector<BlackBirdBox::Ref<BlackBirdBox::ShaderStorageBuffer>>& cloth_shader_storage_buffers
         = cloth_->GetClothStorageArray(0)->GetShaderStorageBuffers();
-    const Core::Ref<Core::ShaderStorageBuffer> fixed_points_shader_storage_buffer = cloth_shader_storage_buffers[2];
+    const BlackBirdBox::Ref<BlackBirdBox::ShaderStorageBuffer> fixed_points_shader_storage_buffer = cloth_shader_storage_buffers[2];
     fixed_points_shader_storage_buffer->SetPersistentDataIndex(fixed_point_to_move_, num_cloth_dimension_size_ * num_cloth_dimension_size_ - 1);
 
     ImGui::End();
     /*ImGui::Begin("ViewPort");
     int i = 0;
-    for (Core::FrameBufferAttachments attachment :
+    for (BlackBirdBox::FrameBufferAttachments attachment :
     test_frame_buffer_->GetFrameBufferSpecification().frame_buffer_attachments) {
         // TODO(Rok Kos): Investigate why depth buffer is not rendering
-        if (attachment == Core::FrameBufferAttachments::DEPTH_STENCIL_ATTACHMENT) {
+        if (attachment == BlackBirdBox::FrameBufferAttachments::DEPTH_STENCIL_ATTACHMENT) {
             continue;
         }
         if (i != 0) {
@@ -427,23 +440,23 @@ void EOLLayer::OnImGuiRender()
     */
 }
 
-void EOLLayer::OnEvent(Core::Event& e)
+void EOLLayer::OnEvent(BlackBirdBox::Event& e)
 {
-    Core::EventDispatcher dispatcher(e);
-    dispatcher.Dispatch<Core::KeyPressedEvent>(BIND_EVENT_FN(EOLLayer::OnKeyPressedEvent));
-    dispatcher.Dispatch<Core::KeyTypedEvent>(BIND_EVENT_FN(EOLLayer::OnKeyTypedEvent));
+    BlackBirdBox::EventDispatcher dispatcher(e);
+    dispatcher.Dispatch<BlackBirdBox::KeyPressedEvent>(BIND_EVENT_FN(EOLLayer::OnKeyPressedEvent));
+    dispatcher.Dispatch<BlackBirdBox::KeyTypedEvent>(BIND_EVENT_FN(EOLLayer::OnKeyTypedEvent));
 
     perspective_camera_controller_->OnEvent(e);
-    Core::Layer::OnEvent(e);
+    BlackBirdBox::Layer::OnEvent(e);
 }
 
-bool EOLLayer::OnKeyPressedEvent(Core::KeyPressedEvent& e)
+bool EOLLayer::OnKeyPressedEvent(BlackBirdBox::KeyPressedEvent& e)
 {
     LOG_INFO("EOL LAYER::OnKeyPressedEvent key pressed: {0}", e.GetKeyCode());
     return false;
 }
 
-bool EOLLayer::OnKeyTypedEvent(Core::KeyTypedEvent& e)
+bool EOLLayer::OnKeyTypedEvent(BlackBirdBox::KeyTypedEvent& e)
 {
     LOG_INFO("EOLLayer::OnKeyTypedEvent key pressed: {0}", e.GetKeyCode());
 
@@ -452,7 +465,7 @@ bool EOLLayer::OnKeyTypedEvent(Core::KeyTypedEvent& e)
 
 void EOLLayer::ParseSimulationSettings()
 {
-    auto simulation_config = Core::JsonUtil::ReadJson("assets/Configs/SimulationConfig.json");
+    auto simulation_config = BlackBirdBox::JsonUtil::ReadJson("assets/Configs/SimulationConfig.json");
     ASSERT(simulation_config["ClothSimulationSettings"].IsObject(), "ClothSimulationSettings is not an object!");
     const auto cloth_simulation_settings = simulation_config["ClothSimulationSettings"].GetObject();
 
@@ -499,7 +512,7 @@ void EOLLayer::ParseSimulationSettings()
     ASSERT(cloth_simulation_settings["FlexionStiffness"].IsFloat(), "FlexionStiffness is not an float!");
     const float flexion_stiffness = cloth_simulation_settings["FlexionStiffness"].GetFloat();
 
-    compute_shader_simulation_configuration_ = Core::ComputeShaderSimulationConfiguration(gravity, simulation_delta_time, external_force,
+    compute_shader_simulation_configuration_ = BlackBirdBox::ComputeShaderSimulationConfiguration(gravity, simulation_delta_time, external_force,
         wind_resistance, constraint_iterations, structural_stiffness, shear_stiffness, flexion_stiffness);
 
     ASSERT(cloth_simulation_settings["ComputeShaderConfiguration"].IsObject(), "ComputeShaderConfiguration is not an object!");
@@ -522,14 +535,14 @@ void EOLLayer::ParseSimulationSettings()
         local_group_config[i] = local_group_size_json[i].GetInt();
     }
 
-    compute_shader_configuration_ = Core::ComputeShaderConfiguration(work_group_config, local_group_config);
+    compute_shader_configuration_ = BlackBirdBox::ComputeShaderConfiguration(work_group_config, local_group_config);
 }
 
 void EOLLayer::LoadAllShaders()
 {
     PROFILE_FUNCTION();
 
-    auto load_shader = Core::JsonUtil::ReadJson("assets/Configs/LoadShader.json");
+    auto load_shader = BlackBirdBox::JsonUtil::ReadJson("assets/Configs/LoadShader.json");
     ASSERT(load_shader["Shaders"].IsArray(), "Shaders is not an array!");
 
     for (auto& shader_path : load_shader["Shaders"].GetArray()) {
@@ -541,7 +554,7 @@ void EOLLayer::LoadAllShaders()
 void EOLLayer::LoadAllPrimitiveModels()
 {
     PROFILE_FUNCTION();
-    auto load_model = Core::JsonUtil::ReadJson("assets/Configs/LoadModels.json");
+    auto load_model = BlackBirdBox::JsonUtil::ReadJson("assets/Configs/LoadModels.json");
     ASSERT(load_model["Models"].IsArray(), "Models is not an array!");
 
     std::vector<std::thread> threads;
@@ -563,37 +576,37 @@ void EOLLayer::LoadModelInThread(const std::string& filepath)
     model_library_.Load(filepath);
 }
 
-std::string EOLLayer::FrameBufferAttachmentToName(Core::FrameBufferAttachments attachment)
+std::string EOLLayer::FrameBufferAttachmentToName(BlackBirdBox::FrameBufferAttachments attachment)
 {
     switch (attachment) {
-    case Core::FrameBufferAttachments::COLOR_ATTACHMENT0:
+    case BlackBirdBox::FrameBufferAttachments::COLOR_ATTACHMENT0:
         return "Main Color Output";
-    case Core::FrameBufferAttachments::COLOR_ATTACHMENT1:
+    case BlackBirdBox::FrameBufferAttachments::COLOR_ATTACHMENT1:
         return "Normals Output";
-    case Core::FrameBufferAttachments::COLOR_ATTACHMENT2:
+    case BlackBirdBox::FrameBufferAttachments::COLOR_ATTACHMENT2:
         return "UV Output";
-    case Core::FrameBufferAttachments::COLOR_ATTACHMENT3:
+    case BlackBirdBox::FrameBufferAttachments::COLOR_ATTACHMENT3:
         return "vertex Positions Output";
-    case Core::FrameBufferAttachments::COLOR_ATTACHMENT4:
+    case BlackBirdBox::FrameBufferAttachments::COLOR_ATTACHMENT4:
         return "Model Positions Output";
-    case Core::FrameBufferAttachments::COLOR_ATTACHMENT5:
+    case BlackBirdBox::FrameBufferAttachments::COLOR_ATTACHMENT5:
         return "Light Diffuse Color";
-    case Core::FrameBufferAttachments::COLOR_ATTACHMENT6:
+    case BlackBirdBox::FrameBufferAttachments::COLOR_ATTACHMENT6:
         return "Light Specular Color";
-    case Core::FrameBufferAttachments::COLOR_ATTACHMENT7:
+    case BlackBirdBox::FrameBufferAttachments::COLOR_ATTACHMENT7:
         return "Light All Color";
-    case Core::FrameBufferAttachments::DEPTH_STENCIL_ATTACHMENT:
+    case BlackBirdBox::FrameBufferAttachments::DEPTH_STENCIL_ATTACHMENT:
         return "Depth/Stencil Buffer";
-    case Core::FrameBufferAttachments::COLOR_ATTACHMENT8:
-    case Core::FrameBufferAttachments::COLOR_ATTACHMENT9:
-    case Core::FrameBufferAttachments::COLOR_ATTACHMENT10:
-    case Core::FrameBufferAttachments::COLOR_ATTACHMENT11:
-    case Core::FrameBufferAttachments::COLOR_ATTACHMENT12:
-    case Core::FrameBufferAttachments::COLOR_ATTACHMENT13:
-    case Core::FrameBufferAttachments::COLOR_ATTACHMENT14:
-    case Core::FrameBufferAttachments::COLOR_ATTACHMENT15:
-    case Core::FrameBufferAttachments::DEPTH_ATTACHMENT:
-    case Core::FrameBufferAttachments::STENCIL_ATTACHMENT:
+    case BlackBirdBox::FrameBufferAttachments::COLOR_ATTACHMENT8:
+    case BlackBirdBox::FrameBufferAttachments::COLOR_ATTACHMENT9:
+    case BlackBirdBox::FrameBufferAttachments::COLOR_ATTACHMENT10:
+    case BlackBirdBox::FrameBufferAttachments::COLOR_ATTACHMENT11:
+    case BlackBirdBox::FrameBufferAttachments::COLOR_ATTACHMENT12:
+    case BlackBirdBox::FrameBufferAttachments::COLOR_ATTACHMENT13:
+    case BlackBirdBox::FrameBufferAttachments::COLOR_ATTACHMENT14:
+    case BlackBirdBox::FrameBufferAttachments::COLOR_ATTACHMENT15:
+    case BlackBirdBox::FrameBufferAttachments::DEPTH_ATTACHMENT:
+    case BlackBirdBox::FrameBufferAttachments::STENCIL_ATTACHMENT:
     default:
         break;
     }
@@ -601,7 +614,8 @@ std::string EOLLayer::FrameBufferAttachmentToName(Core::FrameBufferAttachments a
     return "";
 }
 
-void EOLLayer::SetPhongParameters(const Core::Ref<Core::Material>& material, Core::PhongLightingParameters phong_lighting_parameters)
+void EOLLayer::SetPhongParameters(
+    const BlackBirdBox::Ref<BlackBirdBox::Material>& material, BlackBirdBox::PhongLightingParameters phong_lighting_parameters)
 {
     material->SetUniform("u_DiffuseColor", phong_lighting_parameters.diffuse_color_);
     material->SetUniform("u_SpecularColor", phong_lighting_parameters.specular_color_);

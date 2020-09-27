@@ -1,36 +1,36 @@
-#pragma once
+﻿#pragma once
 
-#include "BlackBirdBox/Components/Transform.h"
 #include "BlackBirdBox/Components/Material.h"
-#include "ModelData.h"
+#include "BlackBirdBox/Components/Transform.h"
 #include "BlackBirdBox/Renderer/Buffers/VertexArray.h"
+#include "ModelData.h"
 
-namespace Core {
+namespace BlackBirdBox {
 
-	class Shape
-	{
-	public:
-		Shape() = default;
-		
-		Shape(const Ref<Material>& material, const Ref<VertexArray>& vertex_array, const Ref<Transform>& transform, const ModelData& model_data = ModelData(), const std::string& name = "shape");
+class Shape {
+public:
+    Shape() = default;
 
-		const Ref<Material>& GetMaterial() const { return material_; }
-		const Ref<VertexArray>& GetVertexArray() const { return vertex_array_; }
-		const Ref<Transform>& GetTransform() const { return transform_; }
-		const std::string& GetName() const { return name_; }
-		bool GetObjectEnabled() const { return enabled_; }
-		bool* GetObjectEnabledImGui() { return &enabled_; }
-		void SetObjectEnabled(bool enabled) { enabled_ = enabled; }
+    Shape(const Ref<Material>& material, const Ref<VertexArray>& vertex_array, const Ref<Transform>& transform,
+        const ModelData& model_data = ModelData(), const std::string& name = "shape");
 
-	protected:
-		Ref<VertexArray> vertex_array_;
+    const Ref<Material>& GetMaterial() const { return material_; }
+    const Ref<VertexArray>& GetVertexArray() const { return vertex_array_; }
+    const Ref<Transform>& GetTransform() const { return transform_; }
+    const std::string& GetName() const { return name_; }
+    bool GetObjectEnabled() const { return enabled_; }
+    bool* GetObjectEnabledImGui() { return &enabled_; }
+    void SetObjectEnabled(bool enabled) { enabled_ = enabled; }
 
-	private:
-		std::string name_ = "shape";
-		bool enabled_ = true;
+protected:
+    Ref<VertexArray> vertex_array_;
 
-		Ref<Material> material_;
-		ModelData model_data_ = ModelData();
-		Ref<Transform> transform_;
-	};
+private:
+    std::string name_ = "shape";
+    bool enabled_ = true;
+
+    Ref<Material> material_;
+    ModelData model_data_ = ModelData();
+    Ref<Transform> transform_;
+};
 }

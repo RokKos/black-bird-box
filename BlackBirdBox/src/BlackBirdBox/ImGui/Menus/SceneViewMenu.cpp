@@ -4,7 +4,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <imgui.h>
 
-namespace Core {
+namespace BlackBirdBox {
 
 SceneViewMenu::SceneViewMenu(const std::string& menu_name, const std::vector<Ref<Shape>>& shapes, const std::vector<Ref<LightSource>>& lights)
     : BaseMenu(menu_name)

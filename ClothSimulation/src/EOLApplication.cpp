@@ -1,19 +1,11 @@
-#include "EOLApplication.h"
-
+﻿#include "EOLApplication.h"
 
 namespace EOL {
 
-	EOLApplication::EOLApplication()
-	{
-		PushLayer(new EOLLayer());
-	}
-	
+EOLApplication::EOLApplication() { PushLayer(new EOLLayer()); }
 
 }
 
-
-namespace Core {
-	Application* CreateApplication() {
-		return new EOL::EOLApplication();
-	}
+namespace BlackBirdBox {
+Application* CreateApplication() { return new EOL::EOLApplication(); }
 }

@@ -1,23 +1,23 @@
-#include "bbbpch.h"
+﻿#include "bbbpch.h"
 #include "BaseMenu.h"
 
 #include <imgui.h>
 
-namespace Core {
-	
-	BaseMenu::BaseMenu(const std::string& menu_name) :
-		menu_name_(menu_name)
-	{
-		PROFILE_FUNCTION();
-	}
+namespace BlackBirdBox {
 
-	void BaseMenu::OnImGuiRender()
-	{
-		PROFILE_FUNCTION();
+BaseMenu::BaseMenu(const std::string& menu_name)
+    : menu_name_(menu_name)
+{
+    PROFILE_FUNCTION();
+}
 
-		ImGui::Begin(menu_name_.c_str());
+void BaseMenu::OnImGuiRender()
+{
+    PROFILE_FUNCTION();
 
-		ImGui::End();
-	}
+    ImGui::Begin(menu_name_.c_str());
+
+    ImGui::End();
+}
 
 }

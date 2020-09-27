@@ -4,7 +4,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <imgui.h>
 
-namespace Core {
+namespace BlackBirdBox {
 
 ComputeShaderMenu::ComputeShaderMenu(const std::string& menu_name, ComputeShaderSimulationConfiguration& compute_shader_simulation_configuration)
     : BaseMenu(menu_name)
@@ -22,6 +22,8 @@ void ComputeShaderMenu::OnImGuiRender()
     glm::vec3 gravity = compute_shader_simulation_configuration_.GetGravity();
     ImGui::InputFloat3("Gravity", glm::value_ptr(gravity), 10);
     compute_shader_simulation_configuration_.SetGravity(gravity);
+
+    // TODO(Change Material properties of compute shaders
 
     float delta_time = compute_shader_simulation_configuration_.GetDeltaTime();
     ImGui::InputFloat("Delta Time", &delta_time, 0.0f, 0.0f, "%.10f");

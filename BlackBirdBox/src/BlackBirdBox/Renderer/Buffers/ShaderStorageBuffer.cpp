@@ -4,7 +4,7 @@
 #include "BlackBirdBox/Renderer/Renderer.h"
 #include "Platform/OpenGL/Buffers/OpenGLShaderStorageBuffer.h"
 
-namespace Core {
+namespace BlackBirdBox {
 
 Ref<ShaderStorageBuffer> ShaderStorageBuffer::Create(uint32_t size)
 {

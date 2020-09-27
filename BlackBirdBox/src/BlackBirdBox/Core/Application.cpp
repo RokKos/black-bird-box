@@ -8,7 +8,7 @@
 
 #include <glfw/glfw3.h>
 
-namespace Core {
+namespace BlackBirdBox {
 
 Application* Application::s_Instance = nullptr;
 

@@ -1,17 +1,15 @@
-#pragma once
+﻿#pragma once
 
-namespace Core {
+namespace BlackBirdBox {
 
-	class BaseMenu
-	{
-	public:
-		BaseMenu(const std::string& menu_name = "Menu");
-		virtual ~BaseMenu() = default;
+class BaseMenu {
+public:
+    BaseMenu(const std::string& menu_name = "Menu");
+    virtual ~BaseMenu() = default;
 
-		virtual void OnImGuiRender();
+    virtual void OnImGuiRender();
 
-
-	protected:
-		std::string menu_name_;
-	};
+protected:
+    std::string menu_name_;
+};
 }

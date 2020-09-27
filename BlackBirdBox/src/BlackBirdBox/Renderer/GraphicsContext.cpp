@@ -1,23 +1,25 @@
-#include "bbbpch.h"
+﻿#include "bbbpch.h"
 #include "GraphicsContext.h"
 
-#include "Renderer.h"
 #include "Platform/OpenGL/OpenGLContext.h"
+#include "Renderer.h"
 
-namespace Core {
+namespace BlackBirdBox {
 
-	Scope<GraphicsContext> GraphicsContext::Create(void* window)
-	{
-		PROFILE_FUNCTION();
+Scope<GraphicsContext> GraphicsContext::Create(void* window)
+{
+    PROFILE_FUNCTION();
 
-		switch (Renderer::GetAPI())
-		{
-		case RendererAPI::API::None:    CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
-		case RendererAPI::API::OpenGL:  return CreateScope<Platform::OpenGLContext>(static_cast<GLFWwindow*>(window));
-		}
+    switch (Renderer::GetAPI()) {
+    case RendererAPI::API::None:
+        CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
+        return nullptr;
+    case RendererAPI::API::OpenGL:
+        return CreateScope<Platform::OpenGLContext>(static_cast<GLFWwindow*>(window));
+    }
 
-		CORE_ASSERT(false, "Unknown RendererAPI!");
-		return nullptr;
-	}
+    CORE_ASSERT(false, "Unknown RendererAPI!");
+    return nullptr;
+}
 
 }

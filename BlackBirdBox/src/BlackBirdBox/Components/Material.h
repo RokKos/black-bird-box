@@ -6,7 +6,7 @@
 #include "BlackBirdBox/Renderer/Shader.h"
 #include "BlackBirdBox/Renderer/Texture/Texture.h"
 
-namespace Core {
+namespace BlackBirdBox {
 enum class UniformType { None = 0, Int = 1, Float = 2, Vec2 = 3, Vec3 = 4, Vec4 = 5, Mat4 = 6, Sampler2D = 7, SamplerCube = 8 };
 
 struct Uniform {

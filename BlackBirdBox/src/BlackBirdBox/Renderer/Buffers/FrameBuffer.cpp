@@ -1,24 +1,25 @@
-#include "bbbpch.h"
+﻿#include "bbbpch.h"
 #include "FrameBuffer.h"
 
 #include "BlackBirdBox/Renderer/Renderer.h"
 #include "Platform/OpenGL/Buffers/OpenGLFrameBuffer.h"
 
-namespace Core {
-	
-	Core::Ref<Core::FrameBuffer> FrameBuffer::Create(const FramebufferSpecification& specification)
-	{
-		PROFILE_FUNCTION();
+namespace BlackBirdBox {
 
-		switch (Renderer::GetAPI())
-		{
-		case RendererAPI::API::None:    CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
-		case RendererAPI::API::OpenGL:  return CreateRef<Platform::OpenGLFrameBuffer>(specification);
-		}
+BlackBirdBox::Ref<BlackBirdBox::FrameBuffer> FrameBuffer::Create(const FramebufferSpecification& specification)
+{
+    PROFILE_FUNCTION();
 
-		CORE_ASSERT(false, "Unknown RendererAPI!");
-		return nullptr;
-		
-	}
+    switch (Renderer::GetAPI()) {
+    case RendererAPI::API::None:
+        CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
+        return nullptr;
+    case RendererAPI::API::OpenGL:
+        return CreateRef<Platform::OpenGLFrameBuffer>(specification);
+    }
+
+    CORE_ASSERT(false, "Unknown RendererAPI!");
+    return nullptr;
+}
 
 }
