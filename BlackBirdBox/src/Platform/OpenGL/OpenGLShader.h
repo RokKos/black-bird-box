@@ -24,6 +24,7 @@ public:
     virtual void SetMat4(const std::string& name, const glm::mat4& value) override;
 
     virtual const std::string& GetName() const override { return name_; }
+    virtual const std::unordered_map<GLenum, std::string>& GetShaderSources() const override { return shader_sources_; }
 
     void UploadUniformInt(const std::string& name, int value);
     void UploadUniformIntArray(const std::string& name, int* values, uint32_t count);
@@ -46,6 +47,7 @@ private:
 private:
     uint32_t renderer_id_;
     std::string name_;
+    std::unordered_map<GLenum, std::string> shader_sources_;
     std::unordered_map<std::string, GLint> uniform_location_cache_;
 };
 

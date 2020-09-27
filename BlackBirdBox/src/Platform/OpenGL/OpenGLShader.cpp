@@ -28,9 +28,9 @@ OpenGLShader::OpenGLShader(const std::string& filepath)
     PROFILE_FUNCTION();
 
     std::string source = ReadFile(filepath);
-    auto shaderSources = PreProcess(source);
+    shader_sources_ = PreProcess(source);
     LOG_INFO("Compiling shader from path: {0}", filepath);
-    Compile(shaderSources);
+    Compile(shader_sources_);
 
     // Extract name from filepath
     auto lastSlash = filepath.find_last_of("/\\");
