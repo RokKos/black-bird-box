@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "BlackBirdBox/Components/Transform.h"
+#include "BlackBirdBox/Core/Core.h"
 #include "glm/glm.hpp"
 
 namespace BlackBirdBox {
@@ -23,20 +24,20 @@ public:
         , name_(name)
         , intensity_(intensity){};
 
-    const Ref<Transform>& GetTransform() const { return transform_; }
-    const glm::vec3& GetPosition() const { return transform_->GetPosition(); }
-    const glm::vec3& GetDirection() const { return transform_->GetRotation(); }
-    const glm::vec3& GetIntensity() const { return intensity_; }
-    const glm::vec3& GetColor() const { return color_; }
-    const std::string& GetName() const { return name_; }
-    bool GetObjectEnabled() const { return enabled_; }
-    bool* GetObjectEnabledImGui() { return &enabled_; }
-    void SetObjectEnabled(bool enabled) { enabled_ = enabled; }
+    const Ref<Transform>& GetTransform() const;
+    const glm::vec3& GetPosition() const;
+    const glm::vec3& GetDirection() const;
+    const glm::vec3& GetIntensity() const;
+    const glm::vec3& GetColor() const;
+    const std::string& GetName() const;
+    bool GetObjectEnabled() const;
+    bool* GetObjectEnabledImGui();
+    void SetObjectEnabled(bool enabled);
 
-    void SetPosition(const glm::vec3& pos) { transform_->SetPosition(pos); }
-    void SetDirection(const glm::vec3& dir) { transform_->SetRotation(dir); }
-    void SetIntensity(const glm::vec3& intensity) { intensity_ = intensity; }
-    void SetColor(const glm::vec3& color) { color_ = color; }
+    void SetPosition(const glm::vec3& pos);
+    void SetDirection(const glm::vec3& dir);
+    void SetIntensity(const glm::vec3& intensity);
+    void SetColor(const glm::vec3& color);
 
 private:
     std::string name_ = "Light Source";
@@ -47,5 +48,4 @@ private:
     glm::vec3 color_;
     glm::vec3 intensity_;
 };
-
 }
