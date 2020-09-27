@@ -1,4 +1,4 @@
-﻿#include "EOLLayer.h"
+﻿#include "ClothSimulationLayer.h"
 
 #include <cmath>
 #include <functional>
@@ -6,9 +6,9 @@
 #include <imgui.h>
 #include <thread>
 
-namespace EOL {
-EOLLayer::EOLLayer()
-    : BlackBirdBox::Layer("EOLLayer")
+namespace ClothSimulation {
+ClothSimulationLayer::ClothSimulationLayer()
+    : BlackBirdBox::Layer("ClothSimulationLayer")
 {
     PROFILE_FUNCTION();
 
@@ -337,11 +337,11 @@ EOLLayer::EOLLayer()
     test_frame_buffer_ = BlackBirdBox::FrameBuffer::Create(frame_buffer_spec);
 }
 
-void EOLLayer::OnAttach() { BlackBirdBox::Layer::OnAttach(); }
+void ClothSimulationLayer::OnAttach() { BlackBirdBox::Layer::OnAttach(); }
 
-void EOLLayer::OnDetach() { BlackBirdBox::Layer::OnDetach(); }
+void ClothSimulationLayer::OnDetach() { BlackBirdBox::Layer::OnDetach(); }
 
-void EOLLayer::OnUpdate(BlackBirdBox::TimeStep ts)
+void ClothSimulationLayer::OnUpdate(BlackBirdBox::TimeStep ts)
 {
     BlackBirdBox::Layer::OnUpdate(ts);
     perspective_camera_controller_->OnUpdate(ts);
@@ -396,7 +396,7 @@ void EOLLayer::OnUpdate(BlackBirdBox::TimeStep ts)
     BlackBirdBox::Renderer::EndScene();
 }
 
-void EOLLayer::OnImGuiRender()
+void ClothSimulationLayer::OnImGuiRender()
 {
     BlackBirdBox::Layer::OnImGuiRender();
 
@@ -440,30 +440,30 @@ void EOLLayer::OnImGuiRender()
     */
 }
 
-void EOLLayer::OnEvent(BlackBirdBox::Event& e)
+void ClothSimulationLayer::OnEvent(BlackBirdBox::Event& e)
 {
     BlackBirdBox::EventDispatcher dispatcher(e);
-    dispatcher.Dispatch<BlackBirdBox::KeyPressedEvent>(BIND_EVENT_FN(EOLLayer::OnKeyPressedEvent));
-    dispatcher.Dispatch<BlackBirdBox::KeyTypedEvent>(BIND_EVENT_FN(EOLLayer::OnKeyTypedEvent));
+    dispatcher.Dispatch<BlackBirdBox::KeyPressedEvent>(BIND_EVENT_FN(ClothSimulationLayer::OnKeyPressedEvent));
+    dispatcher.Dispatch<BlackBirdBox::KeyTypedEvent>(BIND_EVENT_FN(ClothSimulationLayer::OnKeyTypedEvent));
 
     perspective_camera_controller_->OnEvent(e);
     BlackBirdBox::Layer::OnEvent(e);
 }
 
-bool EOLLayer::OnKeyPressedEvent(BlackBirdBox::KeyPressedEvent& e)
+bool ClothSimulationLayer::OnKeyPressedEvent(BlackBirdBox::KeyPressedEvent& e)
 {
-    LOG_INFO("EOL LAYER::OnKeyPressedEvent key pressed: {0}", e.GetKeyCode());
+    LOG_INFO("ClothSimulation LAYER::OnKeyPressedEvent key pressed: {0}", e.GetKeyCode());
     return false;
 }
 
-bool EOLLayer::OnKeyTypedEvent(BlackBirdBox::KeyTypedEvent& e)
+bool ClothSimulationLayer::OnKeyTypedEvent(BlackBirdBox::KeyTypedEvent& e)
 {
-    LOG_INFO("EOLLayer::OnKeyTypedEvent key pressed: {0}", e.GetKeyCode());
+    LOG_INFO("ClothSimulationLayer::OnKeyTypedEvent key pressed: {0}", e.GetKeyCode());
 
     return false;
 }
 
-void EOLLayer::ParseSimulationSettings()
+void ClothSimulationLayer::ParseSimulationSettings()
 {
     auto simulation_config = BlackBirdBox::JsonUtil::ReadJson("assets/Configs/SimulationConfig.json");
     ASSERT(simulation_config["ClothSimulationSettings"].IsObject(), "ClothSimulationSettings is not an object!");
@@ -538,7 +538,7 @@ void EOLLayer::ParseSimulationSettings()
     compute_shader_configuration_ = BlackBirdBox::ComputeShaderConfiguration(work_group_config, local_group_config);
 }
 
-void EOLLayer::LoadAllShaders()
+void ClothSimulationLayer::LoadAllShaders()
 {
     PROFILE_FUNCTION();
 
@@ -551,7 +551,7 @@ void EOLLayer::LoadAllShaders()
     }
 }
 
-void EOLLayer::LoadAllPrimitiveModels()
+void ClothSimulationLayer::LoadAllPrimitiveModels()
 {
     PROFILE_FUNCTION();
     auto load_model = BlackBirdBox::JsonUtil::ReadJson("assets/Configs/LoadModels.json");
@@ -561,7 +561,7 @@ void EOLLayer::LoadAllPrimitiveModels()
 
     for (auto& model_path : load_model["Models"].GetArray()) {
         ASSERT(model_path.IsString(), "Models Path is not string");
-        threads.push_back(std::thread(&EOLLayer::LoadModelInThread, this, model_path.GetString()));
+        threads.push_back(std::thread(&ClothSimulationLayer::LoadModelInThread, this, model_path.GetString()));
     }
 
     for (auto& thread : threads) {
@@ -569,14 +569,14 @@ void EOLLayer::LoadAllPrimitiveModels()
     }
 }
 
-void EOLLayer::LoadModelInThread(const std::string& filepath)
+void ClothSimulationLayer::LoadModelInThread(const std::string& filepath)
 {
     PROFILE_FUNCTION();
 
     model_library_.Load(filepath);
 }
 
-std::string EOLLayer::FrameBufferAttachmentToName(BlackBirdBox::FrameBufferAttachments attachment)
+std::string ClothSimulationLayer::FrameBufferAttachmentToName(BlackBirdBox::FrameBufferAttachments attachment)
 {
     switch (attachment) {
     case BlackBirdBox::FrameBufferAttachments::COLOR_ATTACHMENT0:
@@ -614,7 +614,7 @@ std::string EOLLayer::FrameBufferAttachmentToName(BlackBirdBox::FrameBufferAttac
     return "";
 }
 
-void EOLLayer::SetPhongParameters(
+void ClothSimulationLayer::SetPhongParameters(
     const BlackBirdBox::Ref<BlackBirdBox::Material>& material, BlackBirdBox::PhongLightingParameters phong_lighting_parameters)
 {
     material->SetUniform("u_DiffuseColor", phong_lighting_parameters.diffuse_color_);
@@ -623,4 +623,4 @@ void EOLLayer::SetPhongParameters(
     material->SetUniform("u_AmbientColor", phong_lighting_parameters.ambient_color_);
     material->SetUniform("u_AmbientIntensity", phong_lighting_parameters.ambient_color_);
 }
-} // namespace EOL
+} // namespace ClothSimulation

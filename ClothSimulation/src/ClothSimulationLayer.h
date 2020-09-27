@@ -4,12 +4,12 @@
 
 #include <glm/glm.hpp>
 
-namespace EOL {
+namespace ClothSimulation {
 
-class EOLLayer : public BlackBirdBox::Layer {
+class ClothSimulationLayer : public BlackBirdBox::Layer {
 public:
-    EOLLayer();
-    virtual ~EOLLayer() = default;
+    ClothSimulationLayer();
+    virtual ~ClothSimulationLayer() = default;
 
     virtual void OnAttach() override;
     virtual void OnDetach() override;
