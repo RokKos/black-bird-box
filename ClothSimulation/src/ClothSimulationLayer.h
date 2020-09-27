@@ -24,9 +24,6 @@ private:
 
     void ParseSimulationSettings();
     void LoadAllShaders();
-    void LoadAllPrimitiveModels();
-    void LoadModelInThread(const std::string& filepath);
-    std::string FrameBufferAttachmentToName(BlackBirdBox::FrameBufferAttachments attachment);
     void SetPhongParameters(
         const BlackBirdBox::Ref<BlackBirdBox::Material>& material, BlackBirdBox::PhongLightingParameters phong_lighting_parameters);
 
@@ -38,7 +35,6 @@ private:
     BlackBirdBox::ModelLibrary model_library_;
 
     BlackBirdBox::Ref<BlackBirdBox::PerspectiveCameraController> perspective_camera_controller_;
-
     std::vector<BlackBirdBox::Ref<BlackBirdBox::BaseMenu>> menus_;
 
     BlackBirdBox::Scene scene_;
@@ -46,8 +42,6 @@ private:
     BlackBirdBox::Ref<BlackBirdBox::VertexArray> vertex_array_box_;
     BlackBirdBox::Ref<BlackBirdBox::CubeMap> enviroment_map_;
     BlackBirdBox::Ref<BlackBirdBox::Material> enviroment_map_material_;
-    BlackBirdBox::Ref<BlackBirdBox::FrameBuffer> test_frame_buffer_;
-    BlackBirdBox::Ref<BlackBirdBox::Shape> frame_buffer_obj_;
     BlackBirdBox::Ref<BlackBirdBox::Cloth> cloth_;
     BlackBirdBox::Ref<BlackBirdBox::Material> vertlet_compute_material_;
     BlackBirdBox::Ref<BlackBirdBox::Material> constraint_compute_material_;

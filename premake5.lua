@@ -32,4 +32,5 @@ group "Dependencies"
 group ""
 
 include "BlackBirdBox"
+include "BlackBirdNest"
 include "ClothSimulation"

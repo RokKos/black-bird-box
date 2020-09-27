@@ -8,15 +8,7 @@ ClothSimulationApplication::ClothSimulationApplication()
     PushLayer(cloth_simulation_layer_);
 }
 
-void ClothSimulationApplication::OnEvent(BlackBirdBox::Event& e)
-{
-    Application::OnEvent(e);
-
-    PROFILE_FUNCTION();
-
-    BlackBirdBox::EventDispatcher dispatcher(e);
-    dispatcher.Dispatch<BlackBirdBox::KeyPressedEvent>(BIND_EVENT_FN(ClothSimulationApplication::OnKeyPressedEvent));
-}
+void ClothSimulationApplication::OnEvent(BlackBirdBox::Event& e) {}
 
 bool ClothSimulationApplication::OnKeyPressedEvent(BlackBirdBox::KeyPressedEvent& e)
 {

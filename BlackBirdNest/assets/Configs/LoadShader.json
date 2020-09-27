@@ -1,0 +1,14 @@
+{
+    "Shaders": [
+        "assets/Shaders/EnviromentMapShader.glsl",
+        "assets/Shaders/GenericColor.glsl",
+        "assets/Shaders/GenericLighting.glsl",
+        "assets/Shaders/GenericNormals.glsl",
+        "assets/Shaders/GenericTexture.glsl",
+        "assets/Shaders/GenericUVCoordinates.glsl",
+        "assets/Shaders/StandardShader.glsl",
+        "assets/Shaders/Texture.glsl",
+        "assets/Shaders/FrameBufferShader.glsl",
+        "assets/Shaders/BlinnPhongShader.glsl"
+    ]
+}
