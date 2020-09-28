@@ -20,8 +20,11 @@ public:
     void Begin();
     void End();
 
+    void SetBlocksEvents(bool blocks_events) { blocks_events_ = blocks_events; };
+
 private:
     float m_Time = 0.0f;
+    bool blocks_events_ = false;
 };
 
 }

@@ -79,10 +79,11 @@ void ImGuiLayer::Begin()
 void ImGuiLayer::OnEvent(Event& e)
 {
     PROFILE_FUNCTION();
-
-    ImGuiIO& io = ImGui::GetIO();
-    e.Handled |= e.IsInCategory(EventCategoryMouse) & io.WantCaptureMouse;
-    e.Handled |= e.IsInCategory(EventCategoryKeyboard) & io.WantCaptureKeyboard;
+    if (blocks_events_) {
+        ImGuiIO& io = ImGui::GetIO();
+        e.Handled |= e.IsInCategory(EventCategoryMouse) & io.WantCaptureMouse;
+        e.Handled |= e.IsInCategory(EventCategoryKeyboard) & io.WantCaptureKeyboard;
+    }
 }
 
 void ImGuiLayer::End()
