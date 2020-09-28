@@ -18,11 +18,15 @@ public:
     Application();
     virtual ~Application();
 
+    void Close();
+
     virtual void OnEvent(Event& e);
 
     void PushLayer(const Ref<Layer>& layer);
     void PopLayer(const Ref<Layer>& layer);
     void PushOverlay(const Ref<Layer>& layer);
+
+    const Ref<ImGuiLayer>& GetImGuiLayer() const;
 
     inline Window& GetWindow() { return *window_; }
 

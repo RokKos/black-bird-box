@@ -34,6 +34,8 @@ Application::~Application()
     Renderer::Shutdown();
 }
 
+void Application::Close() { running_ = false; }
+
 void Application::PushLayer(const Ref<Layer>& layer)
 {
     PROFILE_FUNCTION();
@@ -59,6 +61,8 @@ void Application::PushOverlay(const Ref<Layer>& layer)
     layer_stack_.PushOverlay(layer);
     layer->OnAttach();
 }
+
+const Ref<ImGuiLayer>& Application::GetImGuiLayer() const { return im_gui_layer_; }
 
 void Application::OnEvent(Event& e)
 {
@@ -109,7 +113,7 @@ bool Application::OnWindowClose(WindowCloseEvent& e)
 {
     PROFILE_FUNCTION();
 
-    running_ = false;
+    Close();
     return true;
 }
 
@@ -134,7 +138,7 @@ bool Application::OnKeyPressedEvent(KeyPressedEvent& e)
     PROFILE_FUNCTION();
 
     if (e.GetKeyCode() == KeyCode::Escape) {
-        running_ = false;
+        Close();
         return true;
     }
 
