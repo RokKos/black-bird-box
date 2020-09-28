@@ -15,10 +15,12 @@ public:
     virtual void Bind() const override;
     virtual void Unbind() const override;
 
+    virtual void Resize(uint32_t width, uint32_t height) override;
     virtual const BlackBirdBox::Ref<BlackBirdBox::Texture2D>& GetTextureAttachment(BlackBirdBox::FrameBufferAttachments attachment) override;
-    virtual const BlackBirdBox::FramebufferSpecification& GetFrameBufferSpecification() const { return specification_; };
+    virtual const BlackBirdBox::FramebufferSpecification& GetFrameBufferSpecification() const override { return specification_; };
 
 private:
+    void RecreateNewBuffer();
     GLenum OpenGLFrameBufferAttachments(BlackBirdBox::FrameBufferAttachments attachment) const;
 
 private:

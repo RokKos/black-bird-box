@@ -8,6 +8,57 @@ OpenGLFrameBuffer::OpenGLFrameBuffer(const BlackBirdBox::FramebufferSpecificatio
 {
     PROFILE_FUNCTION();
 
+    RecreateNewBuffer();
+}
+
+OpenGLFrameBuffer::~OpenGLFrameBuffer()
+{
+    PROFILE_FUNCTION();
+    glDeleteFramebuffers(1, &renderer_id_);
+}
+
+void OpenGLFrameBuffer::Bind() const
+{
+    PROFILE_FUNCTION();
+
+    glBindFramebuffer(GL_FRAMEBUFFER, renderer_id_);
+
+    glViewport(0, 0, specification_.width, specification_.height);
+    glClearColor(0, 0, 0, 0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+void OpenGLFrameBuffer::Unbind() const
+{
+    PROFILE_FUNCTION();
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void OpenGLFrameBuffer::Resize(uint32_t width, uint32_t height)
+{
+    if (width == 0 || height == 0) {
+        return;
+    }
+
+    specification_.width = width;
+    specification_.height = height;
+
+    RecreateNewBuffer();
+}
+
+const BlackBirdBox::Ref<BlackBirdBox::Texture2D>& OpenGLFrameBuffer::GetTextureAttachment(BlackBirdBox::FrameBufferAttachments attachment)
+{
+    return texture_attachments_[attachment];
+}
+
+void OpenGLFrameBuffer::RecreateNewBuffer()
+{
+    if (renderer_id_) {
+        glDeleteFramebuffers(1, &renderer_id_);
+        texture_attachments_ = std::unordered_map<BlackBirdBox::FrameBufferAttachments, BlackBirdBox::Ref<BlackBirdBox::Texture2D>>();
+    }
+
     glGenFramebuffers(1, &renderer_id_);
     glBindFramebuffer(GL_FRAMEBUFFER, renderer_id_);
 
@@ -45,35 +96,6 @@ OpenGLFrameBuffer::OpenGLFrameBuffer(const BlackBirdBox::FramebufferSpecificatio
     CORE_ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Framebuffer is incomplete!");
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
-
-OpenGLFrameBuffer::~OpenGLFrameBuffer()
-{
-    PROFILE_FUNCTION();
-    glDeleteFramebuffers(1, &renderer_id_);
-}
-
-void OpenGLFrameBuffer::Bind() const
-{
-    PROFILE_FUNCTION();
-
-    glBindFramebuffer(GL_FRAMEBUFFER, renderer_id_);
-
-    glViewport(0, 0, specification_.width, specification_.height);
-    glClearColor(0, 0, 0, 0);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-}
-
-void OpenGLFrameBuffer::Unbind() const
-{
-    PROFILE_FUNCTION();
-
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
-
-const BlackBirdBox::Ref<BlackBirdBox::Texture2D>& OpenGLFrameBuffer::GetTextureAttachment(BlackBirdBox::FrameBufferAttachments attachment)
-{
-    return texture_attachments_[attachment];
 }
 
 GLenum OpenGLFrameBuffer::OpenGLFrameBufferAttachments(BlackBirdBox::FrameBufferAttachments attachment) const
