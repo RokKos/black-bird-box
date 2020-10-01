@@ -151,21 +151,9 @@ ClothSimulationLayer::ClothSimulationLayer()
 
     const auto& verlet_integration_shader = shader_library_.Get("VerletIntegrationShader");
     vertlet_compute_material_ = BlackBirdBox::CreateRef<BlackBirdBox::Material>(verlet_integration_shader, "VerletIntegration_MAT");
-    vertlet_compute_material_->SetUniform("u_Gravity", compute_shader_simulation_configuration_.GetGravity());
-    vertlet_compute_material_->SetUniform("u_DeltaTime", compute_shader_simulation_configuration_.GetDeltaTime());
-    vertlet_compute_material_->SetUniform("u_External_Force", compute_shader_simulation_configuration_.GetExternalForce());
-    vertlet_compute_material_->SetUniform("u_Wind_Resistance", compute_shader_simulation_configuration_.GetWindResistance());
 
     const auto& constrains_shader = shader_library_.Get("ConstraintsShader");
     constraint_compute_material_ = BlackBirdBox::CreateRef<BlackBirdBox::Material>(constrains_shader, "Constraints_MAT");
-    constraint_compute_material_->SetUniform("u_Iterations", compute_shader_simulation_configuration_.GetIterations());
-    constraint_compute_material_->SetUniform(
-        "u_Horizontal_Vertical_Rest_Lenght", compute_shader_simulation_configuration_.GetHorizontalVerticalDistanceBetweenVertexes());
-    constraint_compute_material_->SetUniform("u_Diagonal_Rest_Lenght", compute_shader_simulation_configuration_.GetDiagonalDistanceBetweenVertexes());
-    constraint_compute_material_->SetUniform("u_Bend_Lenght", compute_shader_simulation_configuration_.GetBendDistanceBetweenVertexes());
-    constraint_compute_material_->SetUniform("u_Structural_Stiffness", compute_shader_simulation_configuration_.GetStructuralStiffness());
-    constraint_compute_material_->SetUniform("u_Shear_Stiffness", compute_shader_simulation_configuration_.GetShearStiffness());
-    constraint_compute_material_->SetUniform("u_Flexion_Stiffness", compute_shader_simulation_configuration_.GetFlexionStiffness());
 }
 
 void ClothSimulationLayer::OnAttach() { BlackBirdBox::Layer::OnAttach(); }
@@ -187,6 +175,8 @@ void ClothSimulationLayer::OnUpdate(BlackBirdBox::TimeStep ts)
     BlackBirdBox::Renderer::Submit(enviroment_map_material_, enviroment_map_, vertex_array_box_);
 
     BlackBirdBox::RenderCommand::SetPolygonMode((BlackBirdBox::RendererAPI::PolygonMode)polygon_mode_);
+
+    SetSimualtionMaterialProperties();
 
     BlackBirdBox::Renderer::DispatchComputeShader(vertlet_compute_material_, cloth_->GetClothStorageArray(0), compute_shader_configuration_);
 
@@ -338,5 +328,22 @@ void ClothSimulationLayer::SetPhongParameters(
     material->SetUniform("u_SpecularScatering", phong_lighting_parameters.specular_scattering_);
     material->SetUniform("u_AmbientColor", phong_lighting_parameters.ambient_color_);
     material->SetUniform("u_AmbientIntensity", phong_lighting_parameters.ambient_color_);
+}
+
+void ClothSimulationLayer::SetSimualtionMaterialProperties()
+{
+    vertlet_compute_material_->SetUniform("u_Gravity", compute_shader_simulation_configuration_.GetGravity());
+    vertlet_compute_material_->SetUniform("u_DeltaTime", compute_shader_simulation_configuration_.GetDeltaTime());
+    vertlet_compute_material_->SetUniform("u_External_Force", compute_shader_simulation_configuration_.GetExternalForce());
+    vertlet_compute_material_->SetUniform("u_Wind_Resistance", compute_shader_simulation_configuration_.GetWindResistance());
+
+    constraint_compute_material_->SetUniform("u_Iterations", compute_shader_simulation_configuration_.GetIterations());
+    constraint_compute_material_->SetUniform(
+        "u_Horizontal_Vertical_Rest_Lenght", compute_shader_simulation_configuration_.GetHorizontalVerticalDistanceBetweenVertexes());
+    constraint_compute_material_->SetUniform("u_Diagonal_Rest_Lenght", compute_shader_simulation_configuration_.GetDiagonalDistanceBetweenVertexes());
+    constraint_compute_material_->SetUniform("u_Bend_Lenght", compute_shader_simulation_configuration_.GetBendDistanceBetweenVertexes());
+    constraint_compute_material_->SetUniform("u_Structural_Stiffness", compute_shader_simulation_configuration_.GetStructuralStiffness());
+    constraint_compute_material_->SetUniform("u_Shear_Stiffness", compute_shader_simulation_configuration_.GetShearStiffness());
+    constraint_compute_material_->SetUniform("u_Flexion_Stiffness", compute_shader_simulation_configuration_.GetFlexionStiffness());
 }
 } // namespace ClothSimulation
