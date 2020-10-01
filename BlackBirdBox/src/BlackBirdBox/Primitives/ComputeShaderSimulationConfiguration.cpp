@@ -65,7 +65,7 @@ void ComputeShaderSimulationConfiguration::SetShearStiffness(float shear_stiffne
 
 void ComputeShaderSimulationConfiguration::SetFlexionStiffness(float flexion_stiffness) { flexion_stiffness_ = flexion_stiffness; }
 
-void ComputeShaderSimulationConfiguration::SetExternalForces(glm::vec3 external_force) { external_force_ = external_force; }
+void ComputeShaderSimulationConfiguration::SetExternalForce(glm::vec3 external_force) { external_force_ = external_force; }
 
 void ComputeShaderSimulationConfiguration::SetWindResistance(glm::vec3 wind_resistance) { wind_resistance_ = wind_resistance; }
 } // namespace BlackBirdBox

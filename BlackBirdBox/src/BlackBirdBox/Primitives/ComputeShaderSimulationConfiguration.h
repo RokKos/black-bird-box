@@ -38,7 +38,7 @@ public:
     void SetFlexionStiffness(float flexion_stiffness);
 
     const glm::vec3& GetExternalForce() const { return external_force_; }
-    void SetExternalForces(glm::vec3 external_force);
+    void SetExternalForce(glm::vec3 external_force);
 
     const glm::vec3& GetWindResistance() const { return wind_resistance_; }
     void SetWindResistance(glm::vec3 wind_resistance);
