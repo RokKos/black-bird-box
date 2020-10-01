@@ -19,15 +19,25 @@ void ComputeShaderMenu::OnImGuiRender()
 
     ImGui::Begin(menu_name_.c_str());
 
+    ImGui::Text("Verlet Integration Compute Shader Parameters");
+
     glm::vec3 gravity = compute_shader_simulation_configuration_.GetGravity();
     ImGui::InputFloat3("Gravity", glm::value_ptr(gravity), 10);
     compute_shader_simulation_configuration_.SetGravity(gravity);
 
-    // TODO(Change Material properties of compute shaders
-
     float delta_time = compute_shader_simulation_configuration_.GetDeltaTime();
     ImGui::InputFloat("Delta Time", &delta_time, 0.0f, 0.0f, "%.10f");
     compute_shader_simulation_configuration_.SetDeltaTime(delta_time);
+
+    glm::vec3 external_force = compute_shader_simulation_configuration_.GetExternalForce();
+    ImGui::InputFloat3("External Force", glm::value_ptr(external_force), 10);
+    compute_shader_simulation_configuration_.SetExternalForce(external_force);
+
+    glm::vec3 wind_resistance = compute_shader_simulation_configuration_.GetWindResistance();
+    ImGui::InputFloat3("Wind Resistance", glm::value_ptr(wind_resistance), 10);
+    compute_shader_simulation_configuration_.SetWindResistance(wind_resistance);
+
+    ImGui::Text("Constraint Compute Shader Parameters");
 
     int iterations = compute_shader_simulation_configuration_.GetIterations();
     ImGui::InputInt("Iterations", &iterations);
