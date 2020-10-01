@@ -15,16 +15,16 @@ Uniform::Uniform(std::string name, const std::string& type)
         float_value = std::numeric_limits<float>::max();
     } else if (type == "vec2") {
         type_ = UniformType::Vec2;
-        vec2_value = std::numeric_limits<glm::vec2>::max();
+        vec2_value = glm::vec2(std::numeric_limits<float>::max());
     } else if (type == "vec3") {
         type_ = UniformType::Vec3;
-        vec3_value = std::numeric_limits<glm::vec3>::max();
+        vec3_value = glm::vec3(std::numeric_limits<float>::max());
     } else if (type == "vec4") {
         type_ = UniformType::Vec4;
-        vec4_value = std::numeric_limits<glm::vec4>::max();
+        vec4_value = glm::vec4(std::numeric_limits<float>::max());
     } else if (type == "mat4") {
         type_ = UniformType::Mat4;
-        mat4_value = std::numeric_limits<glm::mat4>::max();
+        mat4_value = glm::mat4(std::numeric_limits<float>::max());
     } else if (type == "sampler2D") {
         type_ = UniformType::Sampler2D;
         integer_value = std::numeric_limits<int>::max();
@@ -103,22 +103,26 @@ void Material::BindUniforms()
             shader_->SetFloat(uniform.name_, uniform.float_value);
             break;
         case UniformType::Vec2:
-            CORE_ASSERT(uniform.vec2_value != std::numeric_limits<glm::vec2>::max(), "Vec2 value on uniform %s was not set", uniform.name_.c_str());
+            CORE_ASSERT(
+                uniform.vec2_value != glm::vec2(std::numeric_limits<float>::max()), "Vec2 value on uniform %s was not set", uniform.name_.c_str());
             shader_->SetVec2(uniform.name_, uniform.vec2_value);
             break;
 
         case UniformType::Vec3:
-            CORE_ASSERT(uniform.vec3_value != std::numeric_limits<glm::vec3>::max(), "Vec3 value on uniform %s was not set", uniform.name_.c_str());
+            CORE_ASSERT(
+                uniform.vec3_value != glm::vec3(std::numeric_limits<float>::max()), "Vec3 value on uniform %s was not set", uniform.name_.c_str());
             shader_->SetVec3(uniform.name_, uniform.vec3_value);
             break;
 
         case UniformType::Vec4:
-            CORE_ASSERT(uniform.vec4_value != std::numeric_limits<glm::vec4>::max(), "Vec4 value on uniform %s was not set", uniform.name_.c_str());
+            CORE_ASSERT(
+                uniform.vec4_value != glm::vec4(std::numeric_limits<float>::max()), "Vec4 value on uniform %s was not set", uniform.name_.c_str());
             shader_->SetVec4(uniform.name_, uniform.vec4_value);
             break;
 
         case UniformType::Mat4:
-            CORE_ASSERT(uniform.mat4_value != std::numeric_limits<glm::mat4>::max(), "Mat4 value on uniform %s was not set", uniform.name_.c_str());
+            CORE_ASSERT(
+                uniform.mat4_value != glm::mat4(std::numeric_limits<float>::max()), "Mat4 value on uniform %s was not set", uniform.name_.c_str());
             shader_->SetMat4(uniform.name_, uniform.mat4_value);
             break;
 
