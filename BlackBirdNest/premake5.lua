@@ -21,7 +21,8 @@ project "BlackBirdNest"
 		"../%{IncludeDir.glm}",
 		"../external/spdlog/include",
         "../%{IncludeDir.ImGui}",
-        "../%{IncludeDir.rapidjson}"
+		"../%{IncludeDir.rapidjson}",
+		"../%{IncludeDir.soloud}"
 	}
 
 	links 
