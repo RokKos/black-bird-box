@@ -24,10 +24,12 @@ IncludeDir["glm"] = "external/glm"
 IncludeDir["tinyobjloader"] = "external/tinyobjloader"
 IncludeDir["stb"] = "external/stb"
 IncludeDir["rapidjson"] = "external/rapidjson/include"
+IncludeDir["soloud"] = "external/soloud/include"
 
 group "Dependencies"
 	include "external/GLFW"
 	include "external/imgui"
+	include "external/soloud"
 
 group ""
 

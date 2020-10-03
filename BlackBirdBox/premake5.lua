@@ -20,7 +20,7 @@ project "BlackBirdBox"
         "../%{IncludeDir.glm}/glm/**.inl",
 		"../%{IncludeDir.glew}/**.h",
 		"../%{IncludeDir.tinyobjloader}/tiny_obj_loader.h",
-		"../%{IncludeDir.rapidjson}/**.h"
+		"../%{IncludeDir.rapidjson}/**.h",
 	}
 
 	defines
@@ -40,7 +40,8 @@ project "BlackBirdBox"
 		"../%{IncludeDir.glm}",
         "../%{IncludeDir.stb}", 
 		"../%{IncludeDir.tinyobjloader}",
-		"../%{IncludeDir.rapidjson}"
+		"../%{IncludeDir.rapidjson}",
+		"../%{IncludeDir.soloud}"
 	}
 
     libdirs { "../external/glew/lib/Release/x64" }
@@ -50,7 +51,8 @@ project "BlackBirdBox"
 		"GLFW",
 		"glew32s.lib",
 		"ImGui",
-		"opengl32.lib"
+		"opengl32.lib",
+		"SoLoud"
     }
     
     filter "system:windows"
