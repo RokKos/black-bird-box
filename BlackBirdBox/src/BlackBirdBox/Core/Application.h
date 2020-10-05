@@ -28,9 +28,9 @@ public:
 
     const Ref<ImGuiLayer>& GetImGuiLayer() const;
 
-    inline Window& GetWindow() { return *window_; }
+    Window& GetWindow();
 
-    inline static Application& Get() { return *s_Instance; }
+    static Application& Get();
 
 private:
     void Run();

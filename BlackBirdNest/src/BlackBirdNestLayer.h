@@ -45,6 +45,8 @@ private:
     BlackBirdBox::Ref<BlackBirdBox::FrameBuffer> test_frame_buffer_;
     BlackBirdBox::Ref<BlackBirdBox::Shape> frame_buffer_obj_;
 
+    BlackBirdBox::Ref<BlackBirdBox::AudioSample> sample_;
+
     int polygon_mode_ = 1;
     const char* polygon_mode_names_[3]{ "Point", "Line", "Fill" };
 };

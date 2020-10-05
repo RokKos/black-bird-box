@@ -1,6 +1,7 @@
 ﻿#include "bbbpch.h"
 #include "Application.h"
 
+#include "BlackBirdBox/Audio/AudioContext.h"
 #include "BlackBirdBox/Renderer/Renderer.h"
 #include "Input.h"
 #include "Log.h"
@@ -22,6 +23,7 @@ Application::Application()
     window_->SetEventCallback(BIND_EVENT_FN(Application::OnEvent));
 
     Renderer::Init();
+    AudioContext::Init();
 
     im_gui_layer_ = CreateRef<ImGuiLayer>();
     PushOverlay(im_gui_layer_);
@@ -32,6 +34,7 @@ Application::~Application()
     PROFILE_FUNCTION();
 
     Renderer::Shutdown();
+    AudioContext::DeInit();
 }
 
 void Application::Close() { running_ = false; }
@@ -63,6 +66,10 @@ void Application::PushOverlay(const Ref<Layer>& layer)
 }
 
 const Ref<ImGuiLayer>& Application::GetImGuiLayer() const { return im_gui_layer_; }
+
+Window& Application::GetWindow() { return *window_; }
+
+Application& Application::Get() { return *s_Instance; }
 
 void Application::OnEvent(Event& e)
 {
