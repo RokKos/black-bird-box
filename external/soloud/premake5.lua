@@ -9,7 +9,8 @@ project "SoLoud"
 	{
         "include/**.h",
         "src/**.h",
-		"src/**.cpp"
+        "src/**.cpp",
+        "src/**.c"
     }
     
     defines
