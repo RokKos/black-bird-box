@@ -31,7 +31,7 @@ private:
 
 private:
     GLFWwindow* m_Window;
-    BlackBirdBox::Scope<BlackBirdBox::GraphicsContext> m_Context;
+    BlackBirdBox::Scope<BlackBirdBox::GraphicsContext> graphics_context_;
 
     struct WindowData {
         std::string Title;

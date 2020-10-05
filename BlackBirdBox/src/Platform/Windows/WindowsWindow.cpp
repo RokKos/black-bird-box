@@ -59,8 +59,8 @@ void WindowsWindow::Init(const BlackBirdBox::WindowProps& props)
         ++s_GLFWWindowCount;
     }
 
-    m_Context = BlackBirdBox::GraphicsContext::Create(m_Window);
-    m_Context->Init();
+    graphics_context_ = BlackBirdBox::GraphicsContext::Create(m_Window);
+    graphics_context_->Init();
 
     glfwSetWindowUserPointer(m_Window, &m_Data);
     SetVSync(false);
@@ -159,7 +159,7 @@ void WindowsWindow::OnUpdate()
     PROFILE_FUNCTION();
 
     glfwPollEvents();
-    m_Context->SwapBuffers();
+    graphics_context_->SwapBuffers();
 }
 
 void WindowsWindow::SetVSync(bool enabled)
