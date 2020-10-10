@@ -14,17 +14,17 @@ std::string Util::ReadFile(std::string file_path)
     return buffer.str();
 }
 
-std::vector<unsigned int> Util::GreedyGraphVertexColoring(unsigned int graph_size, std::vector<glm::mat4> neighbours)
+std::vector<uint32_t> Util::GreedyGraphVertexColoring(uint32_t graph_size, std::vector<glm::mat4> neighbours)
 {
     PROFILE_FUNCTION();
 
     std::vector<Ref<GraphVertex>> graph_vertexes;
     graph_vertexes.reserve(graph_size);
-    for (unsigned int i = 0; i < graph_size; ++i) {
+    for (uint32_t i = 0; i < graph_size; ++i) {
         graph_vertexes.push_back(CreateRef<GraphVertex>());
     }
 
-    for (unsigned int i = 0; i < graph_size; ++i) {
+    for (uint32_t i = 0; i < graph_size; ++i) {
         std::vector<Ref<GraphVertex>> graph_neighbours;
         graph_neighbours.reserve(8);
         for (int x = 0; x < 3; ++x) {
@@ -39,12 +39,12 @@ std::vector<unsigned int> Util::GreedyGraphVertexColoring(unsigned int graph_siz
         graph_vertexes[i]->SetConnections(graph_neighbours);
     }
 
-    for (unsigned int i = 0; i < graph_size; ++i) {
+    for (uint32_t i = 0; i < graph_size; ++i) {
         graph_vertexes[i]->SelectColor();
     }
 
-    std::vector<unsigned int> graph_coloring(graph_size, 0);
-    for (unsigned int i = 0; i < graph_size; ++i) {
+    std::vector<uint32_t> graph_coloring(graph_size, 0);
+    for (uint32_t i = 0; i < graph_size; ++i) {
         graph_coloring[i] = graph_vertexes[i]->GetColor();
     }
 
@@ -52,7 +52,7 @@ std::vector<unsigned int> Util::GreedyGraphVertexColoring(unsigned int graph_siz
 }
 
 // This is fixed function for connection that I have now
-std::vector<std::vector<glm::vec4>> Util::ClothSeperateEdges(unsigned int graph_dimension)
+std::vector<std::vector<glm::vec4>> Util::ClothSeperateEdges(uint32_t graph_dimension)
 {
     PROFILE_FUNCTION();
     // Horizontal Connections
