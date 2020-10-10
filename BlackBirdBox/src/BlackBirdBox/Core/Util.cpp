@@ -52,116 +52,116 @@ std::vector<uint32_t> Util::GreedyGraphVertexColoring(uint32_t graph_size, std::
 }
 
 // This is fixed function for connection that I have now
-std::vector<std::vector<glm::vec4>> Util::ClothSeperateEdges(uint32_t graph_dimension)
+std::vector<std::vector<glm::uvec4>> Util::ClothSeperateEdges(uint32_t graph_dimension)
 {
     PROFILE_FUNCTION();
     // Horizontal Connections
-    std::vector<glm::vec4> batch_01;
+    std::vector<glm::uvec4> batch_01;
     batch_01.reserve(graph_dimension * (graph_dimension / 2));
-    std::vector<glm::vec4> batch_02;
+    std::vector<glm::uvec4> batch_02;
     for (int y = 0; y < graph_dimension; ++y) {
         const int start_of_row = y * graph_dimension;
         for (int x = 0; x < graph_dimension - 1; x += 2) {
-            batch_01.emplace_back(glm::vec4(start_of_row + x, start_of_row + x + 1, 0, 0));
+            batch_01.emplace_back(glm::uvec4(start_of_row + x, start_of_row + x + 1, 0, 0));
             if (x + 2 < graph_dimension) {
-                batch_02.emplace_back(glm::vec4(start_of_row + x + 1, start_of_row + x + 2, 0, 0));
+                batch_02.emplace_back(glm::uvec4(start_of_row + x + 1, start_of_row + x + 2, 0, 0));
             }
         }
     }
 
     // Vertical Connections
-    std::vector<glm::vec4> batch_03;
+    std::vector<glm::uvec4> batch_03;
     batch_03.reserve(graph_dimension * (graph_dimension / 2));
-    std::vector<glm::vec4> batch_04;
+    std::vector<glm::uvec4> batch_04;
     for (int y = 0; y < graph_dimension - 1; y += 2) {
         for (int x = 0; x < graph_dimension; x++) {
-            batch_03.emplace_back(glm::vec4(y * graph_dimension + x, (y + 1) * graph_dimension + x, 0, 0));
+            batch_03.emplace_back(glm::uvec4(y * graph_dimension + x, (y + 1) * graph_dimension + x, 0, 0));
             if (y + 2 < graph_dimension) {
-                batch_04.emplace_back(glm::vec4((y + 1) * graph_dimension + x, (y + 2) * graph_dimension + x, 0, 0));
+                batch_04.emplace_back(glm::uvec4((y + 1) * graph_dimension + x, (y + 2) * graph_dimension + x, 0, 0));
             }
         }
     }
 
     // Diagonal Connections
-    std::vector<glm::vec4> batch_05;
+    std::vector<glm::uvec4> batch_05;
     for (int y = 0; y < graph_dimension - 1; y += 2) {
         const int start_of_row = y * graph_dimension;
         for (int x = 0; x < graph_dimension - 1; x += 2) {
-            batch_05.emplace_back(glm::vec4(start_of_row + x, (y + 1) * graph_dimension + x + 1, 1, 0));
-            batch_05.emplace_back(glm::vec4(start_of_row + x + 1, (y + 1) * graph_dimension + x, 1, 0));
+            batch_05.emplace_back(glm::uvec4(start_of_row + x, (y + 1) * graph_dimension + x + 1, 1, 0));
+            batch_05.emplace_back(glm::uvec4(start_of_row + x + 1, (y + 1) * graph_dimension + x, 1, 0));
         }
     }
 
-    std::vector<glm::vec4> batch_06;
+    std::vector<glm::uvec4> batch_06;
     for (int y = 1; y < graph_dimension - 1; y += 2) {
         for (int x = 0; x < graph_dimension - 1; x += 2) {
-            batch_06.emplace_back(glm::vec4(y * graph_dimension + x, (y + 1) * graph_dimension + x + 1, 1, 0));
-            batch_06.emplace_back(glm::vec4(y * graph_dimension + x + 1, (y + 1) * graph_dimension + x, 1, 0));
+            batch_06.emplace_back(glm::uvec4(y * graph_dimension + x, (y + 1) * graph_dimension + x + 1, 1, 0));
+            batch_06.emplace_back(glm::uvec4(y * graph_dimension + x + 1, (y + 1) * graph_dimension + x, 1, 0));
         }
     }
 
-    std::vector<glm::vec4> batch_07;
+    std::vector<glm::uvec4> batch_07;
     for (int y = 0; y < graph_dimension - 1; y += 2) {
         for (int x = 1; x < graph_dimension - 1; x += 2) {
-            batch_07.emplace_back(glm::vec4(y * graph_dimension + x, (y + 1) * graph_dimension + x + 1, 1, 0));
-            batch_07.emplace_back(glm::vec4(y * graph_dimension + x + 1, (y + 1) * graph_dimension + x, 1, 0));
+            batch_07.emplace_back(glm::uvec4(y * graph_dimension + x, (y + 1) * graph_dimension + x + 1, 1, 0));
+            batch_07.emplace_back(glm::uvec4(y * graph_dimension + x + 1, (y + 1) * graph_dimension + x, 1, 0));
         }
     }
 
-    std::vector<glm::vec4> batch_08;
+    std::vector<glm::uvec4> batch_08;
     for (int y = 1; y < graph_dimension - 1; y += 2) {
         for (int x = 1; x < graph_dimension - 1; x += 2) {
-            batch_08.emplace_back(glm::vec4(y * graph_dimension + x, (y + 1) * graph_dimension + x + 1, 1, 0));
-            batch_08.emplace_back(glm::vec4(y * graph_dimension + x + 1, (y + 1) * graph_dimension + x, 1, 0));
+            batch_08.emplace_back(glm::uvec4(y * graph_dimension + x, (y + 1) * graph_dimension + x + 1, 1, 0));
+            batch_08.emplace_back(glm::uvec4(y * graph_dimension + x + 1, (y + 1) * graph_dimension + x, 1, 0));
         }
     }
 
     // Skip One connection (Bending connections)
-    std::vector<glm::vec4> batch_09;
-    std::vector<glm::vec4> batch_10;
+    std::vector<glm::uvec4> batch_09;
+    std::vector<glm::uvec4> batch_10;
     for (int y = 0; y < graph_dimension; ++y) {
         const int start_of_row = y * graph_dimension;
         for (int x = 0; x < graph_dimension; x += 4) {
             if (x + 2 < graph_dimension) {
-                batch_09.emplace_back(glm::vec4(start_of_row + x, start_of_row + x + 2, 0, 1));
+                batch_09.emplace_back(glm::uvec4(start_of_row + x, start_of_row + x + 2, 0, 1));
             }
 
             if (x + 3 < graph_dimension) {
-                batch_09.emplace_back(glm::vec4(start_of_row + x + 1, start_of_row + x + 3, 0, 1));
+                batch_09.emplace_back(glm::uvec4(start_of_row + x + 1, start_of_row + x + 3, 0, 1));
             }
         }
 
         for (int x = 2; x < graph_dimension; x += 4) {
             if (x + 2 < graph_dimension) {
-                batch_10.emplace_back(glm::vec4(start_of_row + x, start_of_row + x + 2, 0, 1));
+                batch_10.emplace_back(glm::uvec4(start_of_row + x, start_of_row + x + 2, 0, 1));
             }
 
             if (x + 3 < graph_dimension) {
-                batch_10.emplace_back(glm::vec4(start_of_row + x + 1, start_of_row + x + 3, 0, 1));
+                batch_10.emplace_back(glm::uvec4(start_of_row + x + 1, start_of_row + x + 3, 0, 1));
             }
         }
     }
 
-    std::vector<glm::vec4> batch_11;
-    std::vector<glm::vec4> batch_12;
+    std::vector<glm::uvec4> batch_11;
+    std::vector<glm::uvec4> batch_12;
     for (int x = 0; x < graph_dimension; ++x) {
         for (int y = 0; y < graph_dimension; y += 4) {
             if (y + 2 < graph_dimension) {
-                batch_11.emplace_back(glm::vec4(y * graph_dimension + x, (y + 2) * graph_dimension + x, 0, 1));
+                batch_11.emplace_back(glm::uvec4(y * graph_dimension + x, (y + 2) * graph_dimension + x, 0, 1));
             }
 
             if (y + 3 < graph_dimension) {
-                batch_11.emplace_back(glm::vec4((y + 1) * graph_dimension + x, (y + 3) * graph_dimension, 0, 1));
+                batch_11.emplace_back(glm::uvec4((y + 1) * graph_dimension + x, (y + 3) * graph_dimension, 0, 1));
             }
         }
 
         for (int y = 2; y < graph_dimension; y += 4) {
             if (y + 2 < graph_dimension) {
-                batch_12.emplace_back(glm::vec4(y * graph_dimension + x, (y + 2) * graph_dimension + x, 0, 1));
+                batch_12.emplace_back(glm::uvec4(y * graph_dimension + x, (y + 2) * graph_dimension + x, 0, 1));
             }
 
             if (y + 3 < graph_dimension) {
-                batch_12.emplace_back(glm::vec4((y + 1) * graph_dimension + x, (y + 3) * graph_dimension, 0, 1));
+                batch_12.emplace_back(glm::uvec4((y + 1) * graph_dimension + x, (y + 3) * graph_dimension, 0, 1));
             }
         }
     }

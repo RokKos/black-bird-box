@@ -9,6 +9,7 @@ public:
     OpenGLShaderStorageBuffer(uint32_t size);
     OpenGLShaderStorageBuffer(const std::vector<glm::vec3>& storage_data, uint32_t size);
     OpenGLShaderStorageBuffer(const std::vector<glm::vec4>& storage_data, uint32_t size, bool persistent);
+    OpenGLShaderStorageBuffer(const std::vector<glm::uvec4>& storage_data, uint32_t size);
     OpenGLShaderStorageBuffer(const std::vector<glm::mat3>& storage_data, uint32_t size);
     OpenGLShaderStorageBuffer(const std::vector<glm::mat4>& storage_data, uint32_t size);
     OpenGLShaderStorageBuffer(const std::vector<glm::int32>& storage_data, uint32_t size);
@@ -20,6 +21,7 @@ public:
 
     virtual void SetData(const std::vector<glm::vec3>& storage_data, uint32_t size) override;
     virtual void SetData(const std::vector<glm::vec4>& storage_data, uint32_t size) override;
+    virtual void SetData(const std::vector<glm::uvec4>& storage_data, uint32_t size) override;
     virtual void SetData(const std::vector<glm::mat3>& storage_data, uint32_t size) override;
     virtual void SetData(const std::vector<glm::mat4>& storage_data, uint32_t size) override;
     virtual void SetData(const std::vector<glm::int32>& storage_data, uint32_t size) override;

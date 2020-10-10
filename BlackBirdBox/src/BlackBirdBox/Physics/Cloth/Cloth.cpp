@@ -7,8 +7,7 @@ namespace BlackBirdBox {
 
 Cloth::Cloth(unsigned int num_cloth_dimension_size, Ref<Material> material_to_render_cloth)
     : num_cloth_dimension_size_(num_cloth_dimension_size)
-    , Shape(
-          material_to_render_cloth, nullptr, BlackBirdBox::CreateRef<BlackBirdBox::Transform>(glm::vec3(0, 0, 0)), BlackBirdBox::ModelData(), "Cloth")
+    , Shape(material_to_render_cloth, nullptr, CreateRef<Transform>(glm::vec3(0, 0, 0)), ModelData(), "Cloth")
 {
     PROFILE_FUNCTION();
 
@@ -39,20 +38,18 @@ Cloth::Cloth(unsigned int num_cloth_dimension_size, Ref<Material> material_to_re
     }
 
     auto prev_positions_buffer
-        = BlackBirdBox::ShaderStorageBuffer::Create(prev_cloth_particle_positons, prev_cloth_particle_positons.size() * sizeof(glm::vec4), false);
-    auto positions_buffer
-        = BlackBirdBox::ShaderStorageBuffer::Create(cloth_particle_positons, cloth_particle_positons.size() * sizeof(glm::vec4), false);
-    auto fixed_pos_buffer
-        = BlackBirdBox::ShaderStorageBuffer::Create(cloth_particle_fixed_pos, cloth_particle_fixed_pos.size() * sizeof(glm::vec4), true);
-    cloth_storage_array_ = BlackBirdBox::ShaderStorageArray::Create();
+        = ShaderStorageBuffer::Create(prev_cloth_particle_positons, prev_cloth_particle_positons.size() * sizeof(glm::vec4), false);
+    auto positions_buffer = ShaderStorageBuffer::Create(cloth_particle_positons, cloth_particle_positons.size() * sizeof(glm::vec4), false);
+    auto fixed_pos_buffer = ShaderStorageBuffer::Create(cloth_particle_fixed_pos, cloth_particle_fixed_pos.size() * sizeof(glm::vec4), true);
+    cloth_storage_array_ = ShaderStorageArray::Create();
     cloth_storage_array_->AddShaderStorageBuffer(prev_positions_buffer);
     cloth_storage_array_->AddShaderStorageBuffer(positions_buffer);
     cloth_storage_array_->AddShaderStorageBuffer(fixed_pos_buffer);
 
-    vertex_array_ = BlackBirdBox::VertexArray::Create();
-    auto vertex_buffer_cloth = BlackBirdBox::VertexBuffer::CreateExistingBuffer(positions_buffer->GetRendererID());
-    BlackBirdBox::BufferLayout layout_cloth = {
-        { BlackBirdBox::ShaderDataType::Float4, "a_Position" },
+    vertex_array_ = VertexArray::Create();
+    auto vertex_buffer_cloth = VertexBuffer::CreateExistingBuffer(positions_buffer->GetRendererID());
+    BufferLayout layout_cloth = {
+        { ShaderDataType::Float4, "a_Position" },
     };
 
     vertex_buffer_cloth->SetLayout(layout_cloth);
@@ -74,20 +71,19 @@ Cloth::Cloth(unsigned int num_cloth_dimension_size, Ref<Material> material_to_re
         }
     }
 
-    BlackBirdBox::Ref<BlackBirdBox::IndexBuffer> index_buffer_cloth = BlackBirdBox::IndexBuffer::Create(cloth_indices.data(), cloth_indices.size());
+    Ref<IndexBuffer> index_buffer_cloth = IndexBuffer::Create(cloth_indices.data(), cloth_indices.size());
     vertex_array_->SetIndexBuffer(index_buffer_cloth);
 
     graph_colored_edges_ = Util::ClothSeperateEdges(num_cloth_dimension_size);
 
     for (size_t i = 0; i < graph_colored_edges_.size(); ++i) {
-        batch_id_buffers_.push_back(
-            BlackBirdBox::ShaderStorageBuffer::Create(graph_colored_edges_[i], graph_colored_edges_[i].size() * sizeof(glm::vec4), false));
+        batch_id_buffers_.push_back(ShaderStorageBuffer::Create(graph_colored_edges_[i], graph_colored_edges_[i].size() * sizeof(glm::vec4)));
     }
 
     batch_id_start_ind_ = cloth_storage_array_->AddShaderStorageBuffer(batch_id_buffers_[0]);
 }
 
-BlackBirdBox::Ref<BlackBirdBox::ShaderStorageArray> Cloth::GetClothStorageArray(int batch_id)
+Ref<ShaderStorageArray> Cloth::GetClothStorageArray(int batch_id)
 {
     PROFILE_FUNCTION();
 

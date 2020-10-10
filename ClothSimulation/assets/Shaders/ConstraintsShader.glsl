@@ -17,7 +17,7 @@ layout(std430, binding=2) buffer fixedPts
 
 layout(std430, binding=3) buffer btcIds
 {
-	vec4 batchIds[ ];
+	uvec4 batchIds[ ];
 };
 
 layout(local_size_variable) in;
@@ -32,10 +32,10 @@ layout( location=9 ) uniform float u_Flexion_Stiffness;
 
 void main()
 {
-	vec4 pair_vertex = batchIds[gl_GlobalInvocationID.x];
-	uint vertex_a_id_ = uint(pair_vertex.x);
-	uint vertex_b_id_ = uint(pair_vertex.y);
-    float is_diagonal = pair_vertex.z;
+	uvec4 pair_vertex = batchIds[gl_GlobalInvocationID.x];
+	uint vertex_a_id_ = pair_vertex.x;
+	uint vertex_b_id_ = pair_vertex.y;
+    float is_diagonal = float(pair_vertex.z);
     //float is_flexion = pair_vertex.w;
     
 	vec4 position_a = Positions[vertex_a_id_];
