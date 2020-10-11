@@ -1,6 +1,6 @@
 {
   "ClothSimulationSettings": {
-    "ClothDimensionSize": 9,
+    "ClothDimensionSize": 350,
     "Gravity": [
       0.0,
       -9.81,
@@ -9,12 +9,12 @@
     "ExternalForce": [
       0.0,
       0.0,
-      1.0
+      2.0
     ],
     "WindResistance": [
-      0.0,
-      0.0,
-      1.0
+      0.1,
+      0.1,
+      0.1
     ],
     "SimulationDeltaTime": 0.00016,
     "ConstraintIterations": 3,
@@ -23,7 +23,7 @@
     "FlexionStiffness": 0.0,
     "ComputeShaderConfiguration": {
       "WorkGroupSize": [
-        81,
+        122500,
         1,
         1
       ],
