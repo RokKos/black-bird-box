@@ -169,4 +169,19 @@ std::vector<std::vector<glm::uvec4>> Util::ClothSeperateEdges(uint32_t graph_dim
     return { batch_01, batch_02, batch_03, batch_04, batch_05, batch_06, batch_07, batch_08 }; //, batch_09, batch_10, batch_11, batch_12 };
 }
 
+std::vector<glm::uvec4> Util::GetTrianglesOfSquaredMesh(uint32_t dimension)
+{
+    std::vector<glm::uvec4> triangles;
+
+    // TODO(Rok Kos): Change this to better solution
+
+    for (uint32_t y = 0; y < dimension - 1; ++y) {
+        const uint32_t start_of_row = y * dimension;
+        for (uint32_t x = 0; x < dimension - 1; ++x) {
+            triangles.emplace_back(glm::uvec4(start_of_row + x, start_of_row + x + 1, start_of_row + dimension + x, 0));
+            triangles.emplace_back(glm::uvec4(start_of_row + x + 1, start_of_row + dimension + x + 1, start_of_row + dimension + x - 1, 0));
+        }
+    }
+    return triangles;
+}
 } // namespace BlackBirdBox
