@@ -138,10 +138,22 @@ ClothSimulationLayer::ClothSimulationLayer()
 
     enviroment_map_ = BlackBirdBox::CubeMap::Create("assets/Textures/CubeMap/");
 
+    scene_.AddLightSource(BlackBirdBox::CreateRef<BlackBirdBox::LightSource>(BlackBirdBox::LightType::kDirectional,
+        BlackBirdBox::CreateRef<BlackBirdBox::Transform>(glm::vec3(0, 1.5f, 1.5f), glm::vec3(1.0f), glm::vec3(0.1f, 0.1f, 0.1f)),
+        glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.f, 1.f, 1.f)));
+
     // Compute Cloth
 
     ParseSimulationSettings();
     const auto& mat_generic_triangle = BlackBirdBox::CreateRef<BlackBirdBox::Material>(shader_library_.Get("TriangleTest"), "Generic_Triangle_MAT");
+    auto phong_lighting_parameters = BlackBirdBox::PhongLightingParameters();
+    phong_lighting_parameters.diffuse_color_ = glm::vec3(188.0f / 255.0f, 185.0f / 255.0f, 167.0f / 255.0f);
+    phong_lighting_parameters.specular_color_ = glm::vec3(1.0f, 1.0f, 1.0f);
+    phong_lighting_parameters.specular_scattering_ = 15.0f;
+    phong_lighting_parameters.ambient_color_ = glm::vec3(81.0f / 255.0f, 84.0f / 255.0f, 67.0f / 255.0f);
+    phong_lighting_parameters.ambient_intensity_ = glm::vec3(0.21f, 0.21f, 0.21f);
+    SetPhongParameters(mat_generic_triangle, phong_lighting_parameters);
+
     cloth_ = BlackBirdBox::CreateRef<BlackBirdBox::Cloth>(num_cloth_dimension_size_, mat_generic_triangle);
     // TODO(Rok Kos): Move this
     compute_shader_simulation_configuration_.SetHorizontalVerticalDistanceBetweenVertexes(cloth_->GetHorizontalVerticalDistanceBetweenVertexes());
@@ -154,11 +166,14 @@ ClothSimulationLayer::ClothSimulationLayer()
 
     const auto& constrains_shader = shader_library_.Get("ConstraintsShader");
     constraint_compute_material_ = BlackBirdBox::CreateRef<BlackBirdBox::Material>(constrains_shader, "Constraints_MAT");
+
+    const auto& cloth_normals_shader = shader_library_.Get("ClothNormalsShader");
+    cloth_compute_normals_material_ = BlackBirdBox::CreateRef<BlackBirdBox::Material>(cloth_normals_shader, "ClothNormals_MAT");
 }
 
-void ClothSimulationLayer::OnAttach() { BlackBirdBox::Layer::OnAttach(); }
+void ClothSimulationLayer::OnAttach() { Layer::OnAttach(); }
 
-void ClothSimulationLayer::OnDetach() { BlackBirdBox::Layer::OnDetach(); }
+void ClothSimulationLayer::OnDetach() { Layer::OnDetach(); }
 
 void ClothSimulationLayer::OnUpdate(BlackBirdBox::TimeStep ts)
 {
@@ -188,6 +203,8 @@ void ClothSimulationLayer::OnUpdate(BlackBirdBox::TimeStep ts)
             constraint_compute_material_, cloth_->GetClothStorageArray(batch_id), compute_shader_configuration);
     }
 
+    BlackBirdBox::Renderer::DispatchComputeShader(cloth_compute_normals_material_, cloth_->GetClothStorageArray(0), compute_shader_configuration_);
+
     for (const auto& shape : scene_.GetShapes()) {
         if (shape->GetObjectEnabled()) {
             BlackBirdBox::Renderer::Submit(shape->GetMaterial(), shape->GetVertexArray(), shape->GetTransform()->GetTransformMatrix());
@@ -216,7 +233,7 @@ void ClothSimulationLayer::OnImGuiRender()
 
     ImGui::Begin("Cloth");
 
-    ImGui::InputFloat4("Gravity", glm::value_ptr(fixed_point_to_move_), 10);
+    ImGui::InputFloat4("Point To Move", glm::value_ptr(fixed_point_to_move_), 10);
 
     const std::vector<BlackBirdBox::Ref<BlackBirdBox::ShaderStorageBuffer>>& cloth_shader_storage_buffers
         = cloth_->GetClothStorageArray(0)->GetShaderStorageBuffers();

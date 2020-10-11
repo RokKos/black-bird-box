@@ -3,6 +3,8 @@
     "assets/Shaders/EnviromentMapShader.glsl",
     "assets/Shaders/TriangleTest.glsl",
     "assets/Shaders/VerletIntegrationShader.glsl",
-    "assets/Shaders/ConstraintsShader.glsl"
+    "assets/Shaders/ConstraintsShader.glsl",
+    "assets/Shaders/ClothNormalsShader.glsl",
+    "assets/Shaders/GenericColor.glsl"
   ]
 }

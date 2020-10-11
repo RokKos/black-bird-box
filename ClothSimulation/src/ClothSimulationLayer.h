@@ -27,7 +27,7 @@ private:
     void SetPhongParameters(
         const BlackBirdBox::Ref<BlackBirdBox::Material>& material, BlackBirdBox::PhongLightingParameters phong_lighting_parameters);
 
-	void SetSimualtionMaterialProperties();
+    void SetSimualtionMaterialProperties();
 
 private:
     BlackBirdBox::TimeStep prev_time_step_;
@@ -47,6 +47,7 @@ private:
     BlackBirdBox::Ref<BlackBirdBox::Cloth> cloth_;
     BlackBirdBox::Ref<BlackBirdBox::Material> vertlet_compute_material_;
     BlackBirdBox::Ref<BlackBirdBox::Material> constraint_compute_material_;
+    BlackBirdBox::Ref<BlackBirdBox::Material> cloth_compute_normals_material_;
     BlackBirdBox::ComputeShaderConfiguration compute_shader_configuration_;
     BlackBirdBox::ComputeShaderSimulationConfiguration compute_shader_simulation_configuration_;
     glm::vec4 fixed_point_to_move_ = glm::vec4(1.0f, 1.0f, 0.0f, 1.0f);
