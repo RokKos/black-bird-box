@@ -21,122 +21,7 @@ ClothSimulationLayer::ClothSimulationLayer()
         BlackBirdBox::CreateRef<BlackBirdBox::ComputeShaderMenu>("Compute Shader Simulation Controls", compute_shader_simulation_configuration_));
     menus_.push_back(BlackBirdBox::CreateRef<BlackBirdBox::MiscMenu>("Misc Menu", prev_time_step_, bg_color_, polygon_mode_));
 
-    // Enviroment map ------
-    const auto& enviroment_map_shader = shader_library_.Get("EnviromentMapShader");
-    enviroment_map_shader->Bind();
-    enviroment_map_material_ = BlackBirdBox::CreateRef<BlackBirdBox::Material>(enviroment_map_shader, "EnviromentMap_MAT");
-    enviroment_map_material_->SetUniform("u_EnviromentMap", 0);
-
-    vertex_array_box_ = BlackBirdBox::VertexArray::Create();
-
-    float enviroment_map_box_vertices[] = {
-        // Front face
-        -1.0,
-        -1.0,
-        1.0,
-        1.0,
-        -1.0,
-        1.0,
-        1.0,
-        1.0,
-        1.0,
-        -1.0,
-        1.0,
-        1.0,
-
-        // Back face
-        -1.0,
-        -1.0,
-        -1.0,
-        -1.0,
-        1.0,
-        -1.0,
-        1.0,
-        1.0,
-        -1.0,
-        1.0,
-        -1.0,
-        -1.0,
-
-        // Top face
-        -1.0,
-        1.0,
-        -1.0,
-        -1.0,
-        1.0,
-        1.0,
-        1.0,
-        1.0,
-        1.0,
-        1.0,
-        1.0,
-        -1.0,
-
-        // Bottom face
-        -1.0,
-        -1.0,
-        -1.0,
-        1.0,
-        -1.0,
-        -1.0,
-        1.0,
-        -1.0,
-        1.0,
-        -1.0,
-        -1.0,
-        1.0,
-
-        // Right face
-        1.0,
-        -1.0,
-        -1.0,
-        1.0,
-        1.0,
-        -1.0,
-        1.0,
-        1.0,
-        1.0,
-        1.0,
-        -1.0,
-        1.0,
-
-        // Left face
-        -1.0,
-        -1.0,
-        -1.0,
-        -1.0,
-        -1.0,
-        1.0,
-        -1.0,
-        1.0,
-        1.0,
-        -1.0,
-        1.0,
-        -1.0,
-    };
-
-    uint32_t enviroment_map_box_indices[] = {
-        0, 1, 2, 0, 2, 3, // front
-        4, 5, 6, 4, 6, 7, // back
-        8, 9, 10, 8, 10, 11, // top
-        12, 13, 14, 12, 14, 15, // bottom
-        16, 17, 18, 16, 18, 19, // right
-        20, 21, 22, 20, 22, 23, // left
-    };
-
-    auto vertex_buffer_box = BlackBirdBox::VertexBuffer::Create(enviroment_map_box_vertices, sizeof(enviroment_map_box_vertices));
-    BlackBirdBox::BufferLayout layout_box = {
-        { BlackBirdBox::ShaderDataType::Float3, "a_Position" },
-    };
-
-    vertex_buffer_box->SetLayout(layout_box);
-    vertex_array_box_->AddVertexBuffer(vertex_buffer_box);
-
-    BlackBirdBox::Ref<BlackBirdBox::IndexBuffer> index_buffer_box
-        = BlackBirdBox::IndexBuffer::Create(enviroment_map_box_indices, sizeof(enviroment_map_box_indices));
-    vertex_array_box_->SetIndexBuffer(index_buffer_box);
-
-    enviroment_map_ = BlackBirdBox::CubeMap::Create("assets/Textures/CubeMap/");
+    SetEnviromentMap();
 
     scene_.AddLightSource(BlackBirdBox::CreateRef<BlackBirdBox::LightSource>(BlackBirdBox::LightType::kDirectional,
         BlackBirdBox::CreateRef<BlackBirdBox::Transform>(glm::vec3(0, 1.5f, 1.5f), glm::vec3(1.0f), glm::vec3(0.1f, 0.1f, 0.1f)),
@@ -362,5 +247,125 @@ void ClothSimulationLayer::SetSimualtionMaterialProperties()
     constraint_compute_material_->SetUniform("u_Structural_Stiffness", compute_shader_simulation_configuration_.GetStructuralStiffness());
     constraint_compute_material_->SetUniform("u_Shear_Stiffness", compute_shader_simulation_configuration_.GetShearStiffness());
     constraint_compute_material_->SetUniform("u_Flexion_Stiffness", compute_shader_simulation_configuration_.GetFlexionStiffness());
+}
+
+void ClothSimulationLayer::SetEnviromentMap()
+{
+    // Enviroment map ------
+    const auto& enviroment_map_shader = shader_library_.Get("EnviromentMapShader");
+    enviroment_map_shader->Bind();
+    enviroment_map_material_ = BlackBirdBox::CreateRef<BlackBirdBox::Material>(enviroment_map_shader, "EnviromentMap_MAT");
+    enviroment_map_material_->SetUniform("u_EnviromentMap", 0);
+
+    vertex_array_box_ = BlackBirdBox::VertexArray::Create();
+
+    float enviroment_map_box_vertices[] = {
+        // Front face
+        -1.0,
+        -1.0,
+        1.0,
+        1.0,
+        -1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        -1.0,
+        1.0,
+        1.0,
+
+        // Back face
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0,
+        1.0,
+        -1.0,
+        1.0,
+        1.0,
+        -1.0,
+        1.0,
+        -1.0,
+        -1.0,
+
+        // Top face
+        -1.0,
+        1.0,
+        -1.0,
+        -1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        -1.0,
+
+        // Bottom face
+        -1.0,
+        -1.0,
+        -1.0,
+        1.0,
+        -1.0,
+        -1.0,
+        1.0,
+        -1.0,
+        1.0,
+        -1.0,
+        -1.0,
+        1.0,
+
+        // Right face
+        1.0,
+        -1.0,
+        -1.0,
+        1.0,
+        1.0,
+        -1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        -1.0,
+        1.0,
+
+        // Left face
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0,
+        1.0,
+        -1.0,
+        1.0,
+        1.0,
+        -1.0,
+        1.0,
+        -1.0,
+    };
+
+    uint32_t enviroment_map_box_indices[] = {
+        0, 1, 2, 0, 2, 3, // front
+        4, 5, 6, 4, 6, 7, // back
+        8, 9, 10, 8, 10, 11, // top
+        12, 13, 14, 12, 14, 15, // bottom
+        16, 17, 18, 16, 18, 19, // right
+        20, 21, 22, 20, 22, 23, // left
+    };
+
+    auto vertex_buffer_box = BlackBirdBox::VertexBuffer::Create(enviroment_map_box_vertices, sizeof(enviroment_map_box_vertices));
+    BlackBirdBox::BufferLayout layout_box = {
+        { BlackBirdBox::ShaderDataType::Float3, "a_Position" },
+    };
+
+    vertex_buffer_box->SetLayout(layout_box);
+    vertex_array_box_->AddVertexBuffer(vertex_buffer_box);
+
+    BlackBirdBox::Ref<BlackBirdBox::IndexBuffer> index_buffer_box
+        = BlackBirdBox::IndexBuffer::Create(enviroment_map_box_indices, sizeof(enviroment_map_box_indices));
+    vertex_array_box_->SetIndexBuffer(index_buffer_box);
+
+    enviroment_map_ = BlackBirdBox::CubeMap::Create("assets/Textures/CubeMap/");
 }
 } // namespace ClothSimulation

@@ -28,6 +28,7 @@ private:
         const BlackBirdBox::Ref<BlackBirdBox::Material>& material, BlackBirdBox::PhongLightingParameters phong_lighting_parameters);
 
     void SetSimualtionMaterialProperties();
+    void SetEnviromentMap();
 
 private:
     BlackBirdBox::TimeStep prev_time_step_;
