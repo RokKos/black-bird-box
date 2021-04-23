@@ -20,7 +20,7 @@
     "ConstraintIterations": 3,
     "StructuralStiffness": 1.0,
     "ShearStiffness": 1.0,
-    "FlexionStiffness": 0.0,
+    "FlexionStiffness": 1.000,
     "ComputeShaderConfiguration": {
       "WorkGroupSize": [
         122500,

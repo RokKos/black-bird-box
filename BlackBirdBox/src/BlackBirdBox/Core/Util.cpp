@@ -151,7 +151,7 @@ std::vector<std::vector<glm::uvec4>> Util::ClothSeperateEdges(uint32_t graph_dim
             }
 
             if (y + 3 < graph_dimension) {
-                batch_11.emplace_back(glm::uvec4((y + 1) * graph_dimension + x, (y + 3) * graph_dimension, 0, 1));
+                batch_11.emplace_back(glm::uvec4((y + 1) * graph_dimension + x, (y + 3) * graph_dimension + x, 0, 1));
             }
         }
 
@@ -161,12 +161,12 @@ std::vector<std::vector<glm::uvec4>> Util::ClothSeperateEdges(uint32_t graph_dim
             }
 
             if (y + 3 < graph_dimension) {
-                batch_12.emplace_back(glm::uvec4((y + 1) * graph_dimension + x, (y + 3) * graph_dimension, 0, 1));
+                batch_12.emplace_back(glm::uvec4((y + 1) * graph_dimension + x, (y + 3) * graph_dimension + x, 0, 1));
             }
         }
     }
 
-    return { batch_01, batch_02, batch_03, batch_04, batch_05, batch_06, batch_07, batch_08 }; //, batch_09, batch_10, batch_11, batch_12 };
+    return { batch_01, batch_02, batch_03, batch_04, batch_05, batch_06, batch_07, batch_08, batch_09, batch_10, batch_11, batch_12 };
 }
 
 std::vector<glm::uvec4> Util::GetTrianglesOfSquaredMesh(uint32_t dimension)
