@@ -20,7 +20,7 @@ Cloth::Cloth(uint32_t num_cloth_dimension_size, Ref<Material> material_to_render
     std::vector<glm::vec4> cloth_particle_fixed_pos;
     cloth_particle_fixed_pos.reserve(num_cloth_particles_);
 
-    horizontal_vertical_distance_between_vertexes_ = 1.0f / static_cast<float>(num_cloth_dimension_size_ - 1);
+    horizontal_vertical_distance_between_vertexes_ = 1.0f / static_cast<float>(num_cloth_dimension_size_);
     diagonal_distance_between_vertexes_ = horizontal_vertical_distance_between_vertexes_ * std::sqrt(2.0f);
     bend_distance_between_vertexes_ = 2.0f * horizontal_vertical_distance_between_vertexes_;
     for (uint32_t i = 0; i < num_cloth_particles_; ++i) {

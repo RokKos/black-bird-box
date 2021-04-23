@@ -39,9 +39,7 @@ void main()
     //float is_flexion = pair_vertex.w;
     
 	vec4 position_a = Positions[vertex_a_id_];
-    vec4 fixed_position_a = fixedPoints[vertex_a_id_];
 	vec4 position_b = Positions[vertex_b_id_];
-    vec4 fixed_position_b = fixedPoints[vertex_b_id_];
 
     float rest_lenght = mix(u_Horizontal_Vertical_Rest_Lenght, u_Diagonal_Rest_Lenght, is_diagonal);//, u_Bend_Lenght, is_flexion);
     float stiffness = mix(u_Structural_Stiffness, u_Shear_Stiffness, is_diagonal);//, u_Flexion_Stiffness, is_flexion);
@@ -57,6 +55,8 @@ void main()
         position_b -= force_spring_offset;
     }
 
+    vec4 fixed_position_a = fixedPoints[vertex_a_id_];
+    vec4 fixed_position_b = fixedPoints[vertex_b_id_];
     position_a = mix(position_a, vec4(fixed_position_a.xyz, 0.0), fixed_position_a.w);
     position_b = mix(position_b, vec4(fixed_position_b.xyz, 0.0), fixed_position_b.w);
 	Positions[vertex_a_id_] = position_a;
